@@ -18,6 +18,8 @@ import RightMenuDrawer from './components/RightMenuDrawer';
 import UnsettledDetails from './components/UnsettledDetails';
 import SettledDetails from './components/SettledDetails';
 import DrawHistory from './components/DrawHistory';
+import SettingsPage from './components/SettingsPage';
+import LoginPage from './components/LoginPage';
 import RaceAnimation from './components/RaceAnimation';
 import FfcAnimation from './components/FfcAnimation';
 import K3Animation from './components/K3Animation';
@@ -341,7 +343,29 @@ export default function App() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isRightDrawerOpen, setIsRightDrawerOpen] = useState(false);
   const [isHistoryDropdownOpen, setIsHistoryDropdownOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState('betting'); // 'betting', 'unsettled', or 'settled'
+  const [currentPage, setCurrentPage] = useState('betting'); // 'betting', 'unsettled', 'settled', 'history', 'settings'
+  const [loggedIn, setLoggedIn] = useState(true);
+
+  const handleLogout = () => {
+    setIsRightDrawerOpen(false);
+    setIsDrawerOpen(false);
+    setCurrentPage('betting');
+    setLoggedIn(false);
+  };
+  const [theme, setTheme] = useState(() => {
+    const saved = typeof localStorage !== 'undefined' ? localStorage.getItem('appTheme') : null;
+    return saved === 'light-blue' || saved === 'deep-blue' ? saved : 'deep-blue';
+  });
+
+  // Apply the selected theme to the document root and persist it
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    try {
+      localStorage.setItem('appTheme', theme);
+    } catch {
+      // ignore storage errors
+    }
+  }, [theme]);
   const [activeTab, setActiveTab] = useState('shortcut'); // Default to shortcut tab
   const [selectedShortcutPositions, setSelectedShortcutPositions] = useState([]);
   const [selectedShortcutOptions, setSelectedShortcutOptions] = useState([]);
@@ -1883,7 +1907,8 @@ export default function App() {
         onSelectSettled={() => setCurrentPage('settled')}
         onSelectBetting={() => setCurrentPage('betting')}
         onSelectHistory={() => setCurrentPage('history')}
-        activeItem={currentPage === 'betting' ? '投注' : currentPage === 'unsettled' ? '未结明细' : currentPage === 'settled' ? '今日已结' : currentPage === 'history' ? '开奖历史' : ''}
+        onSelectSettings={() => setCurrentPage('settings')}
+        activeItem={currentPage === 'betting' ? '投注' : currentPage === 'unsettled' ? '未结明细' : currentPage === 'settled' ? '今日已结' : currentPage === 'history' ? '开奖历史' : currentPage === 'settings' ? '设置' : ''}
         unsettledAmount={placedBets.reduce((acc, b) => acc + b.amount, 20)}
       />
 
@@ -1915,6 +1940,20 @@ export default function App() {
           onOpenMenu={() => setIsRightDrawerOpen(true)}
         />
       )}
+
+      {/* Settings Full Page Overlay */}
+      {currentPage === 'settings' && (
+        <SettingsPage
+          onBack={() => setCurrentPage('betting')}
+          onOpenMenu={() => setIsRightDrawerOpen(true)}
+          theme={theme}
+          onChangeTheme={setTheme}
+          onLogout={handleLogout}
+        />
+      )}
+
+      {/* Login Page Overlay */}
+      {!loggedIn && <LoginPage onLogin={() => setLoggedIn(true)} />}
     </div>
   );
 }
