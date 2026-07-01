@@ -134,20 +134,15 @@ body {
   justify-content: center;
 }
 
-/* Scrollbar customizations */
+/* Hide scrollbars everywhere (keep scrolling functional) */
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 0;
+  height: 0;
+  display: none;
 }
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 2px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 /* Mobile Frame Wrapper for Desktop */
@@ -233,18 +228,18 @@ body {
   transform: scale(0.95);
 }
 
-/* Header right-side button: translucent white on the blue header */
+/* Header right-side button: plain icon (matches the drawer page headers) */
 .app-header > button.icon-btn,
 .app-header .header-right-group > button.icon-btn {
-  background-color: var(--header-btn-bg);
-  border: 1px solid var(--header-btn-border);
+  background-color: transparent;
+  border: none;
   box-shadow: none;
-  color: var(--header-btn-text);
+  color: var(--header-text);
 }
 
 .app-header > button.icon-btn:hover,
 .app-header .header-right-group > button.icon-btn:hover {
-  background-color: var(--header-btn-hover-bg);
+  background-color: transparent;
 }
 
 /* Draw Information Banner */
@@ -4219,6 +4214,16 @@ img.lhc-ball {
   height: 32px;
   font-size: 13px;
   padding: 0 10px;
+  /* Match the header hamburger button's edge/fill */
+  background-color: var(--header-btn-bg);
+  border: 1px solid var(--header-btn-border);
+  color: var(--header-btn-text);
+}
+.pankou-picker:hover {
+  background-color: var(--header-btn-hover-bg);
+}
+.pankou-picker .history-picker-caret {
+  color: var(--header-btn-text);
 }
 .header-pankou-backdrop {
   position: fixed;
