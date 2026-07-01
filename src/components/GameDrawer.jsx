@@ -54,65 +54,20 @@ export default function GameDrawer({ isOpen, onClose, onSelectGame, gameTimers =
     return `00:${m}:${s}`;
   };
 
-  // Icon renderer for categories
-  const renderCategoryIcon = (catId) => {
-    switch (catId) {
-      case 'lhc':
-        // Two overlapping lottery balls with shine + a "6"
-        return (
-          <svg className="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="15.5" cy="9" r="4.8" />
-            <path d="M13.4 6.5a3 3 0 0 1 2.4-.7" opacity="0.7" />
-            <circle cx="8.5" cy="14.5" r="5.6" fill="currentColor" fillOpacity="0.12" />
-            <path d="M5.7 11.9a3.4 3.4 0 0 1 2.6-1" opacity="0.7" />
-            <text x="8.5" y="17.4" textAnchor="middle" fontSize="6.5" fontWeight="700" fill="currentColor" stroke="none">6</text>
-          </svg>
-        );
-      case 'pk10':
-        // Checkered racing flag on a pole
-        return (
-          <svg className="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="5" y1="3" x2="5" y2="21.5" />
-            <rect x="5" y="4" width="14" height="10" rx="0.6" />
-            <g fill="currentColor" stroke="none">
-              <rect x="5" y="4" width="3.5" height="3.33" />
-              <rect x="12" y="4" width="3.5" height="3.33" />
-              <rect x="8.5" y="7.33" width="3.5" height="3.34" />
-              <rect x="15.5" y="7.33" width="3.5" height="3.34" />
-              <rect x="5" y="10.67" width="3.5" height="3.33" />
-              <rect x="12" y="10.67" width="3.5" height="3.33" />
-            </g>
-          </svg>
-        );
-      case 'ffc':
-        // Clock face with tick marks, hands and a "60" marker
-        return (
-          <svg className="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="9.2" />
-            <path d="M12 3.2v1.6M12 19.2v1.6M20.8 12h-1.6M4.8 12H3.2" />
-            <polyline points="12 7 12 12 15.5 13.8" />
-            <text x="12" y="9.6" textAnchor="middle" fontSize="4.6" fontWeight="700" fill="currentColor" stroke="none">60</text>
-          </svg>
-        );
-      case 'k3':
-        // Isometric 3D dice cube with pips on the three visible faces
-        return (
-          <svg className="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 2.5 20.5 7 12 11.5 3.5 7Z" />
-            <path d="M3.5 7 12 11.5 12 21 3.5 16.5Z" fill="currentColor" fillOpacity="0.08" />
-            <path d="M20.5 7 12 11.5 12 21 20.5 16.5Z" fill="currentColor" fillOpacity="0.16" />
-            <circle cx="12" cy="6.9" r="1" fill="currentColor" stroke="none" />
-            <circle cx="6.6" cy="11.3" r="0.95" fill="currentColor" stroke="none" />
-            <circle cx="8.9" cy="15.6" r="0.95" fill="currentColor" stroke="none" />
-            <circle cx="15.3" cy="10.6" r="0.95" fill="currentColor" stroke="none" />
-            <circle cx="17.4" cy="14.3" r="0.95" fill="currentColor" stroke="none" />
-          </svg>
-        );
-      case 'xy28':
-        return <span className="tab-icon-num">28</span>;
-      default:
-        return null;
-    }
+  // Category icons live in /public/gametype/<name>-1.png (inactive) and -2.png (active).
+  const CATEGORY_ICON_BASE = {
+    lhc: '六合彩',
+    pk10: 'PK10',
+    ffc: '分分',
+    k3: '快三',
+    xy28: '28',
+  };
+
+  const renderCategoryIcon = (catId, isActive) => {
+    const base = CATEGORY_ICON_BASE[catId];
+    if (!base) return null;
+    const src = `${import.meta.env.BASE_URL}gametype/${encodeURIComponent(base)}-${isActive ? 2 : 1}.png`;
+    return <img className="tab-icon" src={src} alt="" />;
   };
 
   const activeCategoryData = DRAWER_CATEGORIES.find(cat => cat.id === activeCategory);
@@ -134,7 +89,7 @@ export default function GameDrawer({ isOpen, onClose, onSelectGame, gameTimers =
                 className={`drawer-sidebar-tab ${isActive ? 'active' : ''}`}
                 onClick={() => setActiveCategory(cat.id)}
               >
-                {renderCategoryIcon(cat.id)}
+                {renderCategoryIcon(cat.id, isActive)}
                 <span className="drawer-tab-name">{cat.name}</span>
               </button>
             );
