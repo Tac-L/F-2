@@ -1467,8 +1467,9 @@ body {
 }
 
 .right-drawer-member-row {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: 12px;
   align-items: center;
   font-size: 13px;
   color: var(--rmenu-card-text);
@@ -1476,6 +1477,7 @@ body {
 
 .right-drawer-member-row .label {
   color: var(--rmenu-card-label);
+  text-align: right;
 }
 
 .right-drawer-member-row .value {
