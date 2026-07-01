@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import {
-  PK10_COLORS, POSITIONS, SHORTCUT_POSITIONS, ODDS,
+  pk10BallSrc, POSITIONS, SHORTCUT_POSITIONS, ODDS,
   ffcBallSrc, FFC_POSITIONS, FFC_ODDS, FFC_TRIPLE_GROUPS, FFC_TRIPLE_OPTIONS,
   K3_ODDS, K3_SHORT_PAIRS, K3_LONG_PAIRS, K3_TRIPLES,
   K3_SUM_ODDS, K3_TWO_SAME, K3_THREE_DIFF,
@@ -178,19 +178,10 @@ export default function PlayArea({
     return selectedBets.some(b => b.id === betId);
   };
 
-  // Render Ball Item (number box with standard PK10 colors)
-  const renderBall = (num) => {
-    const color = PK10_COLORS[num] || { bg: '#9ca3af', text: '#ffffff' };
-    return (
-      <span
-        key={num}
-        className="pk10-ball"
-        style={{ backgroundColor: color.bg, color: color.text }}
-      >
-        {num}
-      </span>
-    );
-  };
+  // Render Ball Item using the PK10 ball artwork
+  const renderBall = (num) => (
+    <img key={num} className="pk10-ball" src={pk10BallSrc(num)} alt={num} />
+  );
 
   // Render FFC ball (digit 0-9) using the ball artwork
   const renderFfcBall = (num) => (

@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   lhcColorOf, lhcZodiacOf, lhcIsDomestic, lhcBallSrc, LHC_WUXING,
-  PK10_COLORS, DRAWER_CATEGORIES,
+  pk10BallSrc, DRAWER_CATEGORIES,
 } from '../constants/gameData';
 
 // 五行 (element) of a number — find the element set it belongs to.
@@ -160,14 +160,9 @@ export default function DrawHistory({ onBack, onOpenMenu }) {
   };
 
   // ===== PK10: 号码 — 10 colored square balls =====
-  const renderPk10Balls = (numbers) => numbers.map((num, idx) => {
-    const color = PK10_COLORS[num] || { bg: '#9ca3af', text: '#ffffff' };
-    return (
-      <span key={idx} className="pk10-ball" style={{ backgroundColor: color.bg, color: color.text }}>
-        {num}
-      </span>
-    );
-  });
+  const renderPk10Balls = (numbers) => numbers.map((num, idx) => (
+    <img key={idx} className="pk10-ball" src={pk10BallSrc(num)} alt={num} />
+  ));
 
   // ===== PK10: 冠亚和 =====
   const pk10SumStats = (numbers) => {

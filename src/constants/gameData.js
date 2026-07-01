@@ -410,6 +410,10 @@ export const lhcBallSrc = (n) =>
 export const ffcBallSrc = (n) =>
   `${import.meta.env.BASE_URL}${encodeURIComponent('分分-ball')}/${n}.png`;
 
+// PK10 ball artwork lives in /public/PK10-ball/num=1.png … num=10.png.
+export const pk10BallSrc = (n) =>
+  `${import.meta.env.BASE_URL}PK10-ball/num=${n}.png`;
+
 // 家禽 (domestic): 牛、马、羊、鸡、狗、猪 ; 野兽 (wild): 鼠、虎、龙、蛇、兔、猴
 export const LHC_DOMESTIC = ['牛', '马', '羊', '鸡', '狗', '猪'];
 export const lhcIsDomestic = (n) => LHC_DOMESTIC.includes(lhcZodiacOf(n));
