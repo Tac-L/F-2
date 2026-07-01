@@ -4926,29 +4926,108 @@ img.lhc-ball {
   position: absolute;
   inset: 0;
   z-index: 500;
-  background-color: #ffffff;
+  background: linear-gradient(180deg,
+    #5b79cf 0%,
+    #7f99dc 18%,
+    #a8bce9 36%,
+    #d3e0f4 56%,
+    #ffffff 78%);
   display: flex;
   justify-content: center;
   align-items: flex-start;
   overflow-y: auto;
 }
 
+/* Water-ripple texture near the top */
+.login-water {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 300px;
+  pointer-events: none;
+  z-index: 0;
+}
+
 .login-card {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: 360px;
-  padding: 56px 32px 32px;
+  min-height: 100%;
+  padding: 48px 32px 32px;
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  box-sizing: border-box;
 }
 
 .login-logo {
-  align-self: center;
+  align-self: flex-start;
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px 20px;
-  margin-bottom: 36px;
+  padding: 12px 0;
+  margin-bottom: 20px;
+}
+
+/* Auto-rotating advertisement banner */
+.login-ad {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(30, 41, 59, 0.18);
+  position: relative;
+}
+
+.login-ad-track {
+  display: flex;
+  width: 100%;
+  transition: transform 0.5s ease;
+}
+
+.login-ad-slide {
+  flex: 0 0 100%;
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  aspect-ratio: 16 / 7;
+}
+
+.login-ad-dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8px;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.login-ad-dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  transition: background 0.2s, width 0.2s;
+}
+
+.login-ad-dot.is-active {
+  width: 16px;
+  border-radius: 4px;
+  background: #ffffff;
+}
+
+/* Login form block pushed toward the lower-center of the page */
+.login-body {
+  margin-top: auto;
+  margin-bottom: 21vh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .login-chip {
@@ -4958,15 +5037,19 @@ img.lhc-ball {
 .login-logo-text {
   font-size: 34px;
   font-weight: 800;
-  color: #1e293b;
   letter-spacing: 2px;
+  background: linear-gradient(180deg, #241d4a 0%, #5b49c9 55%, #a99de6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 .login-title {
-  text-align: center;
+  text-align: left;
   font-size: 22px;
   font-weight: 700;
-  color: #1e293b;
+  color: #64748b;
   margin: 0 0 28px;
 }
 

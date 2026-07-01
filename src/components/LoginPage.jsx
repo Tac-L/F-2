@@ -23,6 +23,66 @@ const CaptchaImg = () => (
   </svg>
 );
 
+// Decorative water-ripple texture near the top of the page
+const WaterWave = () => (
+  <svg
+    className="login-water"
+    viewBox="0 0 375 300"
+    preserveAspectRatio="xMidYMin slice"
+    aria-hidden="true"
+  >
+    <g fill="#ffffff">
+      <circle cx="86" cy="74" r="2.4" opacity="0.5" />
+      <circle cx="188" cy="52" r="1.8" opacity="0.45" />
+      <circle cx="292" cy="96" r="2.6" opacity="0.4" />
+      <circle cx="132" cy="128" r="1.6" opacity="0.4" />
+      <circle cx="248" cy="150" r="2.2" opacity="0.35" />
+      <circle cx="60" cy="176" r="1.8" opacity="0.3" />
+      <circle cx="320" cy="188" r="2" opacity="0.3" />
+    </g>
+  </svg>
+);
+
+// Auto-rotating advertisement banner (images live in /public/廣告/)
+const AD_IMAGES = [1, 2, 3].map(
+  (n) => `${import.meta.env.BASE_URL}${encodeURIComponent('廣告')}/${encodeURIComponent('廣告' + n)}.png`
+);
+
+const AdBanner = () => {
+  const [index, setIndex] = React.useState(0);
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setIndex((i) => (i + 1) % AD_IMAGES.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="login-ad">
+      <div
+        className="login-ad-track"
+        style={{ transform: `translateX(-${index * 100}%)` }}
+      >
+        {AD_IMAGES.map((src, i) => (
+          <img key={i} className="login-ad-slide" src={src} alt={`广告 ${i + 1}`} draggable={false} />
+        ))}
+      </div>
+      <div className="login-ad-dots">
+        {AD_IMAGES.map((_, i) => (
+          <button
+            key={i}
+            type="button"
+            className={`login-ad-dot${i === index ? ' is-active' : ''}`}
+            onClick={() => setIndex(i)}
+            aria-label={`显示广告 ${i + 1}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const EyeIcon = ({ open }) => (
   open ? (
     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -51,12 +111,16 @@ export default function LoginPage({ onLogin }) {
 
   return (
     <div className="login-page">
+      <WaterWave />
       <form className="login-card" onSubmit={handleSubmit}>
         <div className="login-logo">
           <ChipLogo />
           <span className="login-logo-text">模彩</span>
         </div>
 
+        <AdBanner />
+
+        <div className="login-body">
         <h1 className="login-title">会员登录</h1>
 
         <div className="login-field">
@@ -99,6 +163,7 @@ export default function LoginPage({ onLogin }) {
         </div>
 
         <button type="submit" className="login-submit">登录</button>
+        </div>
       </form>
     </div>
   );
