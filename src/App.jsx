@@ -1616,11 +1616,7 @@ export default function App() {
               }}
             >
               {/* History records / win-loss icon */}
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 3v5h5"/>
-                <path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/>
-                <path d="M12 7v5l3 2"/>
-              </svg>
+              <img src={`${import.meta.env.BASE_URL}rotate-ccw.png`} width="20" height="20" alt="历史开奖" />
               {/* Caret to indicate expandable dropdown */}
               <svg
                 width="12" height="12" viewBox="0 0 24 24" fill="none"
@@ -1659,10 +1655,7 @@ export default function App() {
               style={{ color: '#3b82f6', display: 'flex', alignItems: 'center', gap: '2px' }}
               onClick={() => setIsVideoOpen(prev => !prev)}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
-                <polygon points="10 8 16 12 10 16 10 8"/>
-              </svg>
+              <img src={`${import.meta.env.BASE_URL}youtube.png`} width="20" height="20" alt="开奖动画" />
               {/* Caret to indicate expandable player */}
               <svg
                 width="12" height="12" viewBox="0 0 24 24" fill="none"
