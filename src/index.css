@@ -76,7 +76,7 @@
 
   --panel-title-bg: #e0efff;
   --panel-title-text: #1e293b;
-  --panel-title-border: rgba(59, 130, 246, 0.15);
+  --panel-title-border: transparent;
   --panel-title-btn: #1e293b;
   --panel-title-btn-active-bg: rgba(59, 130, 246, 0.1);
 
