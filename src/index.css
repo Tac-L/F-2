@@ -68,7 +68,7 @@
 
   --header-bg: #e0f2fe;
   --header-text: #2563eb;
-  --header-border: #bae6fd;
+  --header-border: transparent;
   --header-btn-bg: #ffffff;
   --header-btn-border: #dbeafe;
   --header-btn-text: #2563eb;
@@ -413,7 +413,6 @@ body {
 .sidebar-menu {
   width: 90px;
   background-color: #ffffff;
-  border-right: 1px solid var(--border-light);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -440,10 +439,47 @@ body {
 }
 
 .sidebar-tab.active {
-  background-color: #ffffff;
+  background-color: var(--app-bg);
   color: var(--primary-blue);
   border-left-color: var(--primary-blue);
   font-weight: bold;
+  position: relative;
+}
+
+/* The selected fill sweeps into the neighbouring rows on the RIGHT side only,
+   with a concave curve — flat on the left, reaching out on the right. */
+.sidebar-tab.active::before,
+.sidebar-tab.active::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  width: 100%;
+  height: 26px;
+  background-color: var(--app-bg);
+  pointer-events: none;
+}
+
+/* extends up into the row above with a long, gentle sweep */
+.sidebar-tab.active::before {
+  top: -26px;
+  -webkit-mask: radial-gradient(120px at left bottom, transparent 99%, #000 100%);
+          mask: radial-gradient(120px at left bottom, transparent 99%, #000 100%);
+}
+
+/* extends down into the row below with a long, gentle sweep */
+.sidebar-tab.active::after {
+  bottom: -26px;
+  -webkit-mask: radial-gradient(120px at left top, transparent 99%, #000 100%);
+          mask: radial-gradient(120px at left top, transparent 99%, #000 100%);
+}
+
+/* Position-aware: top item has no upward curve, bottom item no downward curve. */
+.sidebar-tab.active:first-child::before {
+  display: none;
+}
+
+.sidebar-tab.active:last-child::after {
+  display: none;
 }
 
 /* Play Area Content */
@@ -4085,6 +4121,10 @@ body {
   padding: 14px 16px;
   background-color: var(--modal-title-bg);
 }
+/* Light-blue theme: give the 玩法说明 title a soft blue bar */
+[data-theme="light-blue"] .play-help-header {
+  background-color: var(--light-blue-bg);
+}
 .play-help-title {
   font-size: 17px;
   font-weight: 700;
@@ -4100,7 +4140,7 @@ body {
   padding: 0 4px;
 }
 .play-help-body {
-  padding: 0 16px 18px;
+  padding: 16px 16px 18px;
   overflow-y: auto;
 }
 .play-help-tabs {
