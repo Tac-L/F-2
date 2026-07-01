@@ -345,7 +345,7 @@ export default function App() {
   const [isRightDrawerOpen, setIsRightDrawerOpen] = useState(false);
   const [isHistoryDropdownOpen, setIsHistoryDropdownOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState('betting'); // 'betting', 'unsettled', 'settled', 'history', 'settings'
-  const [loggedIn, setLoggedIn] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
 
   const handleLogout = () => {
     setIsRightDrawerOpen(false);
