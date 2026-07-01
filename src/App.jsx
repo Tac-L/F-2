@@ -1861,10 +1861,11 @@ export default function App() {
       )}
 
       {/* Game Selection Drawer */}
-      <GameDrawer 
-        isOpen={isDrawerOpen} 
-        onClose={() => setIsDrawerOpen(false)} 
-        onSelectGame={handleSelectGame} 
+      <GameDrawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        onSelectGame={handleSelectGame}
+        activeGameId={activeGameId}
         gameTimers={{
           pk10_1m: gamesState.pk10_1m.timeLeft,
           pk10_5m: gamesState.pk10_5m.timeLeft,

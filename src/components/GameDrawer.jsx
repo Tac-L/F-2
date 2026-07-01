@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { DRAWER_CATEGORIES } from '../constants/gameData';
 
-export default function GameDrawer({ isOpen, onClose, onSelectGame, gameTimers = {} }) {
+export default function GameDrawer({ isOpen, onClose, onSelectGame, gameTimers = {}, activeGameId }) {
   const [activeCategory, setActiveCategory] = useState('pk10'); // Default to PK10
   const [timers, setTimers] = useState(() => {
     const initialTimers = {};
@@ -36,6 +36,15 @@ export default function GameDrawer({ isOpen, onClose, onSelectGame, gameTimers =
 
     return () => clearInterval(interval);
   }, [isOpen]);
+
+  // When the drawer opens, jump to the category that holds the currently active game
+  useEffect(() => {
+    if (!isOpen || !activeGameId) return;
+    const owningCat = DRAWER_CATEGORIES.find(cat =>
+      cat.games.some(game => game.id === activeGameId)
+    );
+    if (owningCat) setActiveCategory(owningCat.id);
+  }, [isOpen, activeGameId]);
 
   // Format seconds to HH:MM:SS format (or MM:SS since it's short)
   const formatCountdown = (totalSeconds) => {
@@ -137,12 +146,13 @@ export default function GameDrawer({ isOpen, onClose, onSelectGame, gameTimers =
           <div className="drawer-game-grid">
             {activeCategoryData && activeCategoryData.games.map(game => {
               const isClosed = game.status === 'closed';
+              const isSelected = game.id === activeGameId;
               const timeLeft = gameTimers[game.id] !== undefined ? gameTimers[game.id] : timers[game.id];
 
               return (
-                <div 
-                  key={game.id} 
-                  className={`drawer-game-card ${isClosed ? 'closed' : 'active'}`}
+                <div
+                  key={game.id}
+                  className={`drawer-game-card ${isClosed ? 'closed' : 'active'} ${isSelected ? 'selected' : ''}`}
                   onClick={() => onSelectGame(game)}
                 >
                   <div className="game-card-name">{game.name}</div>
