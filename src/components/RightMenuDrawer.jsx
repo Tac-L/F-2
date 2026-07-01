@@ -8,6 +8,7 @@ export default function RightMenuDrawer({
   onSelectSettled,
   onSelectBetting,
   onSelectHistory,
+  onSelectSettings,
   activeItem = '投注',
   unsettledAmount = 20
 }) {
@@ -167,6 +168,8 @@ export default function RightMenuDrawer({
                       if (onSelectBetting) onSelectBetting();
                     } else if (item.id === '开奖历史') {
                       if (onSelectHistory) onSelectHistory();
+                    } else if (item.id === '设置') {
+                      if (onSelectSettings) onSelectSettings();
                     }
                     onClose();
                   }}
