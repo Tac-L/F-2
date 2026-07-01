@@ -470,6 +470,33 @@ export default function App() {
     }, 4000);
   };
 
+  // Circular badge icon shown at the left of a toast (check / cross / info).
+  const renderToastIcon = (type) => {
+    if (type === 'success') {
+      return (
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="11" fill="currentColor" />
+          <path d="M7 12.5l3.2 3.2L17 8.8" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+    }
+    if (type === 'error') {
+      return (
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="11" fill="currentColor" />
+          <path d="M8.5 8.5l7 7M15.5 8.5l-7 7" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" />
+        </svg>
+      );
+    }
+    return (
+      <svg viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="11" fill="currentColor" />
+        <path d="M12 11v5.5" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" />
+        <circle cx="12" cy="7.6" r="1.3" fill="#ffffff" />
+      </svg>
+    );
+  };
+
   const handleSelectGame = (game) => {
     if (gamesState[game.id]) {
       setActiveGameId(game.id);
@@ -1527,7 +1554,8 @@ export default function App() {
       <div className="toast-container">
         {toasts.map(t => (
           <div key={t.id} className={`toast ${t.type}`}>
-            {t.message}
+            <span className="toast-icon">{renderToastIcon(t.type)}</span>
+            <span className="toast-msg">{t.message}</span>
           </div>
         ))}
       </div>
