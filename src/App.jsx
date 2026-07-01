@@ -6,7 +6,7 @@ import {
   K3_SIDEBAR_TABS, K3_ODDS, k3SumBig,
   XY28_SIDEBAR_TABS, XY28_COLORS, XY28_ODDS, xy28SumBig,
   LHC_SIDEBAR_TABS, LHC_TEMA_ODDS, LHC_CN_NUM,
-  lhcZodiacOf, lhcIsDomestic, lhcTwoSidedWin, lhcBallSrc,
+  lhcZodiacOf, lhcIsDomestic, lhcTwoSidedWin, lhcBallSrc, ffcBallSrc,
   lhcZhengmaTwoSidedWin, lhcBanboWin, LHC_WUXING_NUMBERS, lhcZongxiaoWin,
   lhcQiseboResult, LHC_PANKOU, lhcPankouFactor,
 } from './constants/gameData';
@@ -1526,6 +1526,11 @@ export default function App() {
         <span key="sum" className="xy28-sum-badge">{sum}</span>
       );
       return els;
+    }
+    if (gameKind === 'ffc') {
+      return numbers.map((num, idx) => (
+        <img key={idx} className="pk10-ball" src={ffcBallSrc(num)} alt={num} />
+      ));
     }
     return numbers.map((num, idx) => {
       const color = COLORS[num] || { bg: '#9ca3af', text: '#ffffff' };

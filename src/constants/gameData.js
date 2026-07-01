@@ -406,6 +406,10 @@ export const lhcZodiacOf = (n) => LHC_ZODIACS[(((7 - n) % 12) + 12) % 12];
 export const lhcBallSrc = (n) =>
   `${import.meta.env.BASE_URL}lhc-ball/num=${n.toString().padStart(2, '0')}.png`;
 
+// 分分彩 ball artwork lives in /public/分分-ball/0.png … 9.png.
+export const ffcBallSrc = (n) =>
+  `${import.meta.env.BASE_URL}${encodeURIComponent('分分-ball')}/${n}.png`;
+
 // 家禽 (domestic): 牛、马、羊、鸡、狗、猪 ; 野兽 (wild): 鼠、虎、龙、蛇、兔、猴
 export const LHC_DOMESTIC = ['牛', '马', '羊', '鸡', '狗', '猪'];
 export const lhcIsDomestic = (n) => LHC_DOMESTIC.includes(lhcZodiacOf(n));

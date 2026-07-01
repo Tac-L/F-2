@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import {
   PK10_COLORS, POSITIONS, SHORTCUT_POSITIONS, ODDS,
-  FFC_COLORS, FFC_POSITIONS, FFC_ODDS, FFC_TRIPLE_GROUPS, FFC_TRIPLE_OPTIONS,
+  ffcBallSrc, FFC_POSITIONS, FFC_ODDS, FFC_TRIPLE_GROUPS, FFC_TRIPLE_OPTIONS,
   K3_ODDS, K3_SHORT_PAIRS, K3_LONG_PAIRS, K3_TRIPLES,
   K3_SUM_ODDS, K3_TWO_SAME, K3_THREE_DIFF,
   xy28SumOdds, XY28_SUM_TWO_SIDED, XY28_SIDE_OPTIONS, XY28_TAIL_TWO_SIDED,
@@ -192,19 +192,10 @@ export default function PlayArea({
     );
   };
 
-  // Render FFC ball (digit 0-9 with FFC colors)
-  const renderFfcBall = (num) => {
-    const color = FFC_COLORS[num] || { bg: '#9ca3af', text: '#ffffff' };
-    return (
-      <span
-        key={num}
-        className="pk10-ball"
-        style={{ backgroundColor: color.bg, color: color.text }}
-      >
-        {num}
-      </span>
-    );
-  };
+  // Render FFC ball (digit 0-9) using the ball artwork
+  const renderFfcBall = (num) => (
+    <img key={num} className="pk10-ball" src={ffcBallSrc(num)} alt={num} />
+  );
 
   // Render checkmark badge if selected
   const renderCheckmark = (isSelected) => {
