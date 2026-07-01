@@ -92,17 +92,18 @@ export default function SettingsPage({ onBack, onOpenMenu, theme, onChangeTheme,
         </svg>
       ),
     },
-    {
-      id: 'language',
-      name: '选择语言',
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="10" />
-          <path d="M2 12h20" />
-          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-        </svg>
-      ),
-    },
+    // 「选择语言」暂时隐藏，需要时再恢复此项
+    // {
+    //   id: 'language',
+    //   name: '选择语言',
+    //   icon: (
+    //     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    //       <circle cx="12" cy="12" r="10" />
+    //       <path d="M2 12h20" />
+    //       <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+    //     </svg>
+    //   ),
+    // },
   ];
 
   return (
