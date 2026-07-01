@@ -467,7 +467,7 @@ export default function App() {
     setToasts(prev => [...prev, { id, message, type }]);
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id));
-    }, 4000);
+    }, 3000);
   };
 
   // Circular badge icon shown at the left of a toast (check / cross / info).

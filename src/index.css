@@ -1045,8 +1045,8 @@ body {
 }
 
 @keyframes slideDownFade {
-  from { transform: translate(-50%, -10px); opacity: 0; }
-  to { transform: translate(-50%, 0); opacity: 1; }
+  from { transform: translateY(-16px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 /* Bet Confirmation Modal */
