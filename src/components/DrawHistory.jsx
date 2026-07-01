@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  lhcColorOf, lhcZodiacOf, lhcIsDomestic, LHC_WAVE_HEX, LHC_WUXING,
+  lhcColorOf, lhcZodiacOf, lhcIsDomestic, lhcBallSrc, LHC_WUXING,
   PK10_COLORS, DRAWER_CATEGORIES,
 } from '../constants/gameData';
 
@@ -188,12 +188,9 @@ export default function DrawHistory({ onBack, onOpenMenu }) {
     const els = [];
     numbers.forEach((num, idx) => {
       if (idx === 6) els.push(<span key="plus" className="lhc-plus">+</span>);
-      const hex = LHC_WAVE_HEX[lhcColorOf(num)];
       els.push(
         <span key={idx} className="lhc-ball-wrap">
-          <span className="lhc-ball" style={{ borderColor: hex, color: hex }}>
-            {num.toString().padStart(2, '0')}
-          </span>
+          <img className="lhc-ball" src={lhcBallSrc(num)} alt={num.toString().padStart(2, '0')} />
           <span className="lhc-zodiac">{lhcZodiacOf(num)}</span>
         </span>
       );

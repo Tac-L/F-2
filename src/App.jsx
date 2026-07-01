@@ -6,7 +6,7 @@ import {
   K3_SIDEBAR_TABS, K3_ODDS, k3SumBig,
   XY28_SIDEBAR_TABS, XY28_COLORS, XY28_ODDS, xy28SumBig,
   LHC_SIDEBAR_TABS, LHC_TEMA_ODDS, LHC_CN_NUM,
-  lhcColorOf, lhcZodiacOf, lhcIsDomestic, lhcTwoSidedWin, LHC_WAVE_HEX,
+  lhcZodiacOf, lhcIsDomestic, lhcTwoSidedWin, lhcBallSrc,
   lhcZhengmaTwoSidedWin, lhcBanboWin, LHC_WUXING_NUMBERS, lhcZongxiaoWin,
   lhcQiseboResult, LHC_PANKOU, lhcPankouFactor,
 } from './constants/gameData';
@@ -1446,15 +1446,13 @@ export default function App() {
       const els = [];
       numbers.forEach((num, idx) => {
         if (idx === 6) els.push(<span key="plus" className="lhc-plus">+</span>);
-        const hex = LHC_WAVE_HEX[lhcColorOf(num)];
         els.push(
           <span key={idx} className="lhc-ball-wrap">
-            <span
+            <img
               className="lhc-ball"
-              style={{ borderColor: hex, color: hex }}
-            >
-              {num.toString().padStart(2, '0')}
-            </span>
+              src={lhcBallSrc(num)}
+              alt={num.toString().padStart(2, '0')}
+            />
             <span className="lhc-zodiac">{lhcZodiacOf(num)}</span>
           </span>
         );

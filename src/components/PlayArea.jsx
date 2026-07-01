@@ -14,7 +14,7 @@ import {
   lhcWeishuOdds, lhcWeishuNoOdds, lhcTeweishuOdds, lhcTetoushuOdds,
   LHC_BANBO_ITEMS, LHC_WUXING, LHC_ZONGXIAO,
   LHC_QISEBO, LHC_HEXIAO_CATEGORIES, LHC_HEXIAO_CN, lhcHexiaoOdds, combinations,
-  lhcNumbersForCategory, lhcColorOf, LHC_WAVE_HEX, lhcPankouFactor,
+  lhcNumbersForCategory, lhcBallSrc, lhcPankouFactor,
 } from '../constants/gameData';
 import Dice from './Dice';
 
@@ -1559,7 +1559,6 @@ export default function PlayArea({
       {Array.from({ length: 49 }, (_, i) => i + 1).map((num) => {
         const betObj = lhcNumberBet(market, num);
         const isSelected = isBetSelected(betObj.id);
-        const hex = LHC_WAVE_HEX[lhcColorOf(num)];
         return (
           <button
             key={num}
@@ -1568,9 +1567,7 @@ export default function PlayArea({
             onClick={() => onToggleBet(betObj)}
             disabled={isClosed}
           >
-            <span className="lhc-ball" style={{ borderColor: hex, color: hex }}>
-              {num.toString().padStart(2, '0')}
-            </span>
+            <img className="lhc-ball" src={lhcBallSrc(num)} alt={num.toString().padStart(2, '0')} />
             <span className="bet-button-odds">{betObj.odds}</span>
             {renderCheckmark(isSelected)}
           </button>
@@ -1958,14 +1955,9 @@ export default function PlayArea({
                 <span className="lhc-xiao-odds">{odds}</span>
               </div>
               <div className="lhc-xiao-balls">
-                {nums.map((n) => {
-                  const hex = LHC_WAVE_HEX[lhcColorOf(n)];
-                  return (
-                    <span key={n} className="lhc-ball" style={{ borderColor: hex, color: hex }}>
-                      {n.toString().padStart(2, '0')}
-                    </span>
-                  );
-                })}
+                {nums.map((n) => (
+                  <img key={n} className="lhc-ball" src={lhcBallSrc(n)} alt={n.toString().padStart(2, '0')} />
+                ))}
               </div>
               {renderCheckmark(isSelected)}
             </button>
@@ -2007,14 +1999,9 @@ export default function PlayArea({
                 <span className="lhc-xiao-odds">{odds}</span>
               </div>
               <div className="lhc-xiao-balls">
-                {nums.map((n) => {
-                  const hex = LHC_WAVE_HEX[lhcColorOf(n)];
-                  return (
-                    <span key={n} className="lhc-ball" style={{ borderColor: hex, color: hex }}>
-                      {n.toString().padStart(2, '0')}
-                    </span>
-                  );
-                })}
+                {nums.map((n) => (
+                  <img key={n} className="lhc-ball" src={lhcBallSrc(n)} alt={n.toString().padStart(2, '0')} />
+                ))}
               </div>
               {renderCheckmark(isSelected)}
             </button>
