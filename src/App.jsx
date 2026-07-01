@@ -1644,7 +1644,7 @@ export default function App() {
                 <span className="status-closed">已封盘</span>
               ) : (
                 <>
-                  <div className="countdown-item open">
+                  <div className="countdown-item open seal">
                     封盘 <span style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>{formatTime(timeLeft - lockSeconds)}</span>
                   </div>
                   <div className="countdown-item open">

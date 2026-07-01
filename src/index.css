@@ -257,9 +257,15 @@ body {
 .draw-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 12px;
   padding: 8px 16px;
   border-bottom: 1px solid #f1f5f9;
+}
+
+/* Keep the trailing history / video button pinned to the right edge,
+   while the issue number + balls/countdown stay grouped on the left. */
+.draw-row > .icon-btn {
+  margin-left: auto;
 }
 
 .draw-row:last-child {
@@ -399,6 +405,11 @@ body {
 
 .countdown-item.open span {
   color: var(--success-green);
+}
+
+/* 封盘 countdown time shows in red */
+.countdown-item.seal span {
+  color: var(--danger-red);
 }
 
 /* Main Split Layout */
