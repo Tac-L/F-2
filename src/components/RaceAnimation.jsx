@@ -332,7 +332,7 @@ export default function RaceAnimation({
   if (!isVideoOpen) {
     return (
       <div className="video-player-container closed">
-        <div className="video-placeholder-title">極速賽車</div>
+        <div className="video-placeholder-title">极速赛车</div>
       </div>
     );
   }
@@ -341,7 +341,7 @@ export default function RaceAnimation({
     <div className="video-player-container open">
       {/* Top Banner Row: Logo, Live Ranks, Sound Control */}
       <div className="video-top-bar">
-        <span className="video-logo">極速賽車</span>
+        <span className="video-logo">极速赛车</span>
         <div className="video-rank-row">
           {activeRank.map((num, idx) => {
             const color = PK10_COLORS[num] || { bg: '#9ca3af', text: '#ffffff' };
@@ -513,10 +513,10 @@ export default function RaceAnimation({
             {/* Mounts and flashes once */}
             <div className="photo-flash" />
             
-            <div className="podium-title">本期冠亞季軍</div>
+            <div className="podium-title">本期冠亚季军</div>
             <div className="podium-stage-container">
               
-              {/* 2nd Place (亞軍) */}
+              {/* 2nd Place (亚军) */}
               <div className="podium-column second">
                 <div className="podium-trophy silver">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
@@ -526,11 +526,11 @@ export default function RaceAnimation({
                 <div className="podium-ball-container">
                   {renderPodiumBall(activeRank[1])}
                 </div>
-                <div className="podium-label">亞軍</div>
+                <div className="podium-label">亚军</div>
                 <div className="podium-pedestal p-second">2</div>
               </div>
 
-              {/* 1st Place (冠軍) */}
+              {/* 1st Place (冠军) */}
               <div className="podium-column first">
                 <div className="podium-trophy gold">
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
@@ -540,11 +540,11 @@ export default function RaceAnimation({
                 <div className="podium-ball-container">
                   {renderPodiumBall(activeRank[0])}
                 </div>
-                <div className="podium-label">冠軍</div>
+                <div className="podium-label">冠军</div>
                 <div className="podium-pedestal p-first">1</div>
               </div>
 
-              {/* 3rd Place (季軍) */}
+              {/* 3rd Place (季军) */}
               <div className="podium-column third">
                 <div className="podium-trophy bronze">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -554,7 +554,7 @@ export default function RaceAnimation({
                 <div className="podium-ball-container">
                   {renderPodiumBall(activeRank[2])}
                 </div>
-                <div className="podium-label">季軍</div>
+                <div className="podium-label">季军</div>
                 <div className="podium-pedestal p-third">3</div>
               </div>
 

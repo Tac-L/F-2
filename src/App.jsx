@@ -20,6 +20,7 @@ import SettledDetails from './components/SettledDetails';
 import DrawHistory from './components/DrawHistory';
 import SettingsPage from './components/SettingsPage';
 import LoginPage from './components/LoginPage';
+import { getLang, setLang, startTraditional } from './i18n';
 import RaceAnimation from './components/RaceAnimation';
 import FfcAnimation from './components/FfcAnimation';
 import K3Animation from './components/K3Animation';
@@ -366,6 +367,22 @@ export default function App() {
       // ignore storage errors
     }
   }, [theme]);
+
+  // Language: app is authored in Simplified; convert to Traditional at runtime
+  // when 繁体中文 is selected. Switching language reloads to apply cleanly.
+  const [lang] = useState(getLang);
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    if (lang === 'zh-TW') {
+      return startTraditional(document.body);
+    }
+  }, [lang]);
+
+  const handleChangeLang = (nextLang) => {
+    if (nextLang === lang) return;
+    setLang(nextLang);
+    window.location.reload();
+  };
   const [activeTab, setActiveTab] = useState('shortcut'); // Default to shortcut tab
   const [selectedShortcutPositions, setSelectedShortcutPositions] = useState([]);
   const [selectedShortcutOptions, setSelectedShortcutOptions] = useState([]);
@@ -1938,6 +1955,8 @@ export default function App() {
           onOpenMenu={() => setIsRightDrawerOpen(true)}
           theme={theme}
           onChangeTheme={setTheme}
+          lang={lang}
+          onChangeLang={handleChangeLang}
           onLogout={handleLogout}
         />
       )}
