@@ -459,7 +459,6 @@ export default function App() {
       clearSelections();
       setActiveTab('long-dragon');
       setIsHistoryDropdownOpen(false);
-      addToast(`您已成功切换到: ${game.name}`, 'success');
     } else {
       addToast(`您已成功切换到: ${game.name} (暂未开放投注，仅展示玩法)`, 'info');
     }
