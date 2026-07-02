@@ -4556,7 +4556,8 @@ img.lhc-ball {
 .play-help-modal {
   width: 100%;
   max-width: 340px;
-  max-height: 80%;
+  height: 480px;
+  max-height: 85vh;
   background: #ffffff;
   border-radius: 12px;
   display: flex;
@@ -4592,6 +4593,9 @@ img.lhc-ball {
 .play-help-body {
   padding: 16px 16px 18px;
   overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 .play-help-tabs {
   display: flex;
@@ -4623,6 +4627,7 @@ img.lhc-ball {
   line-height: 1.7;
   color: #334155;
   white-space: pre-line;
+  flex: 1;
 }
 .play-help-text {
   margin: 12px 2px 0;
