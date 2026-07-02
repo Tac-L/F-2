@@ -167,6 +167,10 @@
   --game-selected-border: #6f8bff;
   --game-selected-shadow: 0 0 0 2px rgba(111, 139, 255, 0.4);
   --game-selected-text: var(--mn-text);
+
+  /* Left game-category icon tint (mask) */
+  --tab-icon-off: #46589f;     /* unselected — deep blue */
+  --tab-icon-on: #a8b8ff;      /* selected — light blue */
 }
 
 /* ============ THEME: 午夜紫 (midnight-purple) — extends midnight ============ */
@@ -233,6 +237,10 @@
   --game-selected-border: #9b7bff;
   --game-selected-shadow: 0 0 0 2px rgba(155, 123, 255, 0.4);
   --game-selected-text: var(--mn-text);
+
+  /* Left game-category icon tint (mask) */
+  --tab-icon-off: #5a479f;     /* unselected — deep purple */
+  --tab-icon-on: #bda6ff;      /* selected — light purple */
 }
 
 /* Midnight: recolor hardcoded light surfaces → theme surface */
@@ -442,6 +450,23 @@
 /* Midnight: 玩法说明 modal content box */
 [data-theme^="midnight-"] .play-help-box {
   background: var(--mn-surface-2);
+}
+
+/* Midnight: left game-category icons → masked tint (deep unselected, light selected) */
+[data-theme^="midnight-"] .drawer-sidebar-tab .tab-icon {
+  display: none;
+}
+[data-theme^="midnight-"] .drawer-sidebar-tab::before {
+  content: '';
+  width: 20px;
+  height: 20px;
+  -webkit-mask: var(--tab-icon-url) center / contain no-repeat;
+          mask: var(--tab-icon-url) center / contain no-repeat;
+  background-color: var(--tab-icon-off);
+  transition: background-color 0.2s ease;
+}
+[data-theme^="midnight-"] .drawer-sidebar-tab.active::before {
+  background-color: var(--tab-icon-on);
 }
 
 * {

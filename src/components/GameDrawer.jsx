@@ -63,10 +63,15 @@ export default function GameDrawer({ isOpen, onClose, onSelectGame, gameTimers =
     xy28: '28',
   };
 
-  const renderCategoryIcon = (catId, isActive) => {
+  const categoryIconSrc = (catId, isActive) => {
     const base = CATEGORY_ICON_BASE[catId];
     if (!base) return null;
-    const src = `${import.meta.env.BASE_URL}gametype/${encodeURIComponent(base)}-${isActive ? 2 : 1}.png`;
+    return `${import.meta.env.BASE_URL}gametype/${encodeURIComponent(base)}-${isActive ? 2 : 1}.png`;
+  };
+
+  const renderCategoryIcon = (catId, isActive) => {
+    const src = categoryIconSrc(catId, isActive);
+    if (!src) return null;
     return <img className="tab-icon" src={src} alt="" />;
   };
 
@@ -82,11 +87,13 @@ export default function GameDrawer({ isOpen, onClose, onSelectGame, gameTimers =
         <div className="drawer-sidebar">
           {DRAWER_CATEGORIES.map(cat => {
             const isActive = cat.id === activeCategory;
+            const iconSrc = categoryIconSrc(cat.id, isActive);
             return (
               <button
                 key={cat.id}
                 type="button"
                 className={`drawer-sidebar-tab ${isActive ? 'active' : ''}`}
+                style={iconSrc ? { '--tab-icon-url': `url("${iconSrc}")` } : undefined}
                 onClick={() => setActiveCategory(cat.id)}
               >
                 {renderCategoryIcon(cat.id, isActive)}
