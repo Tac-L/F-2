@@ -384,7 +384,8 @@
   border-color: var(--mn-border);
   color: var(--mn-text);
 }
-[data-theme^="midnight-"] .bet-amount-input::placeholder {
+[data-theme^="midnight-"] .bet-amount-input::placeholder,
+[data-theme^="midnight-"] .history-issue-input::placeholder {
   color: var(--mn-text-muted);
 }
 
@@ -453,6 +454,19 @@
 
 /* Midnight: open accordion (抽屉) header underline → dark border */
 [data-theme^="midnight-"] .accordion-header.open {
+  border-bottom-color: var(--mn-border);
+}
+
+/* Midnight: 开奖历史 tab bar → defined container + lighter active pill */
+[data-theme^="midnight-"] .history-tabs {
+  background: var(--mn-surface-2);
+  border: 1px solid var(--mn-border);
+}
+[data-theme^="midnight-"] .history-tab.active {
+  background: var(--mn-surface-hover);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+[data-theme^="midnight-"] .history-card-top {
   border-bottom-color: var(--mn-border);
 }
 
