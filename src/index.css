@@ -4616,7 +4616,7 @@ img.lhc-ball {
   cursor: pointer;
 }
 .play-help-tab.active {
-  background: var(--primary-blue-hover);
+  background: var(--primary-blue);
   color: #ffffff;
 }
 .play-help-box {
