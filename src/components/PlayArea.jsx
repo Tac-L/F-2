@@ -77,8 +77,10 @@ export default function PlayArea({
 
           {activeTab === 'sum-combination' && (
             <div className="play-help-body">
-              <div className="play-help-box">冠亚和：冠军号码+亚军号码=冠亚和值</div>
-              <p className="play-help-text">“冠亚和值”可能出现的结果为 3—19，投中对应“冠亚和值”数字的视为中奖，其余视为不中奖。</p>
+              <div className="play-help-box">
+                冠亚和：冠军号码+亚军号码=冠亚和值
+                {'\n\n'}“冠亚和值”可能出现的结果为 3—19，投中对应“冠亚和值”数字的视为中奖，其余视为不中奖。
+              </div>
             </div>
           )}
 
