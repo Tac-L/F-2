@@ -399,6 +399,15 @@
   border-top-color: var(--mn-border);
 }
 
+/* Midnight-blue: history dropdown borders */
+[data-theme^="midnight-"] .history-dropdown {
+  border-top-color: var(--mn-border);
+  border-bottom-color: var(--mn-border);
+}
+[data-theme^="midnight-"] .history-dropdown-row {
+  border-bottom-color: var(--mn-border);
+}
+
 /* Midnight-blue: settled/unsettled filter dropdown text → light */
 [data-theme^="midnight-"] .history-picker,
 [data-theme^="midnight-"] .history-picker-value {
