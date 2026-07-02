@@ -103,6 +103,347 @@
   --game-selected-text: #3b82f6;
 }
 
+/* ============ THEME: 午夜藍 (midnight-blue) ============ */
+[data-theme="midnight-blue"] {
+  /* Local palette tokens */
+  --mn-bg: #0f1740;            /* app base — deep navy */
+  --mn-surface: #1c2a63;       /* cards / buttons — indigo */
+  --mn-surface-2: #16224f;     /* secondary / hover surfaces */
+  --mn-surface-hover: #26356f; /* blue-purple hover / selected */
+  --mn-border: rgba(255, 255, 255, 0.14);
+  --mn-text: #cdd3e2;          /* soft light gray — avoids harsh white-on-dark */
+  --mn-text-2: #c0c8de;        /* secondary text (was slate) */
+  --mn-text-muted: #9aa6d8;    /* muted text (was gray) */
+
+  /* Shared (non-themed) tokens */
+  --text-dark: var(--mn-text);
+  --text-muted: var(--mn-text-muted);
+  --border-light: var(--mn-border);
+  --app-bg: var(--mn-bg);
+
+  /* Accent palette */
+  --primary-blue: #6f8bff;
+  --primary-blue-hover: #8697ff;
+  --primary-blue-rgb: 111, 139, 255;
+  --light-blue-bg: #26356f;
+
+  /* Top app header */
+  --header-bg: #1c2a63;
+  --header-text: var(--mn-text);
+  --header-border: rgba(255, 255, 255, 0.14);
+  --header-btn-bg: rgba(255, 255, 255, 0.12);
+  --header-btn-border: rgba(255, 255, 255, 0.22);
+  --header-btn-text: var(--mn-text);
+  --header-btn-hover-bg: rgba(255, 255, 255, 0.2);
+
+  /* Full-page (drawer) title bars */
+  --panel-title-bg: #1c2a63;
+  --panel-title-text: var(--mn-text);
+  --panel-title-border: rgba(255, 255, 255, 0.14);
+  --panel-title-btn: var(--mn-text);
+  --panel-title-btn-active-bg: rgba(255, 255, 255, 0.18);
+
+  /* Modal title bars */
+  --modal-title-bg: #1c2a63;
+  --modal-title-text: var(--mn-text);
+  --modal-title-close: var(--mn-text);
+  --modal-title-close-hover: rgba(255, 255, 255, 0.75);
+
+  /* Right side menu */
+  --rmenu-panel-bg: linear-gradient(180deg, #141f4a 0%, #0f1740 100%);
+  --rmenu-card-bg: linear-gradient(135deg, #6f8bff 0%, #5468e6 55%, #4152c9 100%);
+  --rmenu-card-shadow: 0 8px 18px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  --rmenu-card-border: none;
+  --rmenu-card-text: #ffffff;
+  --rmenu-card-value: #ffffff;
+  --rmenu-card-label: rgba(255, 255, 255, 0.82);
+  --rmenu-refresh: var(--mn-text);
+  --rmenu-active-bg: #26356f;
+  --rmenu-active-text: var(--mn-text);
+  --rmenu-hover-bg: rgba(255, 255, 255, 0.08);
+
+  /* Selected game card */
+  --game-selected-bg: #26356f;
+  --game-selected-border: #6f8bff;
+  --game-selected-shadow: 0 0 0 2px rgba(111, 139, 255, 0.4);
+  --game-selected-text: var(--mn-text);
+}
+
+/* ============ THEME: 午夜紫 (midnight-purple) — extends midnight ============ */
+[data-theme="midnight-purple"] {
+  /* Local palette tokens (violet variant of midnight) */
+  --mn-bg: #150d33;            /* app base — deep purple */
+  --mn-surface: #2a1c63;       /* cards / buttons — indigo-violet */
+  --mn-surface-2: #201550;     /* secondary / hover surfaces */
+  --mn-surface-hover: #362673; /* brighter violet hover / selected */
+  --mn-border: rgba(255, 255, 255, 0.14);
+  --mn-text: #d2cde0;          /* soft light gray (violet tint) */
+  --mn-text-2: #cbc0de;        /* secondary text */
+  --mn-text-muted: #a99ad8;    /* muted text */
+
+  /* Shared (non-themed) tokens */
+  --text-dark: var(--mn-text);
+  --text-muted: var(--mn-text-muted);
+  --border-light: var(--mn-border);
+  --app-bg: var(--mn-bg);
+
+  /* Accent palette (violet) */
+  --primary-blue: #9b7bff;
+  --primary-blue-hover: #ab8dff;
+  --primary-blue-rgb: 155, 123, 255;
+  --light-blue-bg: #362673;
+
+  /* Top app header */
+  --header-bg: #2a1c63;
+  --header-text: var(--mn-text);
+  --header-border: rgba(255, 255, 255, 0.14);
+  --header-btn-bg: rgba(255, 255, 255, 0.12);
+  --header-btn-border: rgba(255, 255, 255, 0.22);
+  --header-btn-text: var(--mn-text);
+  --header-btn-hover-bg: rgba(255, 255, 255, 0.2);
+
+  /* Full-page (drawer) title bars */
+  --panel-title-bg: #2a1c63;
+  --panel-title-text: var(--mn-text);
+  --panel-title-border: rgba(255, 255, 255, 0.14);
+  --panel-title-btn: var(--mn-text);
+  --panel-title-btn-active-bg: rgba(255, 255, 255, 0.18);
+
+  /* Modal title bars */
+  --modal-title-bg: #2a1c63;
+  --modal-title-text: var(--mn-text);
+  --modal-title-close: var(--mn-text);
+  --modal-title-close-hover: rgba(255, 255, 255, 0.75);
+
+  /* Right side menu */
+  --rmenu-panel-bg: linear-gradient(180deg, #221452 0%, #150d33 100%);
+  --rmenu-card-bg: linear-gradient(135deg, #9b7bff 0%, #7c56e6 55%, #6236c9 100%);
+  --rmenu-card-shadow: 0 8px 18px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  --rmenu-card-border: none;
+  --rmenu-card-text: #ffffff;
+  --rmenu-card-value: #ffffff;
+  --rmenu-card-label: rgba(255, 255, 255, 0.82);
+  --rmenu-refresh: var(--mn-text);
+  --rmenu-active-bg: #362673;
+  --rmenu-active-text: var(--mn-text);
+  --rmenu-hover-bg: rgba(255, 255, 255, 0.08);
+
+  /* Selected game card */
+  --game-selected-bg: #362673;
+  --game-selected-border: #9b7bff;
+  --game-selected-shadow: 0 0 0 2px rgba(155, 123, 255, 0.4);
+  --game-selected-text: var(--mn-text);
+}
+
+/* Midnight: recolor hardcoded light surfaces → theme surface */
+[data-theme^="midnight-"] .draw-banner,
+[data-theme^="midnight-"] .xy28-group-card,
+[data-theme^="midnight-"] .sidebar-menu,
+[data-theme^="midnight-"] .dragon-card,
+[data-theme^="midnight-"] .bet-button,
+[data-theme^="midnight-"] .shortcut-pos-tab,
+[data-theme^="midnight-"] .accordion-section,
+[data-theme^="midnight-"] .accordion-header,
+[data-theme^="midnight-"] .app-footer,
+[data-theme^="midnight-"] .btn-reset,
+[data-theme^="midnight-"] .modal-content,
+[data-theme^="midnight-"] .toast,
+[data-theme^="midnight-"] .confirm-modal-content,
+[data-theme^="midnight-"] .confirm-btn-cancel,
+[data-theme^="midnight-"] .drawer-sidebar,
+[data-theme^="midnight-"] .drawer-sidebar-tab.active,
+[data-theme^="midnight-"] .drawer-game-card,
+[data-theme^="midnight-"] .unsettled-select-wrapper,
+[data-theme^="midnight-"] .unsettled-bet-card,
+[data-theme^="midnight-"] .history-dropdown,
+[data-theme^="midnight-"] .settled-select-wrapper,
+[data-theme^="midnight-"] .settled-bet-card,
+[data-theme^="midnight-"] .result-modal-content,
+[data-theme^="midnight-"] .history-picker,
+[data-theme^="midnight-"] .history-picker:disabled,
+[data-theme^="midnight-"] .play-help-btn,
+[data-theme^="midnight-"] .play-help-modal,
+[data-theme^="midnight-"] .history-dropdown-menu,
+[data-theme^="midnight-"] .history-issue-input,
+[data-theme^="midnight-"] .history-reset-btn,
+[data-theme^="midnight-"] .history-tab.active,
+[data-theme^="midnight-"] .history-card,
+[data-theme^="midnight-"] .history-badge.outline,
+[data-theme^="midnight-"] .lhc-panel-tab,
+[data-theme^="midnight-"] .lhc-pos-tab,
+[data-theme^="midnight-"] .lhc-quick-cat,
+[data-theme^="midnight-"] .lhc-xiao-card,
+[data-theme^="midnight-"] .settings-row,
+[data-theme^="midnight-"] .skin-option,
+[data-theme^="midnight-"] .login-input {
+  background-color: var(--mn-surface);
+  background: var(--mn-surface);
+  border-color: var(--mn-border);
+}
+
+/* Midnight-blue: secondary / hover / muted surfaces → deeper indigo */
+[data-theme^="midnight-"] .sidebar-tab:hover,
+[data-theme^="midnight-"] .shortcut-pos-tab:hover,
+[data-theme^="midnight-"] .accordion-content,
+[data-theme^="midnight-"] .edit-chip-btn:hover,
+[data-theme^="midnight-"] .btn-reset:active,
+[data-theme^="midnight-"] .modal-btn-cancel,
+[data-theme^="midnight-"] .confirm-bet-row,
+[data-theme^="midnight-"] .confirm-btn-cancel:active,
+[data-theme^="midnight-"] .drawer-sidebar-tab:hover,
+[data-theme^="midnight-"] .drawer-content,
+[data-theme^="midnight-"] .unsettled-detail-container,
+[data-theme^="midnight-"] .draw-row.clickable:hover,
+[data-theme^="midnight-"] .draw-row.clickable:active,
+[data-theme^="midnight-"] .settled-detail-container,
+[data-theme^="midnight-"] .play-help-tabs,
+[data-theme^="midnight-"] .history-dropdown-item:active,
+[data-theme^="midnight-"] .history-reset-btn:active,
+[data-theme^="midnight-"] .settings-container,
+[data-theme^="midnight-"] .settings-row:active,
+[data-theme^="midnight-"] .login-captcha {
+  background-color: var(--mn-surface-2);
+  background: var(--mn-surface-2);
+}
+
+/* Midnight-blue: drawer base surface → app base */
+[data-theme^="midnight-"] .drawer-panel {
+  background-color: var(--mn-bg);
+}
+
+/* Midnight-blue: strong / heading text → white */
+[data-theme^="midnight-"] .xy28-group-label,
+[data-theme^="midnight-"] .unsettled-summary-card .summary-value,
+[data-theme^="midnight-"] .bet-card-header,
+[data-theme^="midnight-"] .settled-report-title,
+[data-theme^="midnight-"] .settled-summary-card .summary-value,
+[data-theme^="midnight-"] .history-tab.active,
+[data-theme^="midnight-"] .history-field-value.strong,
+[data-theme^="midnight-"] .login-input {
+  color: var(--mn-text);
+}
+
+/* Midnight-blue: secondary text → light lavender */
+[data-theme^="midnight-"] .xy28-op,
+[data-theme^="midnight-"] .right-drawer-menu-item,
+[data-theme^="midnight-"] .unsettled-select,
+[data-theme^="midnight-"] .bet-detail-row .detail-value,
+[data-theme^="midnight-"] .detail-value.order-id-container,
+[data-theme^="midnight-"] .settled-select,
+[data-theme^="midnight-"] .lhc-plus,
+[data-theme^="midnight-"] .play-help-box,
+[data-theme^="midnight-"] .play-help-text,
+[data-theme^="midnight-"] .history-dropdown-item,
+[data-theme^="midnight-"] .history-issue-input,
+[data-theme^="midnight-"] .history-reset-btn,
+[data-theme^="midnight-"] .history-field-value,
+[data-theme^="midnight-"] .history-badge.outline,
+[data-theme^="midnight-"] .toast {
+  color: var(--mn-text-2);
+}
+
+/* Midnight-blue: muted text → muted lavender */
+[data-theme^="midnight-"] .unsettled-summary-card .summary-label,
+[data-theme^="midnight-"] .bet-card-header .issue-text,
+[data-theme^="midnight-"] .bet-detail-row .detail-label,
+[data-theme^="midnight-"] .video-sound-btn,
+[data-theme^="midnight-"] .video-bottom-bar,
+[data-theme^="midnight-"] .podium-label,
+[data-theme^="midnight-"] .settled-summary-card .summary-label,
+[data-theme^="midnight-"] .play-help-tab,
+[data-theme^="midnight-"] .history-tab,
+[data-theme^="midnight-"] .login-title,
+[data-theme^="midnight-"] .login-eye {
+  color: var(--mn-text-muted);
+}
+
+/* Midnight-blue: footer amount chips, custom input & edit button */
+[data-theme^="midnight-"] .chip-btn {
+  background: linear-gradient(180deg, var(--mn-surface-hover) 0%, var(--mn-surface) 100%);
+  border-color: var(--mn-border);
+  color: var(--mn-text);
+}
+[data-theme^="midnight-"] .chip-btn.active {
+  background: var(--mn-surface-hover);
+  border-color: var(--primary-blue);
+  color: var(--mn-text-2);
+}
+[data-theme^="midnight-"] .edit-chip-btn {
+  border-color: var(--mn-border);
+  color: var(--mn-text-muted);
+}
+[data-theme^="midnight-"] .bet-amount-input {
+  background-color: var(--mn-surface);
+  border-color: var(--mn-border);
+  color: var(--mn-text);
+}
+[data-theme^="midnight-"] .bet-amount-input::placeholder {
+  color: var(--mn-text-muted);
+}
+
+/* Midnight-blue: divider between the two draw-period rows → match header border */
+[data-theme^="midnight-"] .draw-row {
+  border-bottom-color: var(--mn-border);
+}
+
+/* Midnight-blue: right side-menu bottom divider → match header border */
+[data-theme^="midnight-"] .right-drawer-bottom-section {
+  border-top-color: var(--mn-border);
+}
+
+/* Midnight-blue: settled/unsettled filter dropdown text → light */
+[data-theme^="midnight-"] .history-picker,
+[data-theme^="midnight-"] .history-picker-value {
+  color: var(--mn-text-2);
+}
+
+/* Midnight-blue: settled/unsettled summary card → indigo surface */
+[data-theme^="midnight-"] .settled-summary-card,
+[data-theme^="midnight-"] .unsettled-summary-card {
+  background-color: var(--mn-surface);
+  border-color: var(--mn-border);
+}
+[data-theme^="midnight-"] .settled-summary-card .summary-item:not(:last-child),
+[data-theme^="midnight-"] .unsettled-summary-card .summary-item:first-child {
+  border-right-color: var(--mn-border);
+}
+
+/* Midnight-blue: deeper red logout button */
+[data-theme^="midnight-"] .settings-logout-btn {
+  background-color: #a11f18;
+  box-shadow: 0 4px 12px rgba(161, 31, 24, 0.35);
+}
+[data-theme^="midnight-"] .settings-logout-btn:hover {
+  background-color: #8c1a14;
+}
+
+/* Midnight: PK10 position tab (1~10) & bet cell selected state → dark orange tint */
+[data-theme^="midnight-"] .shortcut-pos-tab.selected,
+[data-theme^="midnight-"] .bet-button.selected {
+  background-color: rgba(249, 115, 22, 0.16);
+  color: var(--mn-text);
+}
+
+/* Midnight: bet-confirmation modal inner surfaces & inputs */
+[data-theme^="midnight-"] .confirm-modal-summary {
+  background-color: var(--mn-surface-2);
+  border-color: var(--mn-border);
+}
+[data-theme^="midnight-"] .confirm-bet-row {
+  border-color: var(--mn-border);
+}
+[data-theme^="midnight-"] .confirm-bet-input,
+[data-theme^="midnight-"] .confirm-bulk-input {
+  background-color: var(--mn-surface);
+  border-color: var(--mn-border);
+  color: var(--mn-text);
+}
+
+/* Midnight: 玩法说明 modal content box */
+[data-theme^="midnight-"] .play-help-box {
+  background: var(--mn-surface-2);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;

@@ -3,7 +3,7 @@ import React from 'react';
 const THEME_OPTIONS = [
   {
     id: 'light-blue',
-    name: '浅蓝白',
+    name: '浅蓝',
     desc: '清爽的天蓝色系',
     // swatch preview colors
     header: '#e0f2fe',
@@ -12,10 +12,26 @@ const THEME_OPTIONS = [
   },
   {
     id: 'deep-blue',
-    name: '深蓝白',
+    name: '深蓝',
     desc: '沉稳的靛蓝色系',
     header: '#547cfd',
     accent: '#547cfd',
+    text: '#ffffff',
+  },
+  {
+    id: 'midnight-blue',
+    name: '午夜蓝',
+    desc: '深邃的靛蓝紫色系',
+    header: '#1c2a63',
+    accent: '#6f8bff',
+    text: '#ffffff',
+  },
+  {
+    id: 'midnight-purple',
+    name: '午夜紫',
+    desc: '深邃的靛紫色系',
+    header: '#2a1c63',
+    accent: '#9b7bff',
     text: '#ffffff',
   },
 ];

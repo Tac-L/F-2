@@ -355,7 +355,7 @@ export default function App() {
   };
   const [theme, setTheme] = useState(() => {
     const saved = typeof localStorage !== 'undefined' ? localStorage.getItem('appTheme') : null;
-    return saved === 'light-blue' || saved === 'deep-blue' ? saved : 'deep-blue';
+    return saved === 'light-blue' || saved === 'deep-blue' || saved === 'midnight-blue' || saved === 'midnight-purple' ? saved : 'deep-blue';
   });
 
   // Apply the selected theme to the document root and persist it
@@ -1664,14 +1664,14 @@ export default function App() {
               type="button"
               className={`icon-btn ${isHistoryDropdownOpen ? 'active' : ''}`}
               title="历史开奖 / 盈亏记录"
-              style={{ color: '#3b82f6', display: 'flex', alignItems: 'center', gap: '2px' }}
+              style={{ color: theme === 'midnight-purple' ? '#9B7BFF' : theme === 'midnight-blue' ? '#7199FE' : '#3b82f6', display: 'flex', alignItems: 'center', gap: '2px' }}
               onClick={(e) => {
                 e.stopPropagation();
                 setIsHistoryDropdownOpen(prev => !prev);
               }}
             >
               {/* History records / win-loss icon */}
-              <img src={`${import.meta.env.BASE_URL}rotate-ccw.png`} width="20" height="20" alt="历史开奖" />
+              <img src={`${import.meta.env.BASE_URL}${theme === 'midnight-blue' || theme === 'midnight-purple' ? 'rotate-ccw-db.png' : 'rotate-ccw.png'}`} width="20" height="20" alt="历史开奖" />
               {/* Caret to indicate expandable dropdown */}
               <svg
                 width="12" height="12" viewBox="0 0 24 24" fill="none"
@@ -1707,10 +1707,10 @@ export default function App() {
               type="button"
               className={`icon-btn ${isVideoOpen ? 'active' : ''}`}
               title="开奖动画 / 直播视频"
-              style={{ color: '#3b82f6', display: 'flex', alignItems: 'center', gap: '2px' }}
+              style={{ color: theme === 'midnight-purple' ? '#9B7BFF' : theme === 'midnight-blue' ? '#7199FE' : '#3b82f6', display: 'flex', alignItems: 'center', gap: '2px' }}
               onClick={() => setIsVideoOpen(prev => !prev)}
             >
-              <img src={`${import.meta.env.BASE_URL}youtube.png`} width="20" height="20" alt="开奖动画" />
+              <img src={`${import.meta.env.BASE_URL}${theme === 'midnight-blue' || theme === 'midnight-purple' ? 'youtube-db.png' : 'youtube.png'}`} width="20" height="20" alt="开奖动画" />
               {/* Caret to indicate expandable player */}
               <svg
                 width="12" height="12" viewBox="0 0 24 24" fill="none"
