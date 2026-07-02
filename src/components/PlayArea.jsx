@@ -18,6 +18,33 @@ import {
 } from '../constants/gameData';
 import Dice from './Dice';
 
+const LIANMA_SUB_TABS = [
+  { id: 'si-quan-zhong', name: '四全中' },
+  { id: 'san-quan-zhong', name: '三全中' },
+  { id: 'san-zhong-er', name: '三中二' },
+  { id: 'er-quan-zhong', name: '二全中' },
+  { id: 'er-zhong-te', name: '二中特' },
+  { id: 'te-chuan', name: '特串' },
+];
+
+const LIANMA_REQUIRED_COUNTS = {
+  'si-quan-zhong': 4,
+  'san-quan-zhong': 3,
+  'san-zhong-er': 3,
+  'er-quan-zhong': 2,
+  'er-zhong-te': 2,
+  'te-chuan': 2,
+};
+
+const LIANMA_ODDS = {
+  'si-quan-zhong': 9000,
+  'san-quan-zhong': 600,
+  'san-zhong-er': 100,
+  'er-quan-zhong': 65,
+  'er-zhong-te': 50,
+  'te-chuan': 150,
+};
+
 export default function PlayArea({
   activeTab,
   selectedBets,
@@ -38,8 +65,29 @@ export default function PlayArea({
   // 两面盘 has two sub-sections (大小单双 / 龙虎).
   const [helpOpen, setHelpOpen] = useState(false);
   const [helpSub, setHelpSub] = useState('ds'); // 'ds' (大小单双) | 'lh' (龙虎)
+  const [lhcHelpTab, setLhcHelpTab] = useState('quick'); // 'quick' | 'number' | 'twoside' | 'color'
+  const [selectedLhcCats, setSelectedLhcCats] = useState({});
+
+  // Reset category selection when bets are cleared or page switches
+  useEffect(() => {
+    if (selectedBets.length === 0) {
+      setSelectedLhcCats({});
+    }
+  }, [selectedBets]);
+
   // Close the modal whenever the user switches play tabs.
   useEffect(() => { setHelpOpen(false); }, [activeTab]);
+
+  // Reset LHC help tab when modal opens
+  useEffect(() => {
+    if (helpOpen) {
+      if (activeTab === 'banbo') {
+        setLhcHelpTab('red');
+      } else {
+        setLhcHelpTab('quick');
+      }
+    }
+  }, [helpOpen, activeTab]);
 
   // A small "玩法说明 ?" button shown above the play content.
   const renderPlayHelpBar = () => (
@@ -122,6 +170,654 @@ export default function PlayArea({
               )}
             </div>
           )}
+
+          {gameKind === 'lhc' && activeTab === 'tema' && (
+            <div className="play-help-body">
+              <div className="play-help-tabs">
+                <button
+                  type="button"
+                  className={`play-help-tab ${lhcHelpTab === 'quick' ? 'active' : ''}`}
+                  onClick={() => setLhcHelpTab('quick')}
+                >快捷</button>
+                <button
+                  type="button"
+                  className={`play-help-tab ${lhcHelpTab === 'number' ? 'active' : ''}`}
+                  onClick={() => setLhcHelpTab('number')}
+                >数字</button>
+                <button
+                  type="button"
+                  className={`play-help-tab ${lhcHelpTab === 'twoside' ? 'active' : ''}`}
+                  onClick={() => setLhcHelpTab('twoside')}
+                >两面</button>
+                <button
+                  type="button"
+                  className={`play-help-tab ${lhcHelpTab === 'color' ? 'active' : ''}`}
+                  onClick={() => setLhcHelpTab('color')}
+                >色波</button>
+              </div>
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '12px' }}>
+                  特码：当期开奖的最后 1 个号码。
+                </div>
+                
+                {lhcHelpTab === 'quick' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div>
+                      1. <strong>快捷按钮：</strong>点选按钮会自动选中下方符合的数字，例如点击「红」，则会选中所有红色的球号，再次点击会取消选择
+                    </div>
+                    <div>
+                      2. <strong>快捷投注：</strong>按号码=金额的格式，用多个空格分隔。例如：1=20 2=20
+                    </div>
+                  </div>
+                )}
+
+                {lhcHelpTab === 'number' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div>
+                      1. 假如投注号码为开奖号码之「特码」，视为中奖，其余情形视为不中奖
+                    </div>
+                  </div>
+                )}
+
+                {lhcHelpTab === 'twoside' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
+                    <div>
+                      <strong>大小：</strong>「特码」大于或等于25为大，小于或等于24为小，开出49为和。
+                    </div>
+                    <div>
+                      <strong>单双：</strong>「特码」为单数或双数下注，开出49为和。
+                    </div>
+                    <div>
+                      <strong>合大/合小：</strong>「特码」的个位和十位数字总和来判断胜负，和数大于或等于7为合大，小于或等于6为合小，开出49为和。
+                    </div>
+                    <div>
+                      <strong>合单/合双：</strong>「特码」的个位和十位数字总和来判断单双，开出49为和。
+                    </div>
+                    <div>
+                      <strong>大单/小单/大双/小双：</strong>「特码」的大小单双混合判断，开出49为和。
+                    </div>
+                    <div>
+                      <strong>尾大/尾小：</strong>「特码」的尾数来判断大小，0尾~4尾为小、5尾~9尾为大，开出49为和。
+                    </div>
+                    <div>
+                      <strong>家禽野兽：</strong>开出的「特码」属于十二生肖中的牛、马、羊、鸡、狗、猪号码为家禽，属于十二生肖中的鼠、虎、龙、蛇、兔、猴号码为野兽。(请注意：49亦算输赢，不为和)
+                    </div>
+                  </div>
+                )}
+
+                {lhcHelpTab === 'color' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
+                    <div>
+                      <strong>红波：</strong>
+                      <span style={{ color: '#e3342f', fontWeight: 'bold' }}>
+                        01、02、07、08、12、13、18、19、23、24、29、30、34、35、40、45、46
+                      </span>
+                    </div>
+                    <div>
+                      <strong>绿波：</strong>
+                      <span style={{ color: '#16a34a', fontWeight: 'bold' }}>
+                        05、06、11、16、17、21、22、27、28、32、33、38、39、43、44、49
+                      </span>
+                    </div>
+                    <div>
+                      <strong>蓝波：</strong>
+                      <span style={{ color: '#2563eb', fontWeight: 'bold' }}>
+                        03、04、09、10、14、15、20、25、26、31、36、37、41、42、47、48
+                      </span>
+                    </div>
+                    <div>
+                      <strong>数字范围：</strong>当期开出的「特码」落在投注的数字范围，视为中奖。(请注意：49亦算输赢，不为和)
+                    </div>
+                    <div>
+                      <strong>范围包含：</strong>01-10、11-20、21-30、31-40、41-49
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'lhc' && activeTab === 'zhengma' && (
+            <div className="play-help-body">
+              <div className="play-help-tabs">
+                <button
+                  type="button"
+                  className={`play-help-tab ${lhcHelpTab === 'quick' ? 'active' : ''}`}
+                  onClick={() => setLhcHelpTab('quick')}
+                >快捷</button>
+                <button
+                  type="button"
+                  className={`play-help-tab ${lhcHelpTab === 'number' ? 'active' : ''}`}
+                  onClick={() => setLhcHelpTab('number')}
+                >数字</button>
+                <button
+                  type="button"
+                  className={`play-help-tab ${lhcHelpTab === 'twoside' ? 'active' : ''}`}
+                  onClick={() => setLhcHelpTab('twoside')}
+                >两面</button>
+              </div>
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '12px' }}>
+                  六合彩当期开出之前6个号码叫「正码」。
+                </div>
+                
+                {lhcHelpTab === 'quick' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div>
+                      1. <strong>快捷按钮：</strong>点选按钮会自动选中下方符合的数字，例如点击「红」，则会选中所有红色的球号，再次点击会取消选择
+                    </div>
+                    <div>
+                      2. <strong>快捷投注：</strong>按号码=金额的格式，用多个空格分隔。例如：1=20 2=20
+                    </div>
+                  </div>
+                )}
+
+                {lhcHelpTab === 'number' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
+                    <div>
+                      <strong>数字：</strong>每一个号码为一投注组合，假如投注号码为开奖号码之「正码」，视为中奖，其余情形视为不中奖。
+                    </div>
+                    <div>
+                      <strong>总和单双：</strong>根据「7个号码」的总和判断单双，总和是单数叫总和单，如分数总和是115、183；总和是双数叫总和双，如分数总和是108、162。
+                    </div>
+                    <div>
+                      <strong>总和大小：</strong>根据「7个号码」的总和判断大小，总和大于或等于175为总和大；总和小于或等于174为总和小。
+                    </div>
+                    <div>
+                      <strong>总尾大小：</strong>根据6个「正码」的总和数，尾数(总和数个位数字)若在0尾~4尾为小，5尾~9尾为大;如开奖号码为02,08,17,28,39,46，分数总和是140，则总尾小中奖。(请注意：49亦算输赢，不为和)
+                    </div>
+                    <div>
+                      <strong>龙虎：</strong>第一球跟第六球比较大小，第一球号码大于第六球号码为龙，反之为虎。
+                    </div>
+                  </div>
+                )}
+
+                {lhcHelpTab === 'twoside' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
+                    <div style={{ color: '#64748b', fontSize: '13.5px', marginBottom: '4px', fontStyle: 'italic' }}>
+                      第一时间出来的叫「正码」特一，依次为「正码」特二、「正码」特三、「正码」特四、「正码」特五、「正码」特六(并不以号码大小排序)。
+                    </div>
+                    <div>
+                      <strong>数字：</strong>其下注的「正码」特号与当期之「正码」开奖顺序及开奖号码相同，视为中奖，如开奖第一个「正码」为49号，下注「正码」特一为49，视为中奖，其它号码视为不中奖。
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'lhc' && activeTab === 'zhengte' && (
+            <div className="play-help-body">
+              <div className="play-help-tabs">
+                <button
+                  type="button"
+                  className={`play-help-tab ${lhcHelpTab === 'quick' ? 'active' : ''}`}
+                  onClick={() => setLhcHelpTab('quick')}
+                >快捷</button>
+                <button
+                  type="button"
+                  className={`play-help-tab ${lhcHelpTab === 'number' ? 'active' : ''}`}
+                  onClick={() => setLhcHelpTab('number')}
+                >数字</button>
+                <button
+                  type="button"
+                  className={`play-help-tab ${lhcHelpTab === 'twoside' ? 'active' : ''}`}
+                  onClick={() => setLhcHelpTab('twoside')}
+                >两面</button>
+                <button
+                  type="button"
+                  className={`play-help-tab ${lhcHelpTab === 'color' ? 'active' : ''}`}
+                  onClick={() => setLhcHelpTab('color')}
+                >色波</button>
+              </div>
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <div style={{ fontWeight: 'normal', marginBottom: '12px' }}>
+                  六合彩当期开出之前6个号码叫「正码」。
+                  <br />
+                  第一时间出来的叫「正码」特一，依次为「正码」特二、「正码」特三、「正码」特四、「正码」特五、「正码」特六(并不以号码大小排序)。
+                </div>
+                
+                {lhcHelpTab === 'quick' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
+                    <div>
+                      1. 先选择开奖位置「特一」～「特六」
+                    </div>
+                    <div>
+                      2. <strong>快捷按钮：</strong>点选按钮会自动选中下方符合的数字，例如选点击「红」，则会选中所有红色的球号，再次点击会取消选择
+                    </div>
+                    <div>
+                      3. <strong>快捷投注：</strong>按号码=金额的格式，用多个空格分隔。例如：1=20 2=20
+                    </div>
+                  </div>
+                )}
+
+                {lhcHelpTab === 'number' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
+                    <div>
+                      <strong>数字：</strong>其下注的「正码」特号与当期之「正码」开奖顺序及开奖号码相同，视为中奖，如开奖第一个「正码」为49号，下注「正码」特一为49，视为中奖，其它号码视为不中奖。
+                    </div>
+                  </div>
+                )}
+
+                {lhcHelpTab === 'twoside' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
+                    <div>
+                      <strong>大小：</strong>以指定出现位置的号码大于或等于25为大，小于或等于24为小，开出49为和。
+                    </div>
+                    <div>
+                      <strong>单双：</strong>以指定出现位置的号码为单数或双数下注，开出49为和。
+                    </div>
+                    <div>
+                      <strong>合大/合小：</strong>以指定出现位置的号码个位和十位数字总和来判断胜负，总和数大于或等于7为合大，小于或等于6为合小，开出49为和。
+                    </div>
+                    <div>
+                      <strong>合单/合双：</strong>以指定出现位置的号码个位和十位数字总和来判断单双，开出49为和。
+                    </div>
+                    <div>
+                      <strong>尾大/尾小：</strong>以指定出现位置的号码末尾数来判断大小，0尾~4尾为小、5尾~9尾为大，开出49为和。
+                    </div>
+                  </div>
+                )}
+
+                {lhcHelpTab === 'color' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
+                    <div>
+                      <strong>红波：</strong>
+                      <span style={{ color: '#e3342f', fontWeight: 'bold' }}>
+                        01、02、07、08、12、13、18、19、23、24、29、30、34、35、40、45、46
+                      </span>
+                    </div>
+                    <div>
+                      <strong>绿波：</strong>
+                      <span style={{ color: '#16a34a', fontWeight: 'bold' }}>
+                        05、06、11、16、17、21、22、27、28、32、33、38、39、43、44、49
+                      </span>
+                    </div>
+                    <div>
+                      <strong>蓝波：</strong>
+                      <span style={{ color: '#2563eb', fontWeight: 'bold' }}>
+                        03、04、09、10、14、15、20、25、26、31、36、37、41、42、47、48
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'lhc' && activeTab === 'texiao' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <div style={{ fontWeight: 'normal', marginBottom: '12px' }}>
+                  特肖：以生肖下注。只要当期「特码」落在下注生肖范围内，则视为中奖。(请注意：49亦算输赢，不为和)
+                </div>
+                <ul style={{ margin: 0, paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13.5px', color: '#1e293b' }}>
+                  {(() => {
+                    const sortedZodiacs = [...LHC_ZODIACS].sort((a, b) => {
+                      const minA = LHC_TEXIAO_NUMBERS[a]?.[0] || 99;
+                      const minB = LHC_TEXIAO_NUMBERS[b]?.[0] || 99;
+                      return minA - minB;
+                    });
+                    return sortedZodiacs.map((zodiac) => {
+                      const nums = LHC_TEXIAO_NUMBERS[zodiac] || [];
+                      const formattedNums = nums.map((n) => n.toString().padStart(2, '0')).join('、');
+                      return (
+                        <li key={zodiac} style={{ listStyleType: 'disc' }}>
+                          {zodiac}：{formattedNums}
+                        </li>
+                      );
+                    });
+                  })()}
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'lhc' && activeTab === 'zhengxiao' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <div style={{ fontWeight: 'normal', marginBottom: '12px' }}>
+                  正肖：以生肖下注。只要当期「正码」落在下注生肖范围内，则视为中奖。(请注意：49亦算输赢，不为和)
+                  <br /><br />
+                  若超过1个正码落在下注生肖范围内，盈利将随命中号码倍增。比如2024年龙年，龙赔率为1.4，投注龙100元，6个正码中开出01，则派彩140元；6个正码中开出01，13，则派彩180元。
+                </div>
+                <ul style={{ margin: 0, paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13.5px', color: '#1e293b' }}>
+                  {(() => {
+                    const sortedZodiacs = [...LHC_ZODIACS].sort((a, b) => {
+                      const minA = LHC_TEXIAO_NUMBERS[a]?.[0] || 99;
+                      const minB = LHC_TEXIAO_NUMBERS[b]?.[0] || 99;
+                      return minA - minB;
+                    });
+                    return sortedZodiacs.map((zodiac) => {
+                      const nums = LHC_TEXIAO_NUMBERS[zodiac] || [];
+                      const formattedNums = nums.map((n) => n.toString().padStart(2, '0')).join('、');
+                      return (
+                        <li key={zodiac} style={{ listStyleType: 'disc' }}>
+                          {zodiac}：{formattedNums}
+                        </li>
+                      );
+                    });
+                  })()}
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'lhc' && activeTab === 'yixiao' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <div style={{ fontWeight: 'normal', marginBottom: '12px' }}>
+                  一肖：以生肖下注。只要「当期号码」落在下注生肖范围内，则视为中奖。(请注意：49亦算输赢，不为和)
+                </div>
+                <ul style={{ margin: 0, paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13.5px', color: '#1e293b' }}>
+                  {(() => {
+                    const sortedZodiacs = [...LHC_ZODIACS].sort((a, b) => {
+                      const minA = LHC_TEXIAO_NUMBERS[a]?.[0] || 99;
+                      const minB = LHC_TEXIAO_NUMBERS[b]?.[0] || 99;
+                      return minA - minB;
+                    });
+                    return sortedZodiacs.map((zodiac) => {
+                      const nums = LHC_TEXIAO_NUMBERS[zodiac] || [];
+                      const formattedNums = nums.map((n) => n.toString().padStart(2, '0')).join('、');
+                      return (
+                        <li key={zodiac} style={{ listStyleType: 'disc' }}>
+                          {zodiac}：{formattedNums}
+                        </li>
+                      );
+                    });
+                  })()}
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'lhc' && activeTab === 'yixiao-no' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <div style={{ fontWeight: 'normal', marginBottom: '12px' }}>
+                  一肖不中：以生肖下注。只要「当期号码」不包含下注生肖，则视为中奖。(请注意：49亦算输赢，不为和)
+                </div>
+                <ul style={{ margin: 0, paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13.5px', color: '#1e293b' }}>
+                  {(() => {
+                    const sortedZodiacs = [...LHC_ZODIACS].sort((a, b) => {
+                      const minA = LHC_TEXIAO_NUMBERS[a]?.[0] || 99;
+                      const minB = LHC_TEXIAO_NUMBERS[b]?.[0] || 99;
+                      return minA - minB;
+                    });
+                    return sortedZodiacs.map((zodiac) => {
+                      const nums = LHC_TEXIAO_NUMBERS[zodiac] || [];
+                      const formattedNums = nums.map((n) => n.toString().padStart(2, '0')).join('、');
+                      return (
+                        <li key={zodiac} style={{ listStyleType: 'disc' }}>
+                          {zodiac}：{formattedNums}
+                        </li>
+                      );
+                    });
+                  })()}
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'lhc' && activeTab === 'weishu' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <div style={{ fontWeight: 'normal', marginBottom: '12px' }}>
+                  尾数：只要「当期号码」含有投注所属尾数的一个或多个号码，即视为中奖，不论同尾数的号码出现一个或多个，派彩只派一次。
+                </div>
+                <ul style={{ margin: 0, paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13.5px', color: '#1e293b' }}>
+                  {LHC_TAIL_GROUPS.map((g) => {
+                    const formattedNums = g.nums.map((n) => n.toString().padStart(2, '0')).join('、');
+                    return (
+                      <li key={g.tail} style={{ listStyleType: 'disc' }}>
+                        {g.tail}尾：{formattedNums}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'lhc' && activeTab === 'weishu-no' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <div style={{ fontWeight: 'normal', marginBottom: '12px' }}>
+                  尾数不中：只要「当期号码」不含有投注所属尾数，即视为中奖。
+                </div>
+                <ul style={{ margin: 0, paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13.5px', color: '#1e293b' }}>
+                  {LHC_TAIL_GROUPS.map((g) => {
+                    const formattedNums = g.nums.map((n) => n.toString().padStart(2, '0')).join('、');
+                    return (
+                      <li key={g.tail} style={{ listStyleType: 'disc' }}>
+                        {g.tail}尾：{formattedNums}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'lhc' && activeTab === 'tetoushu' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <div style={{ fontWeight: 'normal', marginBottom: '12px' }}>
+                  特码头数：「特码」为所属头数号码，即视为中奖。
+                </div>
+                <ul style={{ margin: 0, paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13.5px', color: '#1e293b' }}>
+                  {LHC_HEAD_GROUPS.map((g) => {
+                    const formattedNums = g.nums.map((n) => n.toString().padStart(2, '0')).join('、');
+                    return (
+                      <li key={g.head} style={{ listStyleType: 'disc' }}>
+                        {g.head}头：{formattedNums}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'lhc' && activeTab === 'teweishu' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <div style={{ fontWeight: 'normal', marginBottom: '12px' }}>
+                  特码尾数：「特码」为所属尾数号码，即视为中奖。
+                </div>
+                <ul style={{ margin: 0, paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13.5px', color: '#1e293b' }}>
+                  {LHC_TAIL_GROUPS.map((g) => {
+                    const formattedNums = g.nums.map((n) => n.toString().padStart(2, '0')).join('、');
+                    return (
+                      <li key={g.tail} style={{ listStyleType: 'disc' }}>
+                        {g.tail}尾：{formattedNums}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'lhc' && activeTab === 'banbo' && (
+            <div className="play-help-body">
+              <div className="play-help-tabs">
+                <button
+                  type="button"
+                  className={`play-help-tab ${lhcHelpTab === 'red' ? 'active' : ''}`}
+                  onClick={() => setLhcHelpTab('red')}
+                >红</button>
+                <button
+                  type="button"
+                  className={`play-help-tab ${lhcHelpTab === 'green' ? 'active' : ''}`}
+                  onClick={() => setLhcHelpTab('green')}
+                >绿</button>
+                <button
+                  type="button"
+                  className={`play-help-tab ${lhcHelpTab === 'blue' ? 'active' : ''}`}
+                  onClick={() => setLhcHelpTab('blue')}
+                >蓝</button>
+              </div>
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <div style={{ fontWeight: 'normal', marginBottom: '12px' }}>
+                  以「特码」色波和「特码」大小单双为一个投注组合，当期「特码」开出符合投注组合，即视为中奖；若当期「特码」开出49号则视为和局；其余情形视为不中奖。
+                </div>
+                <ul style={{ margin: 0, paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13.5px', color: '#1e293b' }}>
+                  {(() => {
+                    const hexColorMap = { red: '#e3342f', green: '#16a34a', blue: '#2563eb' };
+                    const currentTargetColor = lhcHelpTab === 'red' ? 'red' : lhcHelpTab === 'green' ? 'green' : 'blue';
+                    const filteredItems = LHC_BANBO_ITEMS.filter((item) => item.color === currentTargetColor);
+                    
+                    return filteredItems.map((item) => {
+                      const formattedNums = item.nums.map((n) => n.toString().padStart(2, '0')).join('、');
+                      return (
+                        <li key={item.label} style={{ listStyleType: 'disc' }}>
+                          {item.label}：
+                          <span style={{ color: hexColorMap[currentTargetColor], fontWeight: 'bold' }}>
+                            {formattedNums}
+                          </span>
+                        </li>
+                      );
+                    });
+                  })()}
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'lhc' && activeTab === 'wuxing' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <div style={{ fontWeight: 'normal', marginBottom: '12px' }}>
+                  特码五行：「特码」为所属五行号码，即视为中奖。(调整时间为每年的农历初一)
+                  <br /><br />
+                  2026年五行如下
+                </div>
+                <ul style={{ margin: 0, paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13.5px', color: '#1e293b' }}>
+                  {LHC_WUXING.map((w) => {
+                    const formattedNums = w.nums.map((n) => n.toString().padStart(2, '0')).join('、');
+                    return (
+                      <li key={w.element} style={{ listStyleType: 'disc' }}>
+                        {w.element}：{formattedNums}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'lhc' && activeTab === 'zongxiao' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <div style={{ fontWeight: 'normal', marginBottom: '12px' }}>
+                  总肖：只要「当期号码」开出的不同生肖总数，与所投注之预计开出之生肖总数合（不用指定特定生肖），则视为中奖，其余情形视为不中奖。
+                  <br /><br />
+                  例如：如果当期开奖「正码」为19、24、12、34、40、39「特码」：49，总计六个生肖，若选总肖【6】则为中奖（请注意：49亦算输赢，不为和）。
+                </div>
+                <ul style={{ margin: 0, paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13.5px', color: '#1e293b' }}>
+                  <li style={{ listStyleType: 'disc' }}>
+                    总肖单：「当期号码」所属不同生肖总数是单数
+                  </li>
+                  <li style={{ listStyleType: 'disc' }}>
+                    总肖双：「当期号码」所属不同生肖总数是双数
+                  </li>
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'lhc' && activeTab === 'qisebo' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <div style={{ fontWeight: 'normal', fontSize: '13.5px', lineHeight: '1.6', color: '#1e293b' }}>
+                  <strong>七色波：</strong>以开出的7个色波，哪种颜色最多为中奖。「正码」各以1个色波计，「特码」以1.5个色波计。
+                  <br />
+                  以下3种结果视为和局：
+                  <div style={{ paddingLeft: '12px', marginTop: '6px', marginBottom: '6px' }}>
+                    1. 6个「正码」开出3蓝3绿，而「特码」是1.5红
+                    <br />
+                    2. 6个「正码」开出3红3绿，而「特码」是1.5蓝
+                    <br />
+                    3. 6个「正码」开出3红3蓝，而「特码」是1.5绿
+                  </div>
+                  如果出现和局，所有投注红，蓝，绿七色波的金额将全数退回，会员也可投注和局。
+                </div>
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'lhc' && activeTab === 'hexiao' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <div style={{ fontWeight: 'normal', fontSize: '13.5px', lineHeight: '1.6', color: '#1e293b' }}>
+                  选2~11个生肖(排列如同生肖)为一组合，当期开出「特码」符合所选生肖及投注类别，即视为中奖；若当期「特码」开出49号，则视为和局；其余情形视为不中奖。
+                </div>
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'lhc' && activeTab === 'lianma' && (
+            <div className="play-help-body">
+              <div className="play-help-tabs">
+                <button
+                  type="button"
+                  className={`play-help-tab ${lhcHelpTab === '2' ? 'active' : ''}`}
+                  onClick={() => setLhcHelpTab('2')}
+                >2</button>
+                <button
+                  type="button"
+                  className={`play-help-tab ${lhcHelpTab === '3' ? 'active' : ''}`}
+                  onClick={() => setLhcHelpTab('3')}
+                >3</button>
+                <button
+                  type="button"
+                  className={`play-help-tab ${lhcHelpTab === '4' ? 'active' : ''}`}
+                  onClick={() => setLhcHelpTab('4')}
+                >4</button>
+              </div>
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <div style={{ fontWeight: 'normal', marginBottom: '12px' }}>
+                  每个号码都有自己的赔率，下注组合的总赔率，取该组合号码的最低赔率为总赔率。
+                </div>
+                
+                {lhcHelpTab === '2' && (
+                  <ul style={{ margin: 0, paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px', color: '#1e293b' }}>
+                    <li style={{ listStyleType: 'disc' }}>
+                      <strong>二全中：</strong>所投注的每二个号码为一组合，若二个号码都是开奖号码之「正码」，视为中奖，其余情形视为不中奖（含一个「正码」加一个「特码」之情形）。
+                    </li>
+                    <li style={{ listStyleType: 'disc' }}>
+                      <strong>二中特：</strong>所投注的每二个号码为一组合，若二个号码都是开奖号码之「正码」，叫「二中特之中二」；若其中一个是「正码」一个是「特码」，叫「二中特之中特」；其余情形视为不中奖。
+                    </li>
+                    <li style={{ listStyleType: 'disc' }}>
+                      <strong>特串：</strong>所投注的每二个号码为一组合，其中一个是「正码」，一个是「特码」，视为中奖，其余情形视为不中奖（含二个号码都是「正码」之情形）。
+                    </li>
+                  </ul>
+                )}
+
+                {lhcHelpTab === '3' && (
+                  <ul style={{ margin: 0, paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px', color: '#1e293b' }}>
+                    <li style={{ listStyleType: 'disc' }}>
+                      <strong>三全中：</strong>所投注的每三个号码为一组合，若三个号码都是开奖号码之「正码」，视为中奖，其余情形视为不中奖。例如06、07、08三个都是开奖号码之「正码」，视为中奖，如两个「正码」加上一个「特码」视为不中奖。
+                    </li>
+                    <li style={{ listStyleType: 'disc' }}>
+                      <strong>三中二：</strong>所投注的每三个号码为一组合，若其中2个是开奖号码中的「正码」，即为「三中二」，视为中奖；若3个都是开奖号码中的「正码」，即为「三中二之中三」，其余情形视为不中奖；例如06、07、08、为一组合，开奖号码中有06、07两个「正码」，没有08，即为三中二，按三中二赔付；如开奖号码中有06、07、08三个「正码」，即为三中二之中三，按中三赔付；如出现1个或没有，视为不中奖。
+                    </li>
+                  </ul>
+                )}
+
+                {lhcHelpTab === '4' && (
+                  <ul style={{ margin: 0, paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px', color: '#1e293b' }}>
+                    <li style={{ listStyleType: 'disc' }}>
+                      <strong>四全中：</strong>所投注的每四个号码为一组合，若四个号码都是开奖号码之「正码」，视为中奖，其余情形视为不中奖。例如06、07、08、09四个都是开奖号码之「正码」，视为中奖，如三个「正码」加上一个「特码」视为不中奖。
+                    </li>
+                  </ul>
+                )}
+
+              </div>
+            </div>
+          )}
+
         </div>
       </div>
     );
@@ -162,6 +858,7 @@ export default function PlayArea({
   // 合肖: chosen 类别 (生肖个数) + currently selected 生肖.
   const [hexiaoCat, setHexiaoCat] = useState(2);
   const [hexiaoZodiacs, setHexiaoZodiacs] = useState([]);
+  const [hexiaoDrawerOpen, setHexiaoDrawerOpen] = useState(true);
 
   // Clear the local 合肖 selection once its combo bets leave selectedBets
   // (after 投注 / 重置 / 封盘) so highlighted cards don't get out of sync.
@@ -171,6 +868,19 @@ export default function PlayArea({
     if (prevHexiaoCombo.current && !hexiaoComboActive) setHexiaoZodiacs([]);
     prevHexiaoCombo.current = hexiaoComboActive;
   }, [hexiaoComboActive]);
+
+  // 连码: chosen sub-tab + currently selected numbers
+  const [lianmaSubTab, setLianmaSubTab] = useState('si-quan-zhong');
+  const [lianmaNumbers, setLianmaNumbers] = useState([]);
+  const [lianmaDrawerOpen, setLianmaDrawerOpen] = useState(true);
+
+  // Clear the local 连码 selection once its combo bets leave selectedBets
+  const lianmaComboActive = selectedBets.some((b) => b.type === 'lhc-lianma');
+  const prevLianmaCombo = useRef(false);
+  useEffect(() => {
+    if (prevLianmaCombo.current && !lianmaComboActive) setLianmaNumbers([]);
+    prevLianmaCombo.current = lianmaComboActive;
+  }, [lianmaComboActive]);
 
   // Blue side vs orange side for 两面 / 长龙 labels.
   const blueSide = (label) =>
@@ -1511,15 +2221,53 @@ export default function PlayArea({
     };
   };
 
-  // Select every number in a 快捷投注 category. If all are already selected, clear them.
+  // Select every number in a 快捷投注 category. Supports multi-selection of categories as unions.
   const handleQuickCategory = (market, cat) => {
     if (isClosed) return;
-    const nums = lhcNumbersForCategory(cat);
-    const allSelected = nums.every((n) => isBetSelected(lhcNumberBet(market, n).id));
-    nums.forEach((n) => {
+    const catKey = market === 'zhengte' ? `zhengte-${zhengtePos}` : market;
+    
+    const prevCats = selectedLhcCats[catKey] || [];
+    const isAlreadySelected = prevCats.includes(cat);
+    const nextCats = isAlreadySelected
+      ? prevCats.filter((c) => c !== cat)
+      : [...prevCats, cat];
+
+    setSelectedLhcCats((prev) => ({
+      ...prev,
+      [catKey]: nextCats,
+    }));
+
+    // Helper to get union of numbers matching selected categories
+    const getNumbersForCats = (cats) => {
+      const set = new Set();
+      cats.forEach((c) => {
+        lhcNumbersForCategory(c).forEach((num) => set.add(num));
+      });
+      return set;
+    };
+
+    const prevNums = getNumbersForCats(prevCats);
+    const nextNums = getNumbersForCats(nextCats);
+
+    // Newly added numbers: nextNums minus prevNums
+    const toAdd = [...nextNums].filter((n) => !prevNums.has(n));
+    // Newly removed numbers: prevNums minus nextNums
+    const toRemove = [...prevNums].filter((n) => !nextNums.has(n));
+
+    // Toggle newly added numbers on (if not already selected)
+    toAdd.forEach((n) => {
       const bet = lhcNumberBet(market, n);
-      const selected = isBetSelected(bet.id);
-      if (allSelected ? selected : !selected) onToggleBet(bet);
+      if (!isBetSelected(bet.id)) {
+        onToggleBet(bet);
+      }
+    });
+
+    // Toggle newly removed numbers off (if currently selected)
+    toRemove.forEach((n) => {
+      const bet = lhcNumberBet(market, n);
+      if (isBetSelected(bet.id)) {
+        onToggleBet(bet);
+      }
     });
   };
 
@@ -1563,21 +2311,31 @@ export default function PlayArea({
   // The 快捷投注 抽屉 content (分类快选 + 快捷输入), market-aware.
   const renderLhcQuickContent = (market) => {
     const waveColor = { 红: '#e3342f', 绿: '#16a34a', 蓝: '#2563eb' };
+    const catKey = market === 'zhengte' ? `zhengte-${zhengtePos}` : market;
+    const activeCats = selectedLhcCats[catKey] || [];
+
     return (
       <>
         <div className="lhc-quick-cats">
-          {LHC_QUICK_CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              type="button"
-              className="lhc-quick-cat"
-              style={waveColor[cat] ? { color: waveColor[cat], fontWeight: 700 } : undefined}
-              onClick={() => handleQuickCategory(market, cat)}
-              disabled={isClosed}
-            >
-              {cat}
-            </button>
-          ))}
+          {LHC_QUICK_CATEGORIES.map((cat) => {
+            const catNums = lhcNumbersForCategory(cat);
+            const isCatSelectedInState = activeCats.includes(cat);
+            const isAllSelectedInGrid = catNums.length > 0 && catNums.every((n) => isBetSelected(lhcNumberBet(market, n).id));
+            const isSelected = isCatSelectedInState && isAllSelectedInGrid;
+
+            return (
+              <button
+                key={cat}
+                type="button"
+                className={`lhc-quick-cat ${isSelected ? 'active' : ''}`}
+                style={waveColor[cat] ? { color: isSelected ? '#fff' : waveColor[cat], fontWeight: 700 } : undefined}
+                onClick={() => handleQuickCategory(market, cat)}
+                disabled={isClosed}
+              >
+                {cat}
+              </button>
+            );
+          })}
         </div>
         <div className="lhc-quick-input-row">
           <textarea
@@ -1749,6 +2507,8 @@ export default function PlayArea({
   const renderLhcTema = () => {
     return (
       <div className="play-area">
+        {renderPlayHelpBar()}
+        {renderPlayHelpModal()}
         {/* 特码A / 特码B 盘口切换 */}
         <div className="lhc-panel-tabs">
           {['A', 'B'].map((p) => (
@@ -1779,6 +2539,8 @@ export default function PlayArea({
   const renderLhcZhengma = () => {
     return (
       <div className="play-area">
+        {renderPlayHelpBar()}
+        {renderPlayHelpModal()}
         {/* 快捷投注 抽屉 */}
         {renderLhcSection('lhc-zm-quick', '快捷投注', renderLhcQuickContent('zhengma'))}
 
@@ -1795,6 +2557,8 @@ export default function PlayArea({
   const renderLhcZhengte = () => {
     return (
       <div className="play-area">
+        {renderPlayHelpBar()}
+        {renderPlayHelpModal()}
         {/* 特一 ~ 特六 开奖位置选择 */}
         <div className="lhc-pos-tabs">
           {LHC_ZHENGTE_POS.map((label, idx) => (
@@ -1826,6 +2590,8 @@ export default function PlayArea({
     const bgOf = { 红: '#e3342f', 绿: '#16a34a', 蓝: '#2563eb', 和: '#9ca3af' };
     return (
       <div className="play-area">
+        {renderPlayHelpBar()}
+        {renderPlayHelpModal()}
         <div className="betting-grid">
           {LHC_QISEBO.map(({ label, betName, odds: rawOdds }) => {
             const betId = `lhc-qisebo-${betName}`;
@@ -1905,18 +2671,33 @@ export default function PlayArea({
     const noteCount = M >= hexiaoCat ? combinations(hexiaoZodiacs, hexiaoCat).length : 0;
     return (
       <div className="play-area">
-        {/* 类别选择: 二肖 ~ 十一肖 */}
-        <div className="lhc-hexiao-cats">
-          {LHC_HEXIAO_CATEGORIES.map((n) => (
-            <button
-              key={n}
-              type="button"
-              className={`lhc-pos-tab ${hexiaoCat === n ? 'active' : ''}`}
-              onClick={() => changeHexiaoCat(n)}
-            >
-              {LHC_HEXIAO_CN[n]}肖
-            </button>
-          ))}
+        {renderPlayHelpBar()}
+        {renderPlayHelpModal()}
+        {/* Collapsible Sub-tab Selection Drawer for Hexiao */}
+        <div className="subtab-drawer">
+          <div
+            className={`accordion-header ${hexiaoDrawerOpen ? 'open' : ''}`}
+            onClick={() => setHexiaoDrawerOpen(!hexiaoDrawerOpen)}
+          >
+            <span>{LHC_HEXIAO_CN[hexiaoCat]}肖</span>
+            <i className={`accordion-arrow ${hexiaoDrawerOpen ? 'open' : ''}`} />
+          </div>
+          {hexiaoDrawerOpen && (
+            <div className="accordion-content">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                {LHC_HEXIAO_CATEGORIES.map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    className={`lhc-pos-tab ${hexiaoCat === n ? 'active' : ''}`}
+                    onClick={() => changeHexiaoCat(n)}
+                  >
+                    {LHC_HEXIAO_CN[n]}肖
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
         <div className="lhc-hexiao-hint">
           已选 {M} 生肖（{hexiaoCat}肖组合，共 {noteCount} 注）
@@ -1951,11 +2732,133 @@ export default function PlayArea({
     );
   };
 
+  // --------- LHC: 连码 (选类别 subTab, 再选号码, 自动组合成 C(M, N) 注) ----------
+  const buildLianmaBet = (combo, subTabId) => {
+    const nums = [...combo].sort((a, b) => a - b);
+    const formattedNums = nums.map((n) => n.toString().padStart(2, '0'));
+    const subTabName = LIANMA_SUB_TABS.find((t) => t.id === subTabId)?.name || '';
+    const odds = LIANMA_ODDS[subTabId] || 9000;
+    return {
+      id: `lhc-lianma-${subTabId}-${nums.join('')}`,
+      tabId: 'lianma',
+      positionId: 'lianma',
+      positionName: `连码-${subTabName}`,
+      betName: formattedNums.join(','),
+      nums,
+      odds: adj(odds),
+      displayTitle: `连码-${subTabName}-${formattedNums.join(' ')}`,
+      type: 'lhc-lianma',
+    };
+  };
+
+  const syncLianma = (selectedNums, subTabId) => {
+    selectedBets.forEach((b) => { if (b.type === 'lhc-lianma') onToggleBet(b); });
+    const requiredCount = LIANMA_REQUIRED_COUNTS[subTabId];
+    if (selectedNums.length >= requiredCount) {
+      combinations(selectedNums, requiredCount).forEach((combo) => {
+        onToggleBet(buildLianmaBet(combo, subTabId));
+      });
+    }
+  };
+
+  const toggleLianmaNumber = (num) => {
+    if (isClosed) return;
+    const next = lianmaNumbers.includes(num)
+      ? lianmaNumbers.filter((n) => n !== num)
+      : [...lianmaNumbers, num];
+    setLianmaNumbers(next);
+    syncLianma(next, lianmaSubTab);
+  };
+
+  const changeLianmaSubTab = (subTabId) => {
+    setLianmaSubTab(subTabId);
+    syncLianma(lianmaNumbers, subTabId);
+  };
+
+  const renderLhcLianma = () => {
+    const requiredCount = LIANMA_REQUIRED_COUNTS[lianmaSubTab];
+    const M = lianmaNumbers.length;
+    const noteCount = M >= requiredCount ? combinations(lianmaNumbers, requiredCount).length : 0;
+    
+    // Numbers 01 to 49
+    const allNums = Array.from({ length: 49 }, (_, i) => i + 1);
+
+    return (
+      <div className="play-area">
+        {renderPlayHelpBar()}
+        {renderPlayHelpModal()}
+
+        {/* Collapsible Sub-tab Selection Drawer */}
+        <div className="subtab-drawer">
+          <div
+            className={`accordion-header ${lianmaDrawerOpen ? 'open' : ''}`}
+            onClick={() => setLianmaDrawerOpen(!lianmaDrawerOpen)}
+          >
+            <span>{LIANMA_SUB_TABS.find((t) => t.id === lianmaSubTab)?.name}</span>
+            <i className={`accordion-arrow ${lianmaDrawerOpen ? 'open' : ''}`} />
+          </div>
+          {lianmaDrawerOpen && (
+            <div className="accordion-content">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                {LIANMA_SUB_TABS.map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    className={`lhc-pos-tab ${lianmaSubTab === t.id ? 'active' : ''}`}
+                    onClick={() => changeLianmaSubTab(t.id)}
+                  >
+                    {t.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="lhc-hexiao-hint" style={{ marginBottom: '12px' }}>
+          已选 {M} 号码（{LIANMA_SUB_TABS.find((t) => t.id === lianmaSubTab)?.name}，共 {noteCount} 注）
+        </div>
+
+        {/* 2-column Grid of Numbers */}
+        <div className="betting-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+          {allNums.map((num) => {
+            const isSelected = lianmaNumbers.includes(num);
+            const odds = adj(LIANMA_ODDS[lianmaSubTab] || 9000);
+            return (
+              <button
+                key={num}
+                type="button"
+                className={`bet-button ${isSelected ? 'selected' : ''}`}
+                onClick={() => toggleLianmaNumber(num)}
+                disabled={isClosed}
+                style={{ padding: '10px 14px' }}
+              >
+                <img
+                  className="lhc-ball"
+                  src={lhcBallSrc(num)}
+                  alt={num.toString().padStart(2, '0')}
+                  style={{ width: '28px', height: '28px' }}
+                />
+                <span className="bet-button-odds" style={{ marginLeft: 'auto', fontWeight: '500' }}>
+                  {odds}
+                </span>
+                {renderCheckmark(isSelected)}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   // --------- LHC: 生肖/尾数/头数 卡片玩法 (label + odds 头 + 波色号码) ----------
   // Each item = { label, betName, odds, nums }. Win logic lives in settlement.
   const renderLhcCardList = ({ tabId, betType, positionName, items }) => {
+    const hasHelp = ['texiao', 'zhengxiao', 'yixiao', 'yixiao-no', 'weishu', 'weishu-no', 'tetoushu', 'teweishu', 'banbo', 'wuxing'].includes(tabId);
     return (
       <div className="play-area">
+        {hasHelp && renderPlayHelpBar()}
+        {hasHelp && renderPlayHelpModal()}
         {items.map(({ label, betName, odds: rawOdds, nums }) => {
           const betId = `${betType}-${betName}`;
           const isSelected = isBetSelected(betId);
@@ -2000,9 +2903,12 @@ export default function PlayArea({
     LHC_ZODIACS.map((z) => ({ label: z, betName: z, odds: oddsFn(z), nums: LHC_TEXIAO_NUMBERS[z] }));
 
   // --------- LHC: 总肖 tab (当期不同生肖总数 2-7 / 单 / 双) ----------
-  const renderLhcZongxiao = () => (
-    <div className="play-area">
-      <div className="betting-grid">
+  const renderLhcZongxiao = () => {
+    return (
+      <div className="play-area">
+        {renderPlayHelpBar()}
+        {renderPlayHelpModal()}
+        <div className="betting-grid">
         {LHC_ZONGXIAO.map(({ label, betName, odds: rawOdds }) => {
           const betId = `lhc-zongxiao-${betName}`;
           const isSelected = isBetSelected(betId);
@@ -2034,7 +2940,8 @@ export default function PlayArea({
         })}
       </div>
     </div>
-  );
+    );
+  };
 
   // Placeholder for LHC play types not yet implemented.
   const renderLhcPlaceholder = (name) => (
@@ -2080,6 +2987,8 @@ export default function PlayArea({
         return renderLhcQisebo();
       case 'hexiao':
         return renderLhcHexiao();
+      case 'lianma':
+        return renderLhcLianma();
       default: {
         const tab = [].find((t) => t.id === activeTab);
         return renderLhcPlaceholder(tab ? tab.name : '该');

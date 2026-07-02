@@ -589,6 +589,7 @@ export const LHC_SIDEBAR_TABS = [
   { id: 'zongxiao', name: '总肖' },
   { id: 'qisebo', name: '七色波' },
   { id: 'hexiao', name: '合肖' },
+  { id: 'lianma', name: '连码' },
 ];
 
 // 盘口 (market plate) A~D for 六合彩. Plays are identical across 盘口; only the
