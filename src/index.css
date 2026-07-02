@@ -269,7 +269,6 @@
 [data-theme^="midnight-"] .result-modal-content,
 [data-theme^="midnight-"] .history-picker,
 [data-theme^="midnight-"] .history-picker:disabled,
-[data-theme^="midnight-"] .play-help-btn,
 [data-theme^="midnight-"] .play-help-modal,
 [data-theme^="midnight-"] .history-dropdown-menu,
 [data-theme^="midnight-"] .history-issue-input,
@@ -4508,22 +4507,21 @@ img.lhc-ball {
 /* 玩法说明 (play rules) — button above the play content + modal */
 .play-help-bar {
   display: flex;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 .play-help-btn {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: #ffffff;
-  border: 1px solid #bfdbfe;
-  color: var(--primary-blue-hover);
+  background: none;
+  border: none;
+  color: var(--primary-blue);
   font-size: 13px;
-  padding: 5px 10px;
-  border-radius: 6px;
+  padding: 2px 0;
   cursor: pointer;
 }
 .play-help-btn:active {
-  background: #eff6ff;
+  opacity: 0.7;
 }
 
 .play-help-overlay {
