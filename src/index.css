@@ -451,6 +451,11 @@
   background: var(--mn-surface-2);
 }
 
+/* Midnight: open accordion (抽屉) header underline → dark border */
+[data-theme^="midnight-"] .accordion-header.open {
+  border-bottom-color: var(--mn-border);
+}
+
 /* Midnight: left game-category icons → masked tint (deep unselected, light selected) */
 [data-theme^="midnight-"] .drawer-sidebar-tab .tab-icon {
   display: none;
