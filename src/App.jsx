@@ -41,6 +41,25 @@ const SKIN_CODE_MAP = {
 };
 const VALID_THEMES = ['light-blue', 'deep-blue', 'midnight-blue', 'midnight-purple'];
 
+// roomid -> 内部游戏 id。父项目可用 /?roomid=1062010 直接打开对应游戏投注页。
+const ROOM_ID_MAP = {
+  '1062010': 'pk10_1m',   // 一分极速赛车
+  '1062020': 'pk10_5m',   // 五分极速赛车
+  '1062030': 'pk10_10m',  // 十分极速赛车
+  '1070110': 'ap_lhc_1m', // 一分澳门六合彩
+  '1070120': 'ap_lhc_5m', // 五分澳门六合彩
+  '1070130': 'ap_lhc_10m',// 十分澳门六合彩
+  '601010': 'ffc_1m',     // 一分分分彩
+  '601020': 'ffc_5m',     // 五分分分彩
+  '601030': 'ffc_10m',    // 十分分分彩
+  '701010': 'k3_1m',      // 一分快三
+  '701020': 'k3_5m',      // 五分快三
+  '701030': 'k3_10m',     // 十分快三
+  '1069010': 'xy28_1m',   // 一分幸运28
+  '1069020': 'xy28_5m',   // 五分幸运28
+  '1069030': 'xy28_10m',  // 十分幸运28
+};
+
 const getEmbedParams = () => {
   try {
     const p = new URLSearchParams(window.location.search);
@@ -48,9 +67,10 @@ const getEmbedParams = () => {
     const embedded = embedRaw === '1' || embedRaw === 'true' || embedRaw === 'yes';
     const skinRaw = (p.get('skin') || '').toLowerCase();
     const skin = SKIN_CODE_MAP[skinRaw] || (VALID_THEMES.includes(skinRaw) ? skinRaw : null);
-    return { embedded, skin };
+    const gameId = ROOM_ID_MAP[(p.get('roomid') || '').trim()] || null;
+    return { embedded, skin, gameId };
   } catch {
-    return { embedded: false, skin: null };
+    return { embedded: false, skin: null, gameId: null };
   }
 };
 
@@ -216,7 +236,8 @@ export default function App() {
     return saved ? parseInt(saved) : 110000;
   });
 
-  const [activeGameId, setActiveGameId] = useState('pk10_1m');
+  // roomid URL param picks the entry game (used when embedded in a parent site).
+  const [activeGameId, setActiveGameId] = useState(EMBED.gameId || 'pk10_1m');
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   // 六合彩 盘口 (A~D): scales all LHC odds. The play content is identical.
   const [lhcPankou, setLhcPankou] = useState('A');
@@ -416,7 +437,11 @@ export default function App() {
     setLang(nextLang);
     window.location.reload();
   };
-  const [activeTab, setActiveTab] = useState('shortcut'); // Default to shortcut tab
+  // 快捷 tab only exists for PK10; other kinds start on 长龙. Match the entry game
+  // so a roomid that opens e.g. 六合彩 lands on a valid tab.
+  const [activeTab, setActiveTab] = useState(
+    (EMBED.gameId || 'pk10_1m').startsWith('pk10') ? 'shortcut' : 'long-dragon'
+  );
   const [selectedShortcutPositions, setSelectedShortcutPositions] = useState([]);
   const [selectedShortcutOptions, setSelectedShortcutOptions] = useState([]);
   const [nonShortcutSelectedBets, setNonShortcutSelectedBets] = useState([]);
