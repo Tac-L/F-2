@@ -132,11 +132,11 @@ export default function Footer({
       {isEditModalOpen && (
         <div className="modal-overlay">
           <form className="modal-content" onSubmit={handleSaveChips}>
-            <div className="modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', position: 'relative' }}>
-              <div className="modal-title" style={{ margin: 0, flex: 1, textAlign: 'center' }}>自定义快选金额</div>
-              <button 
-                type="button" 
-                className="confirm-modal-close" 
+            <div className="modal-header">
+              <div className="modal-title">自定义快选金额</div>
+              <button
+                type="button"
+                className="confirm-modal-close"
                 onClick={() => setIsEditModalOpen(false)}
               >
                 &times;

@@ -1296,14 +1296,23 @@ img.pk10-ball {
   animation: scaleIn 0.2s ease-out;
 }
 
+/* Full-width title band, flush to the modal's top & side edges. */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: -16px -16px 16px;
+  padding: 13px 16px;
+  background-color: var(--modal-title-bg);
+  border-radius: 12px 12px 0 0;
+  position: relative;
+}
+
 .modal-title {
+  flex: 1;
   font-size: 15px;
   font-weight: bold;
-  margin: -16px -16px 12px;
-  padding: 12px 16px;
-  background-color: var(--modal-title-bg);
   color: var(--modal-title-text);
-  border-radius: 12px 12px 0 0;
   text-align: center;
 }
 
