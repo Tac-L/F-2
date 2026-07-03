@@ -27,6 +27,36 @@ import K3Animation from './components/K3Animation';
 import Xy28Animation from './components/Xy28Animation';
 import LhcAnimation from './components/LhcAnimation';
 
+// ===== 嵌入参数 (供父项目通过 URL query 传入) =====
+// 用法示例: /?embed=1&skin=3
+//   embed = 1 / true / yes  -> 嵌入模式: 跳过登录页, 隐藏「退出登录」按钮
+//   skin  = 1 / 2 / 3 / 4    -> 进入时的皮肤 (也接受主题 id 本身)
+//     1 = light-blue(浅蓝)  2 = deep-blue(深蓝)
+//     3 = midnight-blue(午夜蓝)  4 = midnight-purple(午夜紫)
+const SKIN_CODE_MAP = {
+  '1': 'light-blue',
+  '2': 'deep-blue',
+  '3': 'midnight-blue',
+  '4': 'midnight-purple',
+};
+const VALID_THEMES = ['light-blue', 'deep-blue', 'midnight-blue', 'midnight-purple'];
+
+const getEmbedParams = () => {
+  try {
+    const p = new URLSearchParams(window.location.search);
+    const embedRaw = (p.get('embed') || '').toLowerCase();
+    const embedded = embedRaw === '1' || embedRaw === 'true' || embedRaw === 'yes';
+    const skinRaw = (p.get('skin') || '').toLowerCase();
+    const skin = SKIN_CODE_MAP[skinRaw] || (VALID_THEMES.includes(skinRaw) ? skinRaw : null);
+    return { embedded, skin };
+  } catch {
+    return { embedded: false, skin: null };
+  }
+};
+
+// Parsed once at load; the query string doesn't change during a session.
+const EMBED = getEmbedParams();
+
 // Helper to generate a random PK10 draw (permutation of 1-10)
 const generateRandomDraw = () => {
   const nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -345,7 +375,8 @@ export default function App() {
   const [isRightDrawerOpen, setIsRightDrawerOpen] = useState(false);
   const [isHistoryDropdownOpen, setIsHistoryDropdownOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState('betting'); // 'betting', 'unsettled', 'settled', 'history', 'settings'
-  const [loggedIn, setLoggedIn] = useState(false);
+  // Embedded mode enters straight into the betting page (no login screen).
+  const [loggedIn, setLoggedIn] = useState(EMBED.embedded);
 
   const handleLogout = () => {
     setIsRightDrawerOpen(false);
@@ -354,6 +385,8 @@ export default function App() {
     setLoggedIn(false);
   };
   const [theme, setTheme] = useState(() => {
+    // URL skin param wins on entry (used when embedded in a parent site).
+    if (EMBED.skin) return EMBED.skin;
     const saved = typeof localStorage !== 'undefined' ? localStorage.getItem('appTheme') : null;
     return saved === 'light-blue' || saved === 'deep-blue' || saved === 'midnight-blue' || saved === 'midnight-purple' ? saved : 'deep-blue';
   });
@@ -2026,6 +2059,7 @@ export default function App() {
           lang={lang}
           onChangeLang={handleChangeLang}
           onLogout={handleLogout}
+          hideLogout={EMBED.embedded}
         />
       )}
 

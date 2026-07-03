@@ -67,7 +67,7 @@ const CheckIcon = () => (
   </svg>
 );
 
-export default function SettingsPage({ onBack, onOpenMenu, theme, onChangeTheme, lang, onChangeLang, onLogout }) {
+export default function SettingsPage({ onBack, onOpenMenu, theme, onChangeTheme, lang, onChangeLang, onLogout, hideLogout }) {
   const [subPage, setSubPage] = React.useState('menu'); // 'menu' | 'skin' | 'password' | 'language'
 
   const title =
@@ -153,11 +153,14 @@ export default function SettingsPage({ onBack, onOpenMenu, theme, onChangeTheme,
               ))}
             </nav>
 
-            <div className="settings-logout-wrap">
-              <button type="button" className="settings-logout-btn" onClick={onLogout}>
-                退出登录
-              </button>
-            </div>
+            {/* 嵌入模式下隐藏「退出登录」 */}
+            {!hideLogout && (
+              <div className="settings-logout-wrap">
+                <button type="button" className="settings-logout-btn" onClick={onLogout}>
+                  退出登录
+                </button>
+              </div>
+            )}
           </div>
         )}
 
