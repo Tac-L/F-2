@@ -2529,14 +2529,16 @@ export default function PlayArea({
           ))}
         </div>
 
-        {/* 快捷投注 抽屉: 分类快选 + 快捷输入 */}
-        {renderLhcSection('lhc-quick', '快捷投注', renderLhcQuickContent('tema'))}
+        <div className="accordion-list">
+          {/* 快捷投注 抽屉: 分类快选 + 快捷输入 */}
+          {renderLhcSection('lhc-quick', '快捷投注', renderLhcQuickContent('tema'))}
 
-        {/* 数字 抽屉: 特码 01-49 点位 */}
-        {renderLhcSection('lhc-num', '数字', renderLhcNumberGrid('tema'))}
+          {/* 数字 抽屉: 特码 01-49 点位 */}
+          {renderLhcSection('lhc-num', '数字', renderLhcNumberGrid('tema'))}
 
-        {/* 两面 抽屉 */}
-        {renderLhcSection('lhc-two', '两面', renderLhcTwoSidedGrid())}
+          {/* 两面 抽屉 */}
+          {renderLhcSection('lhc-two', '两面', renderLhcTwoSidedGrid())}
+        </div>
       </div>
     );
   };
@@ -2547,14 +2549,16 @@ export default function PlayArea({
       <div className="play-area">
         {renderPlayHelpBar()}
         {renderPlayHelpModal()}
-        {/* 快捷投注 抽屉 */}
-        {renderLhcSection('lhc-zm-quick', '快捷投注', renderLhcQuickContent('zhengma'))}
+        <div className="accordion-list">
+          {/* 快捷投注 抽屉 */}
+          {renderLhcSection('lhc-zm-quick', '快捷投注', renderLhcQuickContent('zhengma'))}
 
-        {/* 数字 抽屉: 正码 01-49 点位 (赔率 7.46) */}
-        {renderLhcSection('lhc-zm-num', '数字', renderLhcNumberGrid('zhengma'))}
+          {/* 数字 抽屉: 正码 01-49 点位 (赔率 7.46) */}
+          {renderLhcSection('lhc-zm-num', '数字', renderLhcNumberGrid('zhengma'))}
 
-        {/* 两面 抽屉: 总和大小/单双 · 总尾大小 · 龙虎 */}
-        {renderLhcSection('lhc-zm-two', '两面', renderLhcZhengmaTwoSidedGrid())}
+          {/* 两面 抽屉: 总和大小/单双 · 总尾大小 · 龙虎 */}
+          {renderLhcSection('lhc-zm-two', '两面', renderLhcZhengmaTwoSidedGrid())}
+        </div>
       </div>
     );
   };
@@ -2579,14 +2583,16 @@ export default function PlayArea({
           ))}
         </div>
 
-        {/* 快捷投注 抽屉 */}
-        {renderLhcSection('lhc-zt-quick', '快捷投注', renderLhcQuickContent('zhengte'))}
+        <div className="accordion-list">
+          {/* 快捷投注 抽屉 */}
+          {renderLhcSection('lhc-zt-quick', '快捷投注', renderLhcQuickContent('zhengte'))}
 
-        {/* 数字 抽屉: 所选位置 01-49 点位 (赔率 47.3) */}
-        {renderLhcSection('lhc-zt-num', '数字', renderLhcNumberGrid('zhengte'))}
+          {/* 数字 抽屉: 所选位置 01-49 点位 (赔率 47.3) */}
+          {renderLhcSection('lhc-zt-num', '数字', renderLhcNumberGrid('zhengte'))}
 
-        {/* 两面 抽屉 */}
-        {renderLhcSection('lhc-zt-two', '两面', renderLhcZhengteTwoSidedGrid())}
+          {/* 两面 抽屉 */}
+          {renderLhcSection('lhc-zt-two', '两面', renderLhcZhengteTwoSidedGrid())}
+        </div>
       </div>
     );
   };
