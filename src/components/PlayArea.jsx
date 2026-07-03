@@ -55,7 +55,9 @@ export default function PlayArea({
   setSelectedShortcutPositions,
   selectedShortcutOptions,
   gameKind = 'pk10',
-  pankou = 'A'
+  pankou = 'A',
+  onSetQuickBets,
+  clearNonce,
 }) {
   // 六合彩 盘口 (A~D) scales every LHC odds. adj() rounds to 2 decimals.
   const pankouFactor = gameKind === 'lhc' ? lhcPankouFactor(pankou) : 1;
@@ -857,6 +859,14 @@ export default function PlayArea({
   const [temaPanel, setTemaPanel] = useState('A');
   const [zhengtePos, setZhengtePos] = useState(0); // 正特 开奖位置 0..5 (特一..特六)
   const [quickText, setQuickText] = useState('');
+
+  // 重置 / 投注 / 封盘 / 切换游戏 clears all selections upstream; mirror that by
+  // clearing the 快捷投注 textarea (skips the initial mount at nonce 0).
+  const didMountClear = useRef(false);
+  useEffect(() => {
+    if (didMountClear.current) setQuickText('');
+    else didMountClear.current = true;
+  }, [clearNonce]);
   // 合肖: chosen 类别 (生肖个数) + currently selected 生肖.
   const [hexiaoCat, setHexiaoCat] = useState(2);
   const [hexiaoZodiacs, setHexiaoZodiacs] = useState([]);
@@ -2230,6 +2240,7 @@ export default function PlayArea({
   // Select every number in a 快捷投注 category. Supports multi-selection of categories as unions.
   const handleQuickCategory = (market, cat) => {
     if (isClosed) return;
+    leaveQuickMode(market);
     const catKey = market === 'zhengte' ? `zhengte-${zhengtePos}` : market;
     
     const prevCats = selectedLhcCats[catKey] || [];
@@ -2277,18 +2288,37 @@ export default function PlayArea({
     });
   };
 
-  // Apply the 快捷投注 textarea: parse "号码=金额" tokens (e.g. "1=10 2=20"), select
-  // each referenced 号码. The per-号码 amount is set later in the confirm step.
-  const applyQuickText = (market) => {
-    if (isClosed) return;
-    const tokens = quickText.split(/[\s,，;；]+/).filter(Boolean);
+  // Parse the 快捷投注 textarea into bets. Accepts "号码=金额" tokens separated by
+  // spaces/commas/semicolons (e.g. "1=10 2=20"). Each valid 号码 carries its own
+  // amount so the 购物单 shows the exact number + stake. Later duplicates win.
+  const parseQuickBets = (market, text) => {
+    const tokens = text.split(/[\s,，;；]+/).filter(Boolean);
+    const byNum = new Map();
     tokens.forEach((tok) => {
-      const num = parseInt(tok.split('=')[0], 10);
-      if (num >= 1 && num <= 49) {
-        const bet = lhcNumberBet(market, num);
-        if (!isBetSelected(bet.id)) onToggleBet(bet);
-      }
+      const m = tok.match(/^(\d{1,2})=(\d+)$/);
+      if (!m) return;
+      const num = parseInt(m[1], 10);
+      const amount = parseInt(m[2], 10);
+      if (num < 1 || num > 49 || amount <= 0) return;
+      byNum.set(num, { ...lhcNumberBet(market, num), amount, fromQuick: true });
     });
+    return [...byNum.values()];
+  };
+
+  // Live 快捷投注 input: parse on every keystroke and make the parsed numbers the
+  // sole selection for this market (mutually exclusive with manual number picks).
+  const handleQuickTextChange = (market, text) => {
+    setQuickText(text);
+    if (onSetQuickBets) onSetQuickBets(market, parseQuickBets(market, text));
+  };
+
+  // Manual number/category pick: if a 快捷投注 draft is active, abandon it (clear
+  // the textarea + its bets) so the two input modes never mix.
+  const leaveQuickMode = (market) => {
+    if (quickText) {
+      setQuickText('');
+      if (onSetQuickBets) onSetQuickBets(market, []);
+    }
   };
 
   // The number-points grid (01-49) — colored 波色 ring + odds, selectable.
@@ -2302,7 +2332,7 @@ export default function PlayArea({
             key={num}
             type="button"
             className={`bet-button lhc-num-btn ${isSelected ? 'selected' : ''}`}
-            onClick={() => onToggleBet(betObj)}
+            onClick={() => { leaveQuickMode(market); onToggleBet(betObj); }}
             disabled={isClosed}
           >
             <img className="lhc-ball" src={lhcBallSrc(num)} alt={num.toString().padStart(2, '0')} />
@@ -2348,17 +2378,10 @@ export default function PlayArea({
             className="lhc-quick-textarea"
             placeholder="快捷投注：按号码=金额的格式，多个用空格分隔。如1=10 2=20"
             value={quickText}
-            onChange={(e) => setQuickText(e.target.value)}
+            onChange={(e) => handleQuickTextChange(market, e.target.value)}
             rows={3}
-          />
-          <button
-            type="button"
-            className="lhc-quick-apply"
-            onClick={() => applyQuickText(market)}
             disabled={isClosed}
-          >
-            选号
-          </button>
+          />
         </div>
       </>
     );

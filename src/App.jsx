@@ -387,6 +387,9 @@ export default function App() {
   const [selectedShortcutPositions, setSelectedShortcutPositions] = useState([]);
   const [selectedShortcutOptions, setSelectedShortcutOptions] = useState([]);
   const [nonShortcutSelectedBets, setNonShortcutSelectedBets] = useState([]);
+  // Bumped whenever selections are cleared (重置 / 投注 / 封盘 / 切换游戏) so children
+  // (e.g. PlayArea's 快捷投注 textarea) can reset their own local input state.
+  const [clearNonce, setClearNonce] = useState(0);
   const [placedBets, setPlacedBets] = useState([]);
   const [settledBets, setSettledBets] = useState([]);
   
@@ -428,6 +431,13 @@ export default function App() {
     }
     return nonShortcutSelectedBets.filter(b => b.tabId === activeTab);
   }, [nonShortcutSelectedBets, shortcutBets, activeTab]);
+
+  // Footer 下注金额 total: 快捷投注 bets carry their own amount; everything else
+  // uses the shared 投注金额 from the footer input.
+  const selectedBetsTotal = React.useMemo(() => {
+    const amt = parseInt(betAmount) || 0;
+    return selectedBets.reduce((sum, b) => sum + (b.amount != null ? b.amount : amt), 0);
+  }, [selectedBets, betAmount]);
 
   // Confirmation modal states
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -517,6 +527,17 @@ export default function App() {
   const clearSelections = () => {
     setNonShortcutSelectedBets([]);
     setSelectedShortcutOptions([]);
+    setClearNonce(n => n + 1);
+  };
+
+  // Replace all bets belonging to a single tab (used by 快捷投注 live input, which
+  // owns its tab's selection and is mutually exclusive with manual number picks).
+  const handleSetQuickBets = (tabId, bets) => {
+    if (isClosed) return;
+    setNonShortcutSelectedBets(prev => [
+      ...prev.filter(b => b.tabId !== tabId),
+      ...bets,
+    ]);
   };
 
   // Reset selection when closed period starts
@@ -983,9 +1004,11 @@ export default function App() {
   const handleOpenConfirmModal = () => {
     if (selectedBets.length === 0) return;
     const initialAmount = parseInt(betAmount) || 10;
+    // 快捷投注 bets carry their own per-号码 amount; everything else uses the
+    // shared 投注金额 from the footer.
     const initialConfirmBets = selectedBets.map(bet => ({
       ...bet,
-      amount: initialAmount
+      amount: bet.amount != null ? bet.amount : initialAmount
     }));
     setConfirmBets(initialConfirmBets);
     setBulkAmount(initialAmount.toString());
@@ -1825,6 +1848,8 @@ export default function App() {
           selectedShortcutOptions={selectedShortcutOptions}
           gameKind={gameKind}
           pankou={lhcPankou}
+          onSetQuickBets={handleSetQuickBets}
+          clearNonce={clearNonce}
         />
       </div>
 
@@ -1833,6 +1858,7 @@ export default function App() {
         balance={balance}
         onRefreshBalance={handleRefreshBalance}
         selectedBetsCount={selectedBets.length}
+        selectedBetsTotal={selectedBetsTotal}
         betAmount={betAmount}
         setBetAmount={setBetAmount}
         onReset={handleReset}

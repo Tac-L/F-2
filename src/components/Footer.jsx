@@ -4,6 +4,7 @@ export default function Footer({
   balance,
   onRefreshBalance,
   selectedBetsCount,
+  selectedBetsTotal,
   betAmount,
   setBetAmount,
   onReset,
@@ -15,8 +16,11 @@ export default function Footer({
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [tempChips, setTempChips] = useState(() => chipValues.map(String));
 
-  // Calculate total bet amount
-  const totalBetAmount = selectedBetsCount * (parseInt(betAmount) || 0);
+  // Total stake for the current selection. Prefer the parent-computed total
+  // (which honours 快捷投注 per-号码 amounts); fall back to count × amount.
+  const totalBetAmount = selectedBetsTotal != null
+    ? selectedBetsTotal
+    : selectedBetsCount * (parseInt(betAmount) || 0);
 
   // Open modal and initialize values
   const handleOpenEdit = () => {
