@@ -1121,6 +1121,14 @@ img.pk10-ball {
   z-index: 10;
 }
 
+/* The footer is a flex item, so z-index makes it a stacking context that would
+   otherwise trap the chip-editor overlay below the header pickers (e.g. 六合彩
+   A盘, z-index 70). Lift it above them while the modal is open so the overlay
+   masks the whole screen. */
+.app-footer.modal-open {
+  z-index: 900;
+}
+
 .footer-info-row {
   display: flex;
   justify-content: space-between;

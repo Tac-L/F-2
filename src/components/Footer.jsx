@@ -47,7 +47,7 @@ export default function Footer({
   };
 
   return (
-    <footer className="app-footer">
+    <footer className={`app-footer${isEditModalOpen ? ' modal-open' : ''}`}>
       {/* Row 1: Balance and Current Selections Summary */}
       <div className="footer-info-row">
         <div className="balance-box">
