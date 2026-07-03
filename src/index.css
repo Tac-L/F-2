@@ -1041,6 +1041,16 @@ img.pk10-ball {
   border-color: #cbd5e1;
 }
 
+/* Don't leave a focus ring after tapping (deselecting must return to the plain
+   button look); keep a ring only for keyboard navigation. */
+.shortcut-pos-tab:focus {
+  outline: none;
+}
+.shortcut-pos-tab:focus-visible {
+  outline: 2px solid var(--primary-blue);
+  outline-offset: 1px;
+}
+
 .shortcut-pos-tab.selected {
   border: 1.5px solid var(--orange-selected); /* Orange border as shown in user screenshot */
   background-color: var(--orange-selected-bg); /* Cream/light orange bg */
