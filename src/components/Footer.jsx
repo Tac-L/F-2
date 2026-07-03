@@ -145,16 +145,20 @@ export default function Footer({
             <div className="modal-inputs">
               {tempChips.map((val, idx) => (
                 <div key={idx} className="modal-input-group">
-                  <label>{idx + 1}</label>
-                  <input
-                    type="number"
-                    value={val}
-                    onChange={(e) => {
-                      const newChips = [...tempChips];
-                      newChips[idx] = e.target.value;
-                      setTempChips(newChips);
-                    }}
-                  />
+                  <span className="chip-index">{idx + 1}</span>
+                  <div className="chip-input-wrap">
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      value={val}
+                      onChange={(e) => {
+                        const newChips = [...tempChips];
+                        newChips[idx] = e.target.value;
+                        setTempChips(newChips);
+                      }}
+                    />
+                    <span className="chip-input-suffix">元</span>
+                  </div>
                 </div>
               ))}
             </div>

@@ -1310,48 +1310,85 @@ img.pk10-ball {
 .modal-inputs {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: 10px;
+  margin-bottom: 18px;
 }
 
 .modal-input-group {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   font-size: 13px;
 }
 
-.modal-input-group label {
-  width: 50px;
-  color: var(--text-muted);
+/* Circular index badge — echoes the footer chip aesthetic. */
+.chip-index {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary-blue);
+  background-color: rgba(var(--primary-blue-rgb), 0.12);
+}
+
+.chip-input-wrap {
+  position: relative;
+  flex: 1;
 }
 
 .modal-input-group input {
-  flex: 1;
-  height: 30px;
-  border: 1px solid #cbd5e1;
-  border-radius: 4px;
-  padding: 0 8px;
+  width: 100%;
+  height: 40px;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 0 34px 0 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-dark);
+  background-color: transparent;
   outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 .modal-input-group input:focus {
   border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(var(--primary-blue-rgb), 0.15);
+}
+
+/* 元 suffix inside the field */
+.chip-input-suffix {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: var(--text-muted);
+  pointer-events: none;
 }
 
 .modal-actions {
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 
 .modal-btn {
   flex: 1;
-  height: 34px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
+  height: 42px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
   border: none;
+  transition: background-color 0.15s, opacity 0.15s;
+}
+
+.modal-btn:active {
+  opacity: 0.85;
 }
 
 .modal-btn-cancel {
@@ -1362,6 +1399,10 @@ img.pk10-ball {
 .modal-btn-save {
   background-color: var(--primary-blue);
   color: #ffffff;
+}
+
+.modal-btn-save:hover {
+  background-color: var(--primary-blue-hover);
 }
 
 /* Toast Notifications */
