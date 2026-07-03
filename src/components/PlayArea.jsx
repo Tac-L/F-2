@@ -126,7 +126,9 @@ export default function PlayArea({
   }, [helpOpen, activeTab]);
 
   // A small "玩法说明 ?" button shown above the play content.
-  const renderPlayHelpBar = () => (
+  // onQuickSelect (combination games only) adds a 快选 button that auto-picks the
+  // number of 号码 needed for exactly one 注.
+  const renderPlayHelpBar = (onQuickSelect) => (
     <div className="play-help-bar">
       <button type="button" className="play-help-btn" onClick={() => setHelpOpen(true)}>
         玩法说明
@@ -136,6 +138,19 @@ export default function PlayArea({
           <line x1="12" y1="17" x2="12.01" y2="17" />
         </svg>
       </button>
+      {onQuickSelect && (
+        <button
+          type="button"
+          className="play-quick-btn"
+          onClick={onQuickSelect}
+          disabled={isClosed}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+          </svg>
+          快选
+        </button>
+      )}
     </div>
   );
 
@@ -2845,6 +2860,16 @@ export default function PlayArea({
     );
   };
 
+  // Pick `n` distinct 号码 (1-49) at random — used by 快选 for combination games.
+  const pickRandomNumbers = (n) => {
+    const pool = Array.from({ length: 49 }, (_, i) => i + 1);
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    return pool.slice(0, n).sort((a, b) => a - b);
+  };
+
   // --------- LHC: 连码 (选类别 subTab, 再选号码, 自动组合成 C(M, N) 注) ----------
   const buildLianmaBet = (combo, subTabId) => {
     const nums = [...combo].sort((a, b) => a - b);
@@ -2888,6 +2913,14 @@ export default function PlayArea({
     syncLianma(lianmaNumbers, subTabId);
   };
 
+  // 快选: randomly pick exactly the 号码 count for one 注 of the current sub-tab.
+  const quickSelectLianma = () => {
+    if (isClosed) return;
+    const picks = pickRandomNumbers(LIANMA_REQUIRED_COUNTS[lianmaSubTab]);
+    setLianmaNumbers(picks);
+    syncLianma(picks, lianmaSubTab);
+  };
+
   const renderLhcLianma = () => {
     const requiredCount = LIANMA_REQUIRED_COUNTS[lianmaSubTab];
     const M = lianmaNumbers.length;
@@ -2898,7 +2931,7 @@ export default function PlayArea({
 
     return (
       <div className="play-area">
-        {renderPlayHelpBar()}
+        {renderPlayHelpBar(quickSelectLianma)}
         {renderPlayHelpModal()}
 
         {/* Collapsible Sub-tab Selection Drawer */}
@@ -3008,6 +3041,14 @@ export default function PlayArea({
     syncBuzhong(buzhongNumbers, subTabId);
   };
 
+  // 快选: randomly pick exactly the 号码 count for one 注 of the current sub-tab.
+  const quickSelectBuzhong = () => {
+    if (isClosed) return;
+    const picks = pickRandomNumbers(BUZHONG_REQUIRED_COUNTS[buzhongSubTab]);
+    setBuzhongNumbers(picks);
+    syncBuzhong(picks, buzhongSubTab);
+  };
+
   const renderLhcBuzhong = () => {
     const requiredCount = BUZHONG_REQUIRED_COUNTS[buzhongSubTab];
     const M = buzhongNumbers.length;
@@ -3016,7 +3057,7 @@ export default function PlayArea({
 
     return (
       <div className="play-area">
-        {renderPlayHelpBar()}
+        {renderPlayHelpBar(quickSelectBuzhong)}
         {renderPlayHelpModal()}
 
         {/* Collapsible Sub-tab Selection Drawer */}

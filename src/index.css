@@ -4614,7 +4614,30 @@ img.lhc-ball {
 /* 玩法说明 (play rules) — button above the play content + modal */
 .play-help-bar {
   display: flex;
+  align-items: center;
   margin-bottom: 4px;
+}
+/* 快选 (combination games): pinned to the right of the 玩法说明 bar */
+.play-quick-btn {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border: 1px solid var(--primary-blue);
+  border-radius: 14px;
+  background: none;
+  color: var(--primary-blue);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.play-quick-btn:active {
+  background: rgba(var(--primary-blue-rgb), 0.1);
+}
+.play-quick-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 .play-help-btn {
   display: inline-flex;
