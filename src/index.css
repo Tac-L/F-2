@@ -5046,7 +5046,6 @@ img.lhc-ball {
   cursor: pointer;
   transition: all 0.15s;
 }
-.lhc-quick-cat:hover { background: #f8fafc; }
 .lhc-quick-cat:active { background: #eef2f7; }
 .lhc-quick-cat.active {
   background: var(--primary-blue);
