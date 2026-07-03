@@ -45,6 +45,36 @@ const LIANMA_ODDS = {
   'te-chuan': 150,
 };
 
+// 不中 (not-hit) — combination play like 连码: pick N numbers as one combo; win
+// only when NONE of the drawn numbers appear in the chosen set. N ranges 4..12.
+const BUZHONG_SUB_TABS = [
+  { id: 'si-bu-zhong', name: '四不中', count: 4 },
+  { id: 'wu-bu-zhong', name: '五不中', count: 5 },
+  { id: 'liu-bu-zhong', name: '六不中', count: 6 },
+  { id: 'qi-bu-zhong', name: '七不中', count: 7 },
+  { id: 'ba-bu-zhong', name: '八不中', count: 8 },
+  { id: 'jiu-bu-zhong', name: '九不中', count: 9 },
+  { id: 'shi-bu-zhong', name: '十不中', count: 10 },
+  { id: 'shiyi-bu-zhong', name: '十一不中', count: 11 },
+  { id: 'shier-bu-zhong', name: '十二不中', count: 12 },
+];
+
+const BUZHONG_REQUIRED_COUNTS = Object.fromEntries(
+  BUZHONG_SUB_TABS.map((t) => [t.id, t.count])
+);
+
+const BUZHONG_ODDS = {
+  'si-bu-zhong': 1.19,
+  'wu-bu-zhong': 1.41,
+  'liu-bu-zhong': 1.68,
+  'qi-bu-zhong': 2.0,
+  'ba-bu-zhong': 2.4,
+  'jiu-bu-zhong': 2.9,
+  'shi-bu-zhong': 3.51,
+  'shiyi-bu-zhong': 4.28,
+  'shier-bu-zhong': 5.25,
+};
+
 export default function PlayArea({
   activeTab,
   selectedBets,
@@ -87,6 +117,8 @@ export default function PlayArea({
         setLhcHelpTab('red');
       } else if (activeTab === 'lianma') {
         setLhcHelpTab('2');
+      } else if (activeTab === 'buzhong') {
+        setLhcHelpTab('4-8');
       } else {
         setLhcHelpTab('quick');
       }
@@ -822,6 +854,39 @@ export default function PlayArea({
             </div>
           )}
 
+          {gameKind === 'lhc' && activeTab === 'buzhong' && (
+            <div className="play-help-body">
+              <div className="play-help-tabs">
+                <button
+                  type="button"
+                  className={`play-help-tab ${lhcHelpTab === '4-8' ? 'active' : ''}`}
+                  onClick={() => setLhcHelpTab('4-8')}
+                >4~8不中</button>
+                <button
+                  type="button"
+                  className={`play-help-tab ${lhcHelpTab === '9-12' ? 'active' : ''}`}
+                  onClick={() => setLhcHelpTab('9-12')}
+                >9~12不中</button>
+              </div>
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <div style={{ fontWeight: 'normal', marginBottom: '12px' }}>
+                  每个号码都有自己的赔率，下注组合的总赔率，取该组合号码的最低赔率为总赔率。
+                </div>
+
+                <ul style={{ margin: 0, paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px', color: '#1e293b' }}>
+                  {(lhcHelpTab === '9-12'
+                    ? [['九', 9], ['十', 10], ['十一', 11], ['十二', 12]]
+                    : [['四', 4], ['五', 5], ['六', 6], ['七', 7], ['八', 8]]
+                  ).map(([cn, n]) => (
+                    <li key={n} style={{ listStyleType: 'disc' }}>
+                      <strong>{cn}不中：</strong>挑选{n}个号码为一投注组合进行下注。「当期号码」都没有在该下注组合中，即视为中奖；其余情形视为不中奖。
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+
         </div>
       </div>
     );
@@ -893,6 +958,19 @@ export default function PlayArea({
     if (prevLianmaCombo.current && !lianmaComboActive) setLianmaNumbers([]);
     prevLianmaCombo.current = lianmaComboActive;
   }, [lianmaComboActive]);
+
+  // 不中: chosen sub-tab + currently selected numbers (same structure as 连码)
+  const [buzhongSubTab, setBuzhongSubTab] = useState('si-bu-zhong');
+  const [buzhongNumbers, setBuzhongNumbers] = useState([]);
+  const [buzhongDrawerOpen, setBuzhongDrawerOpen] = useState(true);
+
+  // Clear the local 不中 selection once its combo bets leave selectedBets
+  const buzhongComboActive = selectedBets.some((b) => b.type === 'lhc-buzhong');
+  const prevBuzhongCombo = useRef(false);
+  useEffect(() => {
+    if (prevBuzhongCombo.current && !buzhongComboActive) setBuzhongNumbers([]);
+    prevBuzhongCombo.current = buzhongComboActive;
+  }, [buzhongComboActive]);
 
   // Blue side vs orange side for 两面 / 长龙 labels.
   const blueSide = (label) =>
@@ -2886,6 +2964,124 @@ export default function PlayArea({
     );
   };
 
+  // --------- LHC: 不中 (选 N不中 subTab, 再选号码, 自动组合成 C(M, N) 注) ----------
+  // Win when NONE of the combo's numbers appear in the draw. Mirrors 连码.
+  const buildBuzhongBet = (combo, subTabId) => {
+    const nums = [...combo].sort((a, b) => a - b);
+    const formattedNums = nums.map((n) => n.toString().padStart(2, '0'));
+    const subTabName = BUZHONG_SUB_TABS.find((t) => t.id === subTabId)?.name || '';
+    const odds = BUZHONG_ODDS[subTabId] || 1;
+    return {
+      id: `lhc-buzhong-${subTabId}-${nums.join('')}`,
+      tabId: 'buzhong',
+      positionId: 'buzhong',
+      positionName: `不中-${subTabName}`,
+      betName: formattedNums.join(','),
+      nums,
+      odds: adj(odds),
+      displayTitle: `不中-${subTabName}-${formattedNums.join(' ')}`,
+      type: 'lhc-buzhong',
+    };
+  };
+
+  const syncBuzhong = (selectedNums, subTabId) => {
+    selectedBets.forEach((b) => { if (b.type === 'lhc-buzhong') onToggleBet(b); });
+    const requiredCount = BUZHONG_REQUIRED_COUNTS[subTabId];
+    if (selectedNums.length >= requiredCount) {
+      combinations(selectedNums, requiredCount).forEach((combo) => {
+        onToggleBet(buildBuzhongBet(combo, subTabId));
+      });
+    }
+  };
+
+  const toggleBuzhongNumber = (num) => {
+    if (isClosed) return;
+    const next = buzhongNumbers.includes(num)
+      ? buzhongNumbers.filter((n) => n !== num)
+      : [...buzhongNumbers, num];
+    setBuzhongNumbers(next);
+    syncBuzhong(next, buzhongSubTab);
+  };
+
+  const changeBuzhongSubTab = (subTabId) => {
+    setBuzhongSubTab(subTabId);
+    syncBuzhong(buzhongNumbers, subTabId);
+  };
+
+  const renderLhcBuzhong = () => {
+    const requiredCount = BUZHONG_REQUIRED_COUNTS[buzhongSubTab];
+    const M = buzhongNumbers.length;
+    const noteCount = M >= requiredCount ? combinations(buzhongNumbers, requiredCount).length : 0;
+    const allNums = Array.from({ length: 49 }, (_, i) => i + 1);
+
+    return (
+      <div className="play-area">
+        {renderPlayHelpBar()}
+        {renderPlayHelpModal()}
+
+        {/* Collapsible Sub-tab Selection Drawer */}
+        <div className="subtab-drawer">
+          <div
+            className={`accordion-header ${buzhongDrawerOpen ? 'open' : ''}`}
+            onClick={() => setBuzhongDrawerOpen(!buzhongDrawerOpen)}
+          >
+            <span>{BUZHONG_SUB_TABS.find((t) => t.id === buzhongSubTab)?.name}</span>
+            <i className={`accordion-arrow ${buzhongDrawerOpen ? 'open' : ''}`} />
+          </div>
+          {buzhongDrawerOpen && (
+            <div className="accordion-content">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                {BUZHONG_SUB_TABS.map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    className={`lhc-pos-tab ${buzhongSubTab === t.id ? 'active' : ''}`}
+                    onClick={() => changeBuzhongSubTab(t.id)}
+                  >
+                    {t.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="lhc-hexiao-hint">
+          已选 {M} 号码（{BUZHONG_SUB_TABS.find((t) => t.id === buzhongSubTab)?.name}，共 {noteCount} 注）
+        </div>
+
+        {/* 2-column Grid of Numbers */}
+        <div className="betting-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+          {allNums.map((num) => {
+            const isSelected = buzhongNumbers.includes(num);
+            const odds = adj(BUZHONG_ODDS[buzhongSubTab] || 1);
+            return (
+              <button
+                key={num}
+                type="button"
+                className={`bet-button ${isSelected ? 'selected' : ''}`}
+                onClick={() => toggleBuzhongNumber(num)}
+                disabled={isClosed}
+                style={{ padding: '10px 14px' }}
+              >
+                <img
+                  className="lhc-ball"
+                  src={lhcBallSrc(num)}
+                  alt={num.toString().padStart(2, '0')}
+                  style={{ width: '28px', height: '28px' }}
+                />
+                <span className="bet-button-odds" style={{ marginLeft: 'auto', fontWeight: '500' }}>
+                  {odds}
+                </span>
+                {renderCheckmark(isSelected)}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   // --------- LHC: 生肖/尾数/头数 卡片玩法 (label + odds 头 + 波色号码) ----------
   // Each item = { label, betName, odds, nums }. Win logic lives in settlement.
   const renderLhcCardList = ({ tabId, betType, positionName, items }) => {
@@ -3024,6 +3220,8 @@ export default function PlayArea({
         return renderLhcHexiao();
       case 'lianma':
         return renderLhcLianma();
+      case 'buzhong':
+        return renderLhcBuzhong();
       default: {
         const tab = [].find((t) => t.id === activeTab);
         return renderLhcPlaceholder(tab ? tab.name : '该');

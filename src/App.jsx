@@ -791,6 +791,10 @@ export default function App() {
               const zodiacs = bet.zodiacs || (bet.betName ? bet.betName.split(',') : []);
               isWin = zodiacs.includes(z);
             }
+          } else if (bet.type === 'lhc-buzhong') {
+            // 不中: 组合内的号码全部未在当期开奖号码 (7 个) 中出现即中奖
+            const combo = bet.nums || [];
+            isWin = drawNumbers.every(n => !combo.includes(n));
           }
         } else if (bet.positionId === 'sum') {
           // Sum Bets
