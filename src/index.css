@@ -379,12 +379,14 @@
   border-color: var(--mn-border);
   color: var(--mn-text-muted);
 }
-[data-theme^="midnight-"] .bet-amount-input {
+[data-theme^="midnight-"] .bet-amount-input,
+[data-theme^="midnight-"] .lhc-quick-textarea {
   background-color: var(--mn-surface);
   border-color: var(--mn-border);
   color: var(--mn-text);
 }
 [data-theme^="midnight-"] .bet-amount-input::placeholder,
+[data-theme^="midnight-"] .lhc-quick-textarea::placeholder,
 [data-theme^="midnight-"] .history-issue-input::placeholder {
   color: var(--mn-text-muted);
 }
