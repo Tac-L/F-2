@@ -1058,12 +1058,24 @@ img.pk10-ball {
 }
 
 /* Accordion Position Sections */
+/* Tight vertical stack for the position accordions (猜号码 / 两面盘). Overrides
+   the play-area's 12px gap so the drawers sit closer together. */
+.accordion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .accordion-section {
   background-color: #ffffff;
   border-radius: 8px;
   border: 1px solid #e2e8f0;
   overflow: hidden;
   margin-bottom: 8px;
+}
+
+.accordion-list .accordion-section {
+  margin-bottom: 0;
 }
 
 .accordion-header {

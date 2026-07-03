@@ -1060,11 +1060,12 @@ export default function PlayArea({
       <div className="play-area">
         {renderPlayHelpBar()}
         {renderPlayHelpModal()}
+        <div className="accordion-list">
         {POSITIONS.map((pos) => {
           const isOpen = !!openAccordions[pos.id];
           return (
             <div key={pos.id} className="accordion-section">
-              <div 
+              <div
                 className={`accordion-header ${isOpen ? 'open' : ''}`}
                 onClick={() => toggleAccordion(pos.id)}
               >
@@ -1108,6 +1109,7 @@ export default function PlayArea({
             </div>
           );
         })}
+        </div>
       </div>
     );
   };
@@ -1118,6 +1120,7 @@ export default function PlayArea({
       <div className="play-area">
         {renderPlayHelpBar()}
         {renderPlayHelpModal()}
+        <div className="accordion-list">
         {POSITIONS.map((pos, idx) => {
           const isOpen = !!openAccordions[pos.id];
           // E.g. Champion vs 10th. Index 0 vs 9.
@@ -1179,6 +1182,7 @@ export default function PlayArea({
             </div>
           );
         })}
+        </div>
       </div>
     );
   };
