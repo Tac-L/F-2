@@ -2821,7 +2821,7 @@ export default function PlayArea({
           )}
         </div>
 
-        <div className="lhc-hexiao-hint" style={{ marginBottom: '12px' }}>
+        <div className="lhc-hexiao-hint">
           已选 {M} 号码（{LIANMA_SUB_TABS.find((t) => t.id === lianmaSubTab)?.name}，共 {noteCount} 注）
         </div>
 

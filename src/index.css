@@ -5104,6 +5104,9 @@ img.lhc-ball {
   font-size: 12px;
   color: var(--text-muted);
   padding: 2px 2px 0;
+  /* Pull the hint tight against the drawer above and the number grid below
+     (negative margins trim the play-area's 12px flex gap on both sides). */
+  margin: -6px 0;
 }
 
 /* 特肖 生肖 cards (label + odds header above its 波色 号码 balls) */
@@ -5625,7 +5628,7 @@ img.lhc-ball {
   border: 1px solid var(--border-light, #e2e8f0);
   border-radius: 12px;
   overflow: hidden;
-  margin-bottom: 12px;
+  margin-bottom: 0;
   background: #ffffff;
 }
 
@@ -5635,6 +5638,15 @@ img.lhc-ball {
   border-bottom: 1px solid transparent;
   color: #1e293b;
   font-weight: 600;
+}
+
+/* Light-blue: make the 小玩法 drawer title a raised white button. */
+[data-theme="light-blue"] .subtab-drawer {
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
+}
+
+[data-theme="light-blue"] .subtab-drawer .accordion-header {
+  background-color: #ffffff;
 }
 
 .subtab-drawer .accordion-header.open {
