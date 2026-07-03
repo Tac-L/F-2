@@ -83,6 +83,8 @@ export default function PlayArea({
     if (helpOpen) {
       if (activeTab === 'banbo') {
         setLhcHelpTab('red');
+      } else if (activeTab === 'lianma') {
+        setLhcHelpTab('2');
       } else {
         setLhcHelpTab('quick');
       }
