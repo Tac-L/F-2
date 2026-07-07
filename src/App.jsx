@@ -12,6 +12,7 @@ import {
 } from './constants/gameData';
 import Dice from './components/Dice';
 import PlayArea from './components/PlayArea';
+import FollowPlanModal from './components/FollowPlanModal';
 import Footer from './components/Footer';
 import GameDrawer from './components/GameDrawer';
 import RightMenuDrawer from './components/RightMenuDrawer';
@@ -396,6 +397,8 @@ export default function App() {
   const [isRightDrawerOpen, setIsRightDrawerOpen] = useState(false);
   const [isHistoryDropdownOpen, setIsHistoryDropdownOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState('betting'); // 'betting', 'unsettled', 'settled', 'history', 'settings'
+  // 跟单计划 (follow-plan) modal, opened from the 长龙 rail.
+  const [isFollowPlanOpen, setIsFollowPlanOpen] = useState(false);
   // Embedded mode enters straight into the betting page (no login screen).
   const [loggedIn, setLoggedIn] = useState(EMBED.embedded);
 
@@ -1883,6 +1886,17 @@ export default function App() {
       <div className="main-layout">
         {/* Left Sidebar Menu */}
         <nav className="sidebar-menu">
+          <button
+            type="button"
+            className="follow-plan-btn"
+            onClick={() => setIsFollowPlanOpen(true)}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
+            </svg>
+            跟单计划
+          </button>
           {sidebarTabs.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
@@ -1928,6 +1942,15 @@ export default function App() {
         isClosed={isClosed}
         chipValues={chipValues}
         onUpdateChips={handleUpdateChips}
+      />
+
+      {/* 跟单计划 (Follow-Plan) Modal */}
+      <FollowPlanModal
+        open={isFollowPlanOpen}
+        onClose={() => setIsFollowPlanOpen(false)}
+        gameKind={gameKind}
+        activeGameId={activeGameId}
+        addToast={addToast}
       />
 
       {/* Bet Confirmation Modal */}
