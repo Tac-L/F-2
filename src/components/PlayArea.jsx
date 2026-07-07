@@ -98,6 +98,10 @@ export default function PlayArea({
   const [helpOpen, setHelpOpen] = useState(false);
   const [helpSub, setHelpSub] = useState('ds'); // 'ds' (大小单双) | 'lh' (龙虎)
   const [lhcHelpTab, setLhcHelpTab] = useState('quick'); // 'quick' | 'number' | 'twoside' | 'color'
+  const [ffcHelpTab, setFfcHelpTab] = useState('front'); // FFC 前中后: 'front' | 'mid' | 'back' | 'lh'
+  const [k3SumHelpTab, setK3SumHelpTab] = useState('points'); // K3 和值: 'points' (点数) | 'twoside' (双面)
+  const [xy28SumHelpTab, setXy28SumHelpTab] = useState('sum'); // XY28 总和: 'sum' (总和) | 'twoside' (两面) | 'combo' (两面组合)
+  const [xy28TailHelpTab, setXy28TailHelpTab] = useState('num'); // XY28 尾球: 'num' (数字) | 'twoside' (两面) | 'combo' (两面组合)
   const [selectedLhcCats, setSelectedLhcCats] = useState({});
 
   // Reset category selection when bets are cleared or page switches
@@ -121,6 +125,22 @@ export default function PlayArea({
         setLhcHelpTab('4-8');
       } else {
         setLhcHelpTab('quick');
+      }
+      // FFC 前中后 defaults to the 前三 sub-tab.
+      if (activeTab === 'front-mid-back') {
+        setFfcHelpTab('front');
+      }
+      // K3 和值 defaults to the 点数 sub-tab.
+      if (activeTab === 'sum') {
+        setK3SumHelpTab('points');
+      }
+      // XY28 总和 defaults to the 总和 sub-tab.
+      if (gameKind === 'xy28' && activeTab === 'sum') {
+        setXy28SumHelpTab('sum');
+      }
+      // XY28 尾球 defaults to the 数字 sub-tab.
+      if (gameKind === 'xy28' && activeTab === 'tail-ball') {
+        setXy28TailHelpTab('num');
       }
     }
   }, [helpOpen, activeTab]);
@@ -157,6 +177,39 @@ export default function PlayArea({
   // The 玩法说明 modal. Content depends on the active PK10 tab.
   const renderPlayHelpModal = () => {
     if (!helpOpen) return null;
+
+    // FFC 前中后 (三球) — 前三/中三/后三 differ only in which three digit
+    // positions of the winning number are compared. `digits` names them.
+    const ffcTripleInfo = {
+      front: { digits: '百位千位万位' },
+      mid: { digits: '十位百位千位' },
+      back: { digits: '个位十位百位' },
+    };
+    const renderFfcTriple = (digits) => (
+      <div className="play-help-box" style={{ whiteSpace: 'normal', display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '13px' }}>
+        <div>
+          <strong>豹子：</strong>中奖号码的{digits}数字都相同。
+          {'\n'}如中奖号码为 000、111、999 等，中奖号码的{digits}数字相同，则投注豹子者视为中奖，其它视为不中奖。
+        </div>
+        <div>
+          <strong>顺子：</strong>中奖号码的{digits}数字相连，不分顺序。（数字 9、0、1 相连）。
+          {'\n'}如中奖号码为 123、901、321、546 等，中奖号码{digits}数字相连，则投注顺子者视为中奖，其余情况视为不中奖。
+        </div>
+        <div>
+          <strong>对子：</strong>中奖号码的{digits}任意两位数字相同。（不包括豹子）。
+          {'\n'}如中奖号码为 001、112、696，中奖号码有两位数字相同，则投注对子者为中奖，其余情况视为不中奖。如果开奖号码为豹子，则对子视为不中奖。
+        </div>
+        <div>
+          <strong>半顺：</strong>中奖号码的{digits}任意两位数字相连，不分顺序。（不包括豹子，对子）。
+          {'\n'}如中奖号码为 125、540、390、706，中奖号码有两位数字相连，则投注半顺者视为中奖，其它视为不中奖。如果开奖号码为顺子、对子，则半顺视为不中奖。如中奖号码为 123、901、556、233，视为不中奖。
+        </div>
+        <div>
+          <strong>杂六：</strong>不包括豹子、对子、顺子、半顺的所有中奖号码。
+          {'\n'}如中奖{digits}号码为 157，中奖号码位数之间无关联性，则投注杂六者视为中奖，其它视为不中奖。
+        </div>
+      </div>
+    );
+
     return (
       <div className="play-help-overlay" onClick={() => setHelpOpen(false)}>
         <div className="play-help-modal" onClick={(e) => e.stopPropagation()}>
@@ -183,7 +236,7 @@ export default function PlayArea({
             </div>
           )}
 
-          {activeTab === 'two-sided' && (
+          {gameKind !== 'ffc' && activeTab === 'two-sided' && (
             <div className="play-help-body">
               <div className="play-help-tabs">
                 <button
@@ -902,6 +955,315 @@ export default function PlayArea({
             </div>
           )}
 
+          {/* ===================== FFC (分分彩) ===================== */}
+          {gameKind === 'ffc' && activeTab === 'guess-ball' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <strong>第一球、第二球、第三球、第四球、第五球：</strong>指下注的每一球与开出之号码其开奖顺序及开奖号码相同，视为中奖，如第一球开出号码 8，下注第一球为 8 者视为中奖，其余情形视为不中奖。
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'ffc' && activeTab === 'two-sided' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal', display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '13px' }}>
+                <div>
+                  <strong>大小：</strong>根据相应单项投注的第一球–第五球开出的球号大于或等于 5 为大，小于或等于 4 为小，以此判断胜负。
+                </div>
+                <div>
+                  <strong>单双：</strong>根据相应单项投注的第一球–第五球开出的球号为双数为双，如 2、6；为单数为单，如 1、3，以此判断胜负。
+                </div>
+                <div>
+                  <strong>总和大小：</strong>根据相应单项投注的第一球–第五球开出的球号数字总和值大于或等于 23 为总和大，小于或等于 22 为总和小，以此判断胜负。
+                </div>
+                <div>
+                  <strong>总和单双：</strong>根据相应单项投注的第一球–第五球开出的球号数字总和值是双数为总和双，数字总和值是单数为总和单，以此判断胜负。
+                </div>
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'ffc' && activeTab === 'front-mid-back' && (
+            <div className="play-help-body">
+              <div className="play-help-tabs">
+                <button
+                  type="button"
+                  className={`play-help-tab ${ffcHelpTab === 'front' ? 'active' : ''}`}
+                  onClick={() => setFfcHelpTab('front')}
+                >前三</button>
+                <button
+                  type="button"
+                  className={`play-help-tab ${ffcHelpTab === 'mid' ? 'active' : ''}`}
+                  onClick={() => setFfcHelpTab('mid')}
+                >中三</button>
+                <button
+                  type="button"
+                  className={`play-help-tab ${ffcHelpTab === 'back' ? 'active' : ''}`}
+                  onClick={() => setFfcHelpTab('back')}
+                >后三</button>
+                <button
+                  type="button"
+                  className={`play-help-tab ${ffcHelpTab === 'lh' ? 'active' : ''}`}
+                  onClick={() => setFfcHelpTab('lh')}
+                >龙虎</button>
+              </div>
+              {ffcHelpTab === 'lh' ? (
+                <div className="play-help-box" style={{ whiteSpace: 'normal', display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '13px' }}>
+                  <div>
+                    <strong>龙：</strong>开奖第一球（万位）的号码大于第五球（个位）的号码。
+                    {'\n'}如：第一球开出 6，第五球开出 2，开奖结果为龙，投注龙则视为中奖。
+                  </div>
+                  <div>
+                    <strong>虎：</strong>开奖第一球（万位）的号码小于第五球（个位）的号码。
+                    {'\n'}如：第一球开出 2，第五球开出 6，开奖结果为虎，投注虎则视为中奖。
+                  </div>
+                  <div>
+                    <strong>和：</strong>开奖第一球（万位）的号码等于第五球（个位）的号码。
+                    {'\n'}如：2XXX2、6XXX6、8XXX8…开奖为和，投注和则视为中奖，其余情况（比如投注龙/虎）视为输。
+                  </div>
+                </div>
+              ) : (
+                renderFfcTriple(ffcTripleInfo[ffcHelpTab].digits)
+              )}
+            </div>
+          )}
+
+          {/* ===================== 快三 (K3) ===================== */}
+          {gameKind === 'k3' && activeTab === 'three-army' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <strong>三军：</strong>于 1-6 中至少选择 1 个或 1 个以上号码，所下注的号码符合开奖结果即视为中奖，其余情形即视为不中奖。
+                {'\n'}　根据开奖的三个骰子点数来判断，只要开出一个选定的点数便中奖，开出的三个号码如果重复，中奖倍数以出现次数计算。
+                {'\n\n'}举例：
+                {'\n'}假设赔率为 2，投注三军 2 点股 100 元，开奖结果为：126，2 点股与投注号码相符，视为中奖，派彩 200 元。
+                {'\n'}假设赔率为 2，投注三军 3 点股 100 元，开奖结果为：233，3 点股与投注号码相符，视为中奖，且开出两颗 3 点股，派彩 400 元。
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'k3' && activeTab === 'short-pair' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <strong>短牌：</strong>于短牌（对子）组合中选择 1 组或 1 组以上投注，若开奖号码与所选择的短牌组合相同（不分顺序），即视为中奖，其余情形视为不中奖。
+                {'\n\n'}举例：
+                {'\n'}投注短牌 55 组合，开奖结果为：525，与投注组合相符，视为中奖。
+                {'\n'}举例：
+                {'\n'}投注短牌 66 组合，开奖结果为：666，与投注组合相符，视为中奖。
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'k3' && activeTab === 'long-pair' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <strong>长牌：</strong>于长牌组合中选择 1 或 1 个以上投注，若开奖号码与所选择的长牌组合相符时（不分顺序），即视为中奖，其余情形即视为不中奖。
+                {'\n'}如开奖结果为 126，则投注长牌：12、16、26 之组合都为中奖。
+                {'\n\n'}举例：
+                {'\n'}投注长牌 36 及 15 组合，开奖结果为：136，36 与投注组合相符，视为中奖。15 与投注组合不相符，视为不中。
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'k3' && activeTab === 'all-triple' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <strong>全骰：</strong>投注全骰，开奖号码为豹子即算中奖，即开出 111、222、333、444、555、666，这六种结果相同即视为中奖，其余情形即视为不奖。
+                {'\n'}举例：
+                {'\n'}投注全骰，开奖结果为：444，与投注结果相符，视为中奖。
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'k3' && activeTab === 'sum' && (
+            <div className="play-help-body">
+              <div className="play-help-tabs">
+                <button
+                  type="button"
+                  className={`play-help-tab ${k3SumHelpTab === 'points' ? 'active' : ''}`}
+                  onClick={() => setK3SumHelpTab('points')}
+                >点数</button>
+                <button
+                  type="button"
+                  className={`play-help-tab ${k3SumHelpTab === 'twoside' ? 'active' : ''}`}
+                  onClick={() => setK3SumHelpTab('twoside')}
+                >双面</button>
+              </div>
+              {k3SumHelpTab === 'points' ? (
+                <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                  以开出的三个号码相加总和为开奖依据，投注点数与开奖号码之和相同即视为中奖（包括豹子），其余情形即视为不中奖。
+                  {'\n\n'}举例：
+                  {'\n'}投注和值 6 点，开奖结果为：123，与投注结果相符，视为中奖。
+                  {'\n'}举例：
+                  {'\n'}投注和值 6 点，开奖结果为：222，与投注结果相符，视为中奖。
+                </div>
+              ) : (
+                <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                  以开出的三个号码相加总和为开奖依据，加总和若值为 4~10 为小；11~17 为大；4、6、8、16 为双；5、7、9、17 为单。如开出豹子不论投注大，小，单，双都视为不中奖。
+                  {'\n\n'}举例：
+                  {'\n'}投注和值双面–［大］，开奖结果为：456，与投注结果相符，视为中奖。
+                  {'\n'}举例：
+                  {'\n'}投注和值双面–［单］，开奖结果为：135，与投注结果是相符，视为中奖。
+                </div>
+              )}
+            </div>
+          )}
+
+          {gameKind === 'k3' && activeTab === 'two-same' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <strong>二同号：</strong>于任选号码（二同号）组合中选择 1 组或 1 组以上投注，若开奖号码与所选择的二同号组合相符时（不分顺序），即视为中奖，其余情形即视为不中奖。
+                {'\n'}举例：
+                {'\n'}投注二同号 113 组合，开奖结果为：113，与投注结果相符，视为中奖，其余结果视为不中奖。
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'k3' && activeTab === 'three-diff' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <strong>三不同：</strong>于任选号码（三不同）组合中选择 1 组或 1 组以上投注，若开奖号码与所选择的三不同组合相符时（不分顺序），即视为中奖，其余情形即视为不中奖。
+                {'\n'}举例：
+                {'\n'}投注三不同 123 组合，开奖结果为：123，与投注结果相符，视为中奖，其余结果视为不中奖。
+              </div>
+            </div>
+          )}
+
+          {/* ===================== 幸运28 (XY28) ===================== */}
+          {gameKind === 'xy28' && activeTab === 'sum' && (
+            <div className="play-help-body">
+              <div className="play-help-tabs">
+                <button
+                  type="button"
+                  className={`play-help-tab ${xy28SumHelpTab === 'sum' ? 'active' : ''}`}
+                  onClick={() => setXy28SumHelpTab('sum')}
+                >总和</button>
+                <button
+                  type="button"
+                  className={`play-help-tab ${xy28SumHelpTab === 'twoside' ? 'active' : ''}`}
+                  onClick={() => setXy28SumHelpTab('twoside')}
+                >两面</button>
+                <button
+                  type="button"
+                  className={`play-help-tab ${xy28SumHelpTab === 'combo' ? 'active' : ''}`}
+                  onClick={() => setXy28SumHelpTab('combo')}
+                >两面组合</button>
+              </div>
+              {xy28SumHelpTab === 'sum' && (
+                <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                  开出的三个号码的和值为游戏结果，投注数字对应开奖数字之和视为中奖，其余情况视为不中奖。
+                  {'\n\n'}例：投注总和 10，开奖数字之和为 10，即为中奖。
+                </div>
+              )}
+              {xy28SumHelpTab === 'twoside' && (
+                <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                  <strong>单、双：</strong>号码为单数叫“单”，如：1、3、5、7、9；号码为双数叫“双”，如：2、4、6、8、10。投注总和单双对应所投单双视为中奖，反之视为不中奖。
+                  {'\n\n'}例：投注总和为“双”，开奖结果总和为 18，即为中奖。
+                  {'\n\n'}<strong>大、小：</strong>开出之号码大于等于 14 为“大”，小于等于 13 为“小”。投注总和大小对应所投大小视为中奖，反之视为不中奖。
+                  {'\n\n'}例：投注总和为“大”，开奖结果总和为 20，即为中奖。
+                </div>
+              )}
+              {xy28SumHelpTab === 'combo' && (
+                <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                  <strong>大单、大双：</strong>和值为 15、17、19、21、23、25、27 为“大单”，和值为 14、16、18、20、22、24、26 为“大双”。
+                  {'\n\n'}例：投注“大单”，开奖结果总和为 23，即为中奖。
+                  {'\n\n'}<strong>小单、小双：</strong>和值为 1、3、5、7、9、11、13 为“小单”，和值为 0、2、4、6、8、10、12 为“小双”。
+                  {'\n\n'}例：投注“小双”，开奖结果总和为 10，即为中奖。
+                </div>
+              )}
+            </div>
+          )}
+
+          {gameKind === 'xy28' && activeTab === 'side-ball' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <strong>边：</strong>总和在以下范围视为“边”：
+                {'\n'}0、1、2、3、4、5、6、7、8、9、18、19、20、21、22、23、24、25、26、27
+                {'\n\n'}<strong>大边：</strong>总和在 18 至 27 之间视为“大边”。
+                {'\n\n'}<strong>小边：</strong>总和在 0 至 9 之间视为“小边”。
+                {'\n\n'}<strong>中：</strong>总和在 10 至 17 之间视为“中”。
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'xy28' && activeTab === 'tail-ball' && (
+            <div className="play-help-body">
+              <div className="play-help-tabs">
+                <button
+                  type="button"
+                  className={`play-help-tab ${xy28TailHelpTab === 'num' ? 'active' : ''}`}
+                  onClick={() => setXy28TailHelpTab('num')}
+                >数字</button>
+                <button
+                  type="button"
+                  className={`play-help-tab ${xy28TailHelpTab === 'twoside' ? 'active' : ''}`}
+                  onClick={() => setXy28TailHelpTab('twoside')}
+                >两面</button>
+                <button
+                  type="button"
+                  className={`play-help-tab ${xy28TailHelpTab === 'combo' ? 'active' : ''}`}
+                  onClick={() => setXy28TailHelpTab('combo')}
+                >两面组合</button>
+              </div>
+              {xy28TailHelpTab === 'num' && (
+                <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                  尾球数字的值为游戏结果，投注数字对应开奖数字之和的尾数即为中奖，其余视为不中奖。
+                  {'\n'}例：投注尾球 8，开奖尾球为 8，即为中奖。
+                  {'\n'}注：当开奖结果为 0 或 9 时，视为不中奖！
+                </div>
+              )}
+              {xy28TailHelpTab === 'twoside' && (
+                <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                  <strong>单、双：</strong>尾数为单数叫“单”，如：1、3、5、7；尾数为双数叫“双”，如：2、4、6、8。
+                  {'\n\n'}例：投注尾球为“双”，开奖结果尾球为 8，即为中奖。
+                  {'\n\n'}<strong>大、小：</strong>尾数为 5、6、7、8 为“大”；尾数为 1、2、3、4 为“小”。
+                  {'\n\n'}例：投注尾球为“大”，开奖结果尾球为 7，即为中奖。
+                </div>
+              )}
+              {xy28TailHelpTab === 'combo' && (
+                <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                  <strong>大单、大双：</strong>尾球为 5、7 为“大单”，尾球为 6、8 为“大双”。
+                  {'\n\n'}例：投注“大单”，开奖结果尾球为 7，即为中奖。
+                  {'\n\n'}<strong>小单、小双：</strong>尾球为 1、3 为“小单”，尾球为 2、4 为“小双”。
+                  {'\n\n'}例：投注“小双”，开奖结果尾球为 4，即为中奖。
+                  {'\n'}注：当开奖结果为 0 或 9 时，视为不中奖！
+                </div>
+              )}
+            </div>
+          )}
+
+          {gameKind === 'xy28' && activeTab === 'dragon-tiger-leopard' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                以下和值归类为：
+                <ul style={{ margin: '6px 0', paddingLeft: '18px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <li style={{ listStyleType: 'disc' }}><strong>龙：</strong>00、03、06、09、12、15、18、21、24、27</li>
+                  <li style={{ listStyleType: 'disc' }}><strong>虎：</strong>01、04、07、10、13、16、19、22、25</li>
+                  <li style={{ listStyleType: 'disc' }}><strong>豹：</strong>02、05、08、11、14、17、20、23、26</li>
+                </ul>
+                例：投注“龙”，开奖结果总和为 12，即为中奖。
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'xy28' && activeTab === 'extreme' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                三个号码的和值 22–27 为“极大”，和值 0–5 为“极小”。
+                {'\n\n'}例：投注“极大”，开奖结果总和为 25，即为中奖。
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'xy28' && activeTab === 'three-ball' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div><strong>豹子：</strong>三个号码数字相同，称为“豹子”。</div>
+                <div><strong>对子：</strong>三个号码中，有两个数字相同，称为“对子”。</div>
+                <div><strong>顺子：</strong>三个号码为连续数字，不分顺序，如 123、231，称为“顺子”。</div>
+              </div>
+            </div>
+          )}
+
         </div>
       </div>
     );
@@ -1347,6 +1709,8 @@ export default function PlayArea({
   const renderFfcGuessBall = () => {
     return (
       <div className="play-area">
+        {renderPlayHelpBar()}
+        {renderPlayHelpModal()}
         {FFC_POSITIONS.map((pos) => {
           const isOpen = !!openAccordions[pos.id];
           return (
@@ -1406,6 +1770,8 @@ export default function PlayArea({
     ];
     return (
       <div className="play-area">
+        {renderPlayHelpBar()}
+        {renderPlayHelpModal()}
         {sections.map((pos) => {
           const isOpen = !!openAccordions[pos.id];
           return (
@@ -1474,6 +1840,8 @@ export default function PlayArea({
 
     return (
       <div className="play-area">
+        {renderPlayHelpBar()}
+        {renderPlayHelpModal()}
         {/* 龙虎和 */}
         <div className="accordion-section">
           <div
@@ -1588,6 +1956,8 @@ export default function PlayArea({
   const renderK3ThreeArmy = () => {
     return (
       <div className="play-area">
+        {renderPlayHelpBar()}
+        {renderPlayHelpModal()}
         <div className="betting-grid">
           {[1, 2, 3, 4, 5, 6].map((num) => {
             const betId = `k3-army-${num}`;
@@ -1627,6 +1997,8 @@ export default function PlayArea({
   const renderK3ShortPair = () => {
     return (
       <div className="play-area">
+        {renderPlayHelpBar()}
+        {renderPlayHelpModal()}
         <div className="betting-grid">
           {K3_SHORT_PAIRS.map((num) => {
             const betId = `k3-short-${num}`;
@@ -1667,6 +2039,8 @@ export default function PlayArea({
   const renderK3LongPair = () => {
     return (
       <div className="play-area">
+        {renderPlayHelpBar()}
+        {renderPlayHelpModal()}
         <div className="betting-grid">
           {K3_LONG_PAIRS.map(([a, b]) => {
             const betId = `k3-long-${a}${b}`;
@@ -1707,6 +2081,8 @@ export default function PlayArea({
   const renderK3AllTriple = () => {
     return (
       <div className="play-area">
+        {renderPlayHelpBar()}
+        {renderPlayHelpModal()}
         <div className="betting-grid">
           {K3_TRIPLES.map((num) => {
             const betId = `k3-triple-${num}`;
@@ -1784,6 +2160,8 @@ export default function PlayArea({
     const twoSided = ['大', '小', '单', '双'];
     return (
       <div className="play-area">
+        {renderPlayHelpBar()}
+        {renderPlayHelpModal()}
         <div className="betting-grid">
           {sums.map((sum) => {
             const betId = `k3-sum-number-${sum}`;
@@ -1860,6 +2238,8 @@ export default function PlayArea({
   const renderK3TwoSame = () => {
     return (
       <div className="play-area">
+        {renderPlayHelpBar()}
+        {renderPlayHelpModal()}
         <div className="betting-grid">
           {K3_TWO_SAME.map(([pair, single]) => {
             const betId = `k3-twosame-${pair}${single}`;
@@ -1901,6 +2281,8 @@ export default function PlayArea({
   const renderK3ThreeDiff = () => {
     return (
       <div className="play-area">
+        {renderPlayHelpBar()}
+        {renderPlayHelpModal()}
         <div className="betting-grid">
           {K3_THREE_DIFF.map(([a, b, c]) => {
             const betId = `k3-threediff-${a}${b}${c}`;
@@ -1973,6 +2355,8 @@ export default function PlayArea({
 
     return (
       <div className="play-area">
+        {renderPlayHelpBar()}
+        {renderPlayHelpModal()}
         {renderXy28Section('xy28-sum', '总和', (
           <div className="betting-grid">
             {sumOrder.map((sum) => {
@@ -2055,6 +2439,8 @@ export default function PlayArea({
   const renderXy28SideBall = () => {
     return (
       <div className="play-area">
+        {renderPlayHelpBar()}
+        {renderPlayHelpModal()}
         <div className="betting-grid">
           {XY28_SIDE_OPTIONS.map(({ label, odds }) => {
             const betId = `xy28-side-${label}`;
@@ -2097,6 +2483,8 @@ export default function PlayArea({
   const renderXy28TailBall = () => {
     return (
       <div className="play-area">
+        {renderPlayHelpBar()}
+        {renderPlayHelpModal()}
         {renderXy28Section('xy28-tail-num', '数字', (
           <div className="betting-grid">
             {Array.from({ length: 10 }, (_, i) => i).map((num) => {
@@ -2204,6 +2592,8 @@ export default function PlayArea({
   const renderXy28DragonTigerLeopard = () => {
     return (
       <div className="play-area">
+        {renderPlayHelpBar()}
+        {renderPlayHelpModal()}
         {XY28_DTL_OPTIONS.map(({ label, odds, mod }) => {
           const nums = Array.from({ length: 28 }, (_, i) => i).filter((n) => n % 3 === mod);
           const betId = `xy28-dtl-${label}`;
@@ -2227,6 +2617,8 @@ export default function PlayArea({
   const renderXy28Extreme = () => {
     return (
       <div className="play-area">
+        {renderPlayHelpBar()}
+        {renderPlayHelpModal()}
         {XY28_EXTREME_OPTIONS.map(({ label, odds, nums }) => {
           const betId = `xy28-extreme-${label}`;
           const betObj = {
@@ -2249,6 +2641,8 @@ export default function PlayArea({
   const renderXy28ThreeBall = () => {
     return (
       <div className="play-area">
+        {renderPlayHelpBar()}
+        {renderPlayHelpModal()}
         <div className="betting-grid">
           {XY28_THREE_BALL_OPTIONS.map(({ label, odds }) => {
             const betId = `xy28-threeball-${label}`;
