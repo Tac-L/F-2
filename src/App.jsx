@@ -61,6 +61,9 @@ const ROOM_ID_MAP = {
   '1069010': 'xy28_1m',   // 一分幸运28
   '1069020': 'xy28_5m',   // 五分幸运28
   '1069030': 'xy28_10m',  // 十分幸运28
+  '1001010': 'animal_1m', // 一分动物运动会
+  '1001020': 'animal_5m', // 五分动物运动会
+  '1001030': 'animal_10m',// 十分动物运动会
 };
 
 const getEmbedParams = () => {
@@ -496,11 +499,14 @@ export default function App() {
     setLang(nextLang);
     window.location.reload();
   };
-  // 快捷 tab only exists for PK10; other kinds start on 长龙. Match the entry game
-  // so a roomid that opens e.g. 六合彩 lands on a valid tab.
-  const [activeTab, setActiveTab] = useState(
-    (EMBED.gameId || 'pk10_1m').startsWith('pk10') ? 'shortcut' : 'long-dragon'
-  );
+  // Match the entry game's default tab: 快捷 only exists for PK10, 动物运动会 opens
+  // on 冠军(p1), everything else on 长龙. Keeps a roomid deep-link on a valid tab.
+  const [activeTab, setActiveTab] = useState(() => {
+    const g = EMBED.gameId || 'pk10_1m';
+    if (g.startsWith('pk10')) return 'shortcut';
+    if (g.startsWith('animal')) return 'p1';
+    return 'long-dragon';
+  });
   const [selectedShortcutPositions, setSelectedShortcutPositions] = useState([]);
   const [selectedShortcutOptions, setSelectedShortcutOptions] = useState([]);
   const [nonShortcutSelectedBets, setNonShortcutSelectedBets] = useState([]);
