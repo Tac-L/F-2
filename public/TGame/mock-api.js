@@ -30,10 +30,14 @@
     return '' + d.getFullYear() + pad(d.getMonth() + 1, 2) + pad(d.getDate(), 2);
   }
 
-  // Rolling issue sequence; advances by one each settled round.
-  var seq = 581;
+  // Rolling issue number driven by a wall-clock round so it advances on its own
+  // (~one issue per betting+race cycle), independent of when the game settles.
+  var ROUND_SECS = BETTING_SECS + RACE_SECS;
+  function roundNo() {
+    return Math.floor(Date.now() / 1000 / ROUND_SECS);
+  }
   function currentIssue() {
-    return datePrefix() + pad(seq, 4);
+    return datePrefix() + pad(581 + (roundNo() % 9000), 4);
   }
 
   // A random finishing order as a 6-letter A-F permutation (e.g. "CAEBFD").
@@ -51,7 +55,7 @@
     var counts = [21, 18, 18, 16, 14, 13];
     var letters = ['A', 'B', 'C', 'D', 'E', 'F'];
     // Rotate which animal leads so it isn't visually identical every round.
-    var offset = seq % 6;
+    var offset = roundNo() % 6;
     var out = [];
     for (var i = 0; i < 6; i++) {
       out.push(letters[(i + offset) % 6] + '_' + counts[i]);
@@ -70,7 +74,6 @@
       };
     } else if (url.indexOf('/GetSettle') !== -1) {
       data = { lotteryCode: randomLotteryCode(), issueId: currentIssue() };
-      seq += 1; // this issue is settled; advance to the next betting round
     } else if (url.indexOf('/Rank') !== -1) {
       data = { list: [], myrank: null };
     } else {
