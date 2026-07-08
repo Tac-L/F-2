@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   lhcColorOf, lhcZodiacOf, lhcIsDomestic, lhcBallSrc, LHC_WUXING,
-  pk10BallSrc, DRAWER_CATEGORIES,
+  pk10BallSrc, animalBallSrc, DRAWER_CATEGORIES,
 } from '../constants/gameData';
 
 // 五行 (element) of a number — find the element set it belongs to.
@@ -24,6 +24,10 @@ const TABS_BY_CATEGORY = {
   pk10: [
     { id: 'numbers', name: '号码' },
     { id: 'sum', name: '冠亚和' },
+    { id: 'other', name: '其他' },
+  ],
+  animal: [
+    { id: 'numbers', name: '号码' },
     { id: 'other', name: '其他' },
   ],
 };
@@ -106,6 +110,34 @@ const buildPk10History = () => {
   return list;
 };
 
+// ----- 动物运动会 mock history (permutation of 1-6) -----
+const randomAnimalDraw = () => {
+  const nums = [1, 2, 3, 4, 5, 6];
+  for (let i = nums.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [nums[i], nums[j]] = [nums[j], nums[i]];
+  }
+  return nums;
+};
+
+const buildAnimalHistory = () => {
+  const seeds = [
+    [5, 2, 1, 3, 6, 4],
+    [3, 1, 5, 2, 6, 4],
+    [6, 4, 2, 5, 1, 3],
+  ];
+  const list = [];
+  const startIssue = 202607080581;
+  for (let i = 0; i < 40; i++) {
+    list.push({
+      issue: String(startIssue - i),
+      date: pk10DateTime(i),
+      numbers: seeds[i] || randomAnimalDraw(),
+    });
+  }
+  return list;
+};
+
 export default function DrawHistory({ onBack, onOpenMenu }) {
   const [categoryId, setCategoryId] = React.useState('lhc');
   const [gameId, setGameId] = React.useState(DRAWER_CATEGORIES[0].games[0].id);
@@ -117,6 +149,7 @@ export default function DrawHistory({ onBack, onOpenMenu }) {
 
   const lhcHistory = React.useMemo(() => buildLhcHistory(), []);
   const pk10History = React.useMemo(() => buildPk10History(), []);
+  const animalHistory = React.useMemo(() => buildAnimalHistory(), []);
 
   const category = DRAWER_CATEGORIES.find((c) => c.id === categoryId);
   const game = category.games.find((g) => g.id === gameId);
@@ -126,7 +159,9 @@ export default function DrawHistory({ onBack, onOpenMenu }) {
     ? lhcHistory
     : categoryId === 'pk10'
       ? pk10History
-      : [];
+      : categoryId === 'animal'
+        ? animalHistory
+        : [];
 
   const history = React.useMemo(() => {
     if (!issueQuery) return allHistory;
@@ -177,6 +212,15 @@ export default function DrawHistory({ onBack, onOpenMenu }) {
   // ===== PK10: 其他 — 5 个龙虎 (冠vs第十 ... 第五vs第六) =====
   const pk10DragonTiger = (numbers) =>
     [0, 1, 2, 3, 4].map((i) => (numbers[i] > numbers[9 - i] ? '龙' : '虎'));
+
+  // ===== 动物运动会: 号码 — 6 animal balls =====
+  const renderAnimalBalls = (numbers) => numbers.map((num, idx) => (
+    <img key={idx} className="pk10-ball animal-ball" src={animalBallSrc(num)} alt={num} />
+  ));
+
+  // ===== 动物运动会: 其他 — 3 个龙虎 (冠vs第六, 亚vs第五, 季vs第四) =====
+  const animalDragonTiger = (numbers) =>
+    [0, 1, 2].map((i) => (numbers[i] > numbers[5 - i] ? '龙' : '虎'));
 
   // ===== 六合彩: 彩球 — 6 正码 + 特码 =====
   const renderLhcBalls = (numbers) => {
@@ -364,10 +408,12 @@ export default function DrawHistory({ onBack, onOpenMenu }) {
                   )}
                 </div>
 
-                {/* ===== PK10 tabs ===== */}
+                {/* ===== PK10 / 动物运动会 tabs ===== */}
                 {activeTab === 'numbers' && (
-                  <div className="history-balls-row pk10">
-                    {renderPk10Balls(item.numbers)}
+                  <div className={`history-balls-row ${categoryId === 'animal' ? 'animal' : 'pk10'}`}>
+                    {categoryId === 'animal'
+                      ? renderAnimalBalls(item.numbers)
+                      : renderPk10Balls(item.numbers)}
                   </div>
                 )}
 
@@ -384,7 +430,10 @@ export default function DrawHistory({ onBack, onOpenMenu }) {
 
                 {activeTab === 'other' && (
                   <div className="history-badge-row">
-                    {pk10DragonTiger(item.numbers).map((dt, i) => (
+                    {(categoryId === 'animal'
+                      ? animalDragonTiger(item.numbers)
+                      : pk10DragonTiger(item.numbers)
+                    ).map((dt, i) => (
                       <span key={i} className="history-badge outline">{dt}</span>
                     ))}
                   </div>

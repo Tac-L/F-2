@@ -5083,6 +5083,12 @@ img.lhc-ball {
   border-radius: 5px;
 }
 
+/* 动物运动会 号码 — animal artwork in the history list */
+.history-balls-row.animal .animal-ball {
+  width: 30px;
+  height: 30px;
+}
+
 /* 冠亚和 / 其他 badge rows */
 .history-badge-row {
   display: flex;
