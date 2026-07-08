@@ -1,0 +1,317 @@
+[
+  1,
+  ["dacF+UzIhDio5bgFzNL6vt"],
+  0,
+  [
+    [
+      "sp.SkeletonData",
+      ["_name", "_atlasText", "textureNames", "_skeletonJson", "textures"],
+      -1,
+      3
+    ]
+  ],
+  [[0, 0, 1, 2, 3, 4, 5]],
+  [
+    [
+      0,
+      "dd",
+      "\ndd.png\nsize: 270,301\nformat: RGBA8888\nfilter: Linear,Linear\nrepeat: none\ndd_0000\n  rotate: true\n  xy: 2, 144\n  size: 155, 260\n  orig: 155, 260\n  offset: 0, 0\n  index: -1\ndd_0001\n  rotate: true\n  xy: 2, 28\n  size: 114, 106\n  orig: 114, 106\n  offset: 0, 0\n  index: -1\ndd_0002\n  rotate: false\n  xy: 194, 7\n  size: 74, 135\n  orig: 74, 135\n  offset: 0, 0\n  index: -1\ndd_0003\n  rotate: false\n  xy: 110, 2\n  size: 82, 140\n  orig: 82, 140\n  offset: 0, 0\n  index: -1\ndd_0004\n  rotate: true\n  xy: 2, 5\n  size: 21, 54\n  orig: 21, 54\n  offset: 0, 0\n  index: -1\n",
+      ["dd.png"],
+      {
+        "skeleton": {
+          "hash": "D4DoRPqyWrtoV0FXtcvTkYXxLew",
+          "spine": "3.8.75",
+          "x": -139.55,
+          "y": -0.79,
+          "width": 234.41,
+          "height": 400.99,
+          "images": "",
+          "audio": ""
+        },
+        "bones": [
+          {
+            "name": "root"
+          },
+          {
+            "name": "dd_0000",
+            "parent": "root",
+            "length": 100,
+            "rotation": 90,
+            "y": 102.57
+          },
+          {
+            "name": "dd_0002",
+            "parent": "dd_0000",
+            "length": 100,
+            "rotation": -127.85,
+            "x": 134.66,
+            "y": 56.81,
+            "transform": "onlyTranslation"
+          },
+          {
+            "name": "dd_0003",
+            "parent": "dd_0000",
+            "length": 100,
+            "rotation": 48.5,
+            "x": 128.87,
+            "y": -57.86,
+            "transform": "onlyTranslation"
+          },
+          {
+            "name": "dd_0004",
+            "parent": "dd_0000",
+            "x": 245.47,
+            "y": 12.42,
+            "transform": "onlyTranslation"
+          },
+          {
+            "name": "dd_4",
+            "parent": "dd_0000",
+            "x": 242.34,
+            "y": -11.01,
+            "transform": "onlyTranslation"
+          }
+        ],
+        "slots": [
+          {
+            "name": "dd_0001",
+            "bone": "root",
+            "attachment": "dd_0001"
+          },
+          {
+            "name": "dd_0002",
+            "bone": "dd_0002",
+            "attachment": "dd_0002"
+          },
+          {
+            "name": "dd_0003",
+            "bone": "dd_0003",
+            "attachment": "dd_0002"
+          },
+          {
+            "name": "dd_0000",
+            "bone": "dd_0000",
+            "attachment": "dd_0000"
+          },
+          {
+            "name": "dd_0004",
+            "bone": "dd_0004",
+            "attachment": "dd_0004"
+          },
+          {
+            "name": "dd_4",
+            "bone": "dd_4",
+            "attachment": "dd_0004"
+          }
+        ],
+        "skins": [
+          {
+            "name": "default",
+            "attachments": {
+              "dd_0000": {
+                "dd_0000": {
+                  "x": 125.6,
+                  "rotation": -90,
+                  "width": 155,
+                  "height": 260
+                }
+              },
+              "dd_0001": {
+                "dd_0001": {
+                  "y": 52.21,
+                  "width": 114,
+                  "height": 106
+                }
+              },
+              "dd_0002": {
+                "dd_0002": {
+                  "x": 72.35,
+                  "y": -1.72,
+                  "rotation": 127.85,
+                  "width": 74,
+                  "height": 135
+                }
+              },
+              "dd_0003": {
+                "dd_0002": {
+                  "x": 0.37,
+                  "y": 0.33,
+                  "rotation": -48.5,
+                  "width": 74,
+                  "height": 135
+                },
+                "dd_0003": {
+                  "x": 71.28,
+                  "y": 0.17,
+                  "rotation": -51.68,
+                  "width": 82,
+                  "height": 140
+                }
+              },
+              "dd_0004": {
+                "dd_0004": {
+                  "x": 8.19,
+                  "y": 25.16,
+                  "width": 21,
+                  "height": 54
+                }
+              },
+              "dd_4": {
+                "dd_0004": {
+                  "x": 13.44,
+                  "y": 22.66,
+                  "rotation": -11.23,
+                  "width": 21,
+                  "height": 54
+                }
+              }
+            }
+          }
+        ],
+        "animations": {
+          "win": {
+            "slots": {
+              "dd_0003": {
+                "attachment": [
+                  {
+                    "name": "dd_0003"
+                  }
+                ]
+              }
+            },
+            "bones": {
+              "dd_0000": {
+                "translate": [
+                  {
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.2667,
+                    "y": -3.57,
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.5333
+                  }
+                ],
+                "scale": [
+                  {
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.2667,
+                    "x": 0.99,
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.5333
+                  }
+                ]
+              },
+              "dd_0002": {
+                "rotate": [
+                  {
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.2667,
+                    "angle": 4.89,
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.5333
+                  }
+                ]
+              },
+              "dd_0003": {
+                "rotate": [
+                  {
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.2667,
+                    "angle": -8.72,
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.5333
+                  }
+                ]
+              },
+              "dd_0004": {
+                "rotate": [
+                  {
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.2667,
+                    "angle": -4.66,
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.5333
+                  }
+                ]
+              },
+              "dd_4": {
+                "rotate": [
+                  {
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.2667,
+                    "angle": -4.66,
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.5333
+                  }
+                ]
+              }
+            }
+          },
+          "win2": {
+            "bones": {
+              "dd_0003": {
+                "rotate": [
+                  {
+                    "angle": -97.06
+                  }
+                ],
+                "translate": [
+                  {
+                    "x": -48.05,
+                    "y": -42.99
+                  }
+                ],
+                "scale": [
+                  {
+                    "x": -1
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      [0]
+    ]
+  ],
+  0,
+  0,
+  [0],
+  [-1],
+  [0]
+]

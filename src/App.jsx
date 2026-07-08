@@ -9,6 +9,7 @@ import {
   lhcZodiacOf, lhcIsDomestic, lhcTwoSidedWin, lhcBallSrc, ffcBallSrc, pk10BallSrc,
   lhcZhengmaTwoSidedWin, lhcBanboWin, LHC_WUXING_NUMBERS, lhcZongxiaoWin,
   lhcQiseboResult, LHC_PANKOU, lhcPankouFactor,
+  ANIMAL_SIDEBAR_TABS, ANIMAL_POSITIONS, ANIMAL_ODDS, animalBallSrc,
 } from './constants/gameData';
 import Dice from './components/Dice';
 import PlayArea from './components/PlayArea';
@@ -27,6 +28,7 @@ import FfcAnimation from './components/FfcAnimation';
 import K3Animation from './components/K3Animation';
 import Xy28Animation from './components/Xy28Animation';
 import LhcAnimation from './components/LhcAnimation';
+import AnimalAnimation from './components/AnimalAnimation';
 
 // ===== 嵌入参数 (供父项目通过 URL query 传入) =====
 // 用法示例: /?embed=1&skin=3
@@ -231,6 +233,34 @@ const generateLhcMockHistory = (startIssue) => {
   return history;
 };
 
+// Helper to generate a random 动物运动会 draw (permutation of 1-6).
+const generateAnimalDraw = () => {
+  const nums = [1, 2, 3, 4, 5, 6];
+  for (let i = nums.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [nums[i], nums[j]] = [nums[j], nums[i]];
+  }
+  return nums;
+};
+
+// Generates mock 动物运动会 draw history. Seeds the latest draw to a fixed order.
+const generateAnimalMockHistory = (startIssue) => {
+  const history = [];
+  history.push({
+    issue: (startIssue - 1).toString(),
+    numbers: [3, 1, 5, 2, 6, 4],
+    winLoss: 0
+  });
+  for (let i = 2; i <= 20; i++) {
+    history.push({
+      issue: (startIssue - i).toString(),
+      numbers: generateAnimalDraw(),
+      winLoss: 0
+    });
+  }
+  return history;
+};
+
 export default function App() {
   const [balance, setBalance] = useState(() => {
     const saved = localStorage.getItem('pk10_balance');
@@ -264,6 +294,27 @@ export default function App() {
       maxTime: 600,
       currentIssue: 96,
       history: generateMockHistory(96)
+    },
+    animal_1m: {
+      kind: 'animal',
+      timeLeft: 48,
+      maxTime: 60,
+      currentIssue: 60421,
+      history: generateAnimalMockHistory(60421)
+    },
+    animal_5m: {
+      kind: 'animal',
+      timeLeft: 248,
+      maxTime: 300,
+      currentIssue: 12088,
+      history: generateAnimalMockHistory(12088)
+    },
+    animal_10m: {
+      kind: 'animal',
+      timeLeft: 548,
+      maxTime: 600,
+      currentIssue: 6044,
+      history: generateAnimalMockHistory(6044)
     },
     ffc_1m: {
       kind: 'ffc',
@@ -371,12 +422,17 @@ export default function App() {
         ? XY28_SIDEBAR_TABS
         : gameKind === 'lhc'
           ? LHC_SIDEBAR_TABS
-          : SIDEBAR_TABS;
+          : gameKind === 'animal'
+            ? ANIMAL_SIDEBAR_TABS
+            : SIDEBAR_TABS;
   const gameName = (id) => {
     switch (id) {
       case 'pk10_1m': return '一分极速赛车';
       case 'pk10_5m': return '五分极速赛车';
       case 'pk10_10m': return '十分极速赛车';
+      case 'animal_1m': return '一分动物运动会';
+      case 'animal_5m': return '五分动物运动会';
+      case 'animal_10m': return '十分动物运动会';
       case 'ffc_1m': return '一分分分彩';
       case 'ffc_5m': return '五分分分彩';
       case 'ffc_10m': return '十分分分彩';
@@ -572,7 +628,7 @@ export default function App() {
     if (gamesState[game.id]) {
       setActiveGameId(game.id);
       clearSelections();
-      setActiveTab('long-dragon');
+      setActiveTab(defaultTabFor(game.id));
       setIsHistoryDropdownOpen(false);
     } else {
       addToast(`您已成功切换到: ${game.name} (暂未开放投注，仅展示玩法)`, 'info');
@@ -583,6 +639,9 @@ export default function App() {
   // Check if betting is closed. PK10 locks 15s before draw; FFC locks 10s
   // before the draw — that 封盘 window is when the draw animation spins.
   const lockSeconds = gameKind === 'ffc' ? 10 : gameKind === 'k3' ? 10 : gameKind === 'xy28' ? 10 : gameKind === 'lhc' ? 10 : 15;
+  // 动物运动会 opens on 冠军 (长龙 / 游戏玩法 are placeholders for now); everything
+  // else opens on 长龙.
+  const defaultTabFor = (id) => (gamesState[id]?.kind === 'animal' ? 'p1' : 'long-dragon');
   const isClosed = timeLeft <= lockSeconds;
 
   const clearSelections = () => {
@@ -773,6 +832,25 @@ export default function App() {
               case '大双': isWin = tailBig && !tailOdd; break;
               case '小双': isWin = !tailBig && !tailOdd; break;
               default: break;
+            }
+          }
+        } else if (bet.type && bet.type.startsWith('animal-')) {
+          // ===== 动物运动会 settlement (drawNumbers = permutation of 1-6) =====
+          const pos = ANIMAL_POSITIONS.find(p => p.id === bet.positionId);
+          if (pos) {
+            const num = drawNumbers[pos.index]; // animal number at this 名次 (1-6)
+            if (bet.type === 'animal-number') {
+              isWin = num.toString() === bet.betName;
+            } else if (bet.type === 'animal-twosided') {
+              if (bet.betName === '大') isWin = num >= 4;
+              else if (bet.betName === '小') isWin = num <= 3;
+              else if (bet.betName === '单') isWin = num % 2 !== 0;
+              else if (bet.betName === '双') isWin = num % 2 === 0;
+            } else if (bet.type === 'animal-dragontiger') {
+              // 龙虎: 冠军vs第六名, 亚军vs第五名, 季军vs第四名 (index i vs 5-i)
+              const numOpp = drawNumbers[5 - pos.index];
+              if (bet.betName === '龙') isWin = num > numOpp;
+              else if (bet.betName === '虎') isWin = num < numOpp;
             }
           }
         } else if (bet.type && bet.type.startsWith('lhc-')) {
@@ -972,6 +1050,7 @@ export default function App() {
           const isK3 = game.kind === 'k3';
           const isXy28 = game.kind === 'xy28';
           const isLhc = game.kind === 'lhc';
+          const isAnimal = game.kind === 'animal';
           const drawNumbers = isFfc
             ? generateFfcDraw()
             : isK3
@@ -980,8 +1059,10 @@ export default function App() {
                 ? generateXy28Draw()
                 : isLhc
                   ? generateLhcDraw()
-                  : generateRandomDraw();
-          const drawIssueStr = (isFfc || isK3 || isXy28 || isLhc)
+                  : isAnimal
+                    ? generateAnimalDraw()
+                    : generateRandomDraw();
+          const drawIssueStr = (isFfc || isK3 || isXy28 || isLhc || isAnimal)
             ? game.currentIssue.toString()
             : game.currentIssue.toString().padStart(5, '0');
           const newDraw = { issue: drawIssueStr, numbers: drawNumbers };
@@ -1186,6 +1267,93 @@ export default function App() {
     // We calculate "长龙" from the history.
     const stats = [];
     if (history.length === 0) return stats;
+
+    // ===== 动物运动会 long dragon: per-名次 大小 & 单双 streaks, plus 龙虎 for 冠/亚/季 =====
+    if (gameKind === 'animal') {
+      ANIMAL_POSITIONS.forEach((pos) => {
+        const idx = pos.index;
+
+        // 大小 (大: 号码 4-6, 小: 1-3)
+        let consecutiveBS = 0;
+        let activeBS = null;
+        for (let i = 0; i < history.length; i++) {
+          const bs = history[i].numbers[idx] >= 4 ? '大' : '小';
+          if (i === 0) { activeBS = bs; consecutiveBS = 1; }
+          else if (bs === activeBS) consecutiveBS++;
+          else break;
+        }
+        if (consecutiveBS >= 2) {
+          const mk = (label) => ({
+            id: `animal-${pos.id}-animal-twosided-${label}`,
+            tabId: 'long-dragon', positionId: pos.id, positionName: pos.name,
+            betName: label, odds: ANIMAL_ODDS.twoSided,
+            displayTitle: `${pos.name}-${label}`, type: 'animal-twosided',
+          });
+          stats.push({
+            title: `${pos.name}-${activeBS}`, consecutive: consecutiveBS,
+            opt1Label: '大', opt2Label: '小',
+            opt1Id: `animal-${pos.id}-animal-twosided-大`, opt2Id: `animal-${pos.id}-animal-twosided-小`,
+            odds1: ANIMAL_ODDS.twoSided, odds2: ANIMAL_ODDS.twoSided,
+            opt1BetObj: mk('大'), opt2BetObj: mk('小'),
+          });
+        }
+
+        // 单双
+        let consecutiveOE = 0;
+        let activeOE = null;
+        for (let i = 0; i < history.length; i++) {
+          const oe = history[i].numbers[idx] % 2 !== 0 ? '单' : '双';
+          if (i === 0) { activeOE = oe; consecutiveOE = 1; }
+          else if (oe === activeOE) consecutiveOE++;
+          else break;
+        }
+        if (consecutiveOE >= 2) {
+          const mk = (label) => ({
+            id: `animal-${pos.id}-animal-twosided-${label}`,
+            tabId: 'long-dragon', positionId: pos.id, positionName: pos.name,
+            betName: label, odds: ANIMAL_ODDS.twoSided,
+            displayTitle: `${pos.name}-${label}`, type: 'animal-twosided',
+          });
+          stats.push({
+            title: `${pos.name}-${activeOE}`, consecutive: consecutiveOE,
+            opt1Label: '单', opt2Label: '双',
+            opt1Id: `animal-${pos.id}-animal-twosided-单`, opt2Id: `animal-${pos.id}-animal-twosided-双`,
+            odds1: ANIMAL_ODDS.twoSided, odds2: ANIMAL_ODDS.twoSided,
+            opt1BetObj: mk('单'), opt2BetObj: mk('双'),
+          });
+        }
+
+        // 龙虎 — 冠军vs第六名, 亚军vs第五名, 季军vs第四名 (只有前三名有)
+        if (idx < 3) {
+          const oppIdx = 5 - idx;
+          let consecutiveDT = 0;
+          let activeDT = null;
+          for (let i = 0; i < history.length; i++) {
+            const dt = history[i].numbers[idx] > history[i].numbers[oppIdx] ? '龙' : '虎';
+            if (i === 0) { activeDT = dt; consecutiveDT = 1; }
+            else if (dt === activeDT) consecutiveDT++;
+            else break;
+          }
+          if (consecutiveDT >= 2) {
+            const mk = (label) => ({
+              id: `animal-${pos.id}-animal-dragontiger-${label}`,
+              tabId: 'long-dragon', positionId: pos.id, positionName: pos.name,
+              betName: label, odds: ANIMAL_ODDS.twoSided,
+              displayTitle: `${pos.name}-${label}`, type: 'animal-dragontiger',
+            });
+            stats.push({
+              title: `${pos.name}-${activeDT}`, consecutive: consecutiveDT,
+              opt1Label: '龙', opt2Label: '虎',
+              opt1Id: `animal-${pos.id}-animal-dragontiger-龙`, opt2Id: `animal-${pos.id}-animal-dragontiger-虎`,
+              odds1: ANIMAL_ODDS.twoSided, odds2: ANIMAL_ODDS.twoSided,
+              opt1BetObj: mk('龙'), opt2BetObj: mk('虎'),
+            });
+          }
+        }
+      });
+
+      return stats.sort((a, b) => b.consecutive - a.consecutive).slice(0, 8);
+    }
 
     // ===== 分分彩 long dragon: per-ball & 总和 大小/单双 streaks =====
     if (gameKind === 'ffc') {
@@ -1615,6 +1783,11 @@ export default function App() {
       );
       return els;
     }
+    if (gameKind === 'animal') {
+      return numbers.map((num, idx) => (
+        <img key={idx} className="pk10-ball animal-ball" src={animalBallSrc(num)} alt={num} />
+      ));
+    }
     if (gameKind === 'ffc') {
       return numbers.map((num, idx) => (
         <img key={idx} className="pk10-ball" src={ffcBallSrc(num)} alt={num} />
@@ -1845,14 +2018,22 @@ export default function App() {
           />
         ) : (
           isVideoOpen && (
-            <div className={`video-player-container open ${gameKind === 'k3' ? 'k3' : gameKind === 'xy28' ? 'xy28' : gameKind === 'lhc' ? 'lhc' : ''}`}>
-              <div className="video-top-bar">
-                <span className="video-logo">{gameName(activeGameId)}</span>
-                <div className="video-rank-row">
-                  {lastDraw && renderBallsRow(lastDraw.numbers)}
+            <div className={`video-player-container open ${gameKind === 'k3' ? 'k3' : gameKind === 'xy28' ? 'xy28' : gameKind === 'lhc' ? 'lhc' : gameKind === 'animal' ? 'animal' : ''}`}>
+              {/* 动物运动会 embeds the full Cocos scene (which has its own header),
+                  so skip the app's result top-bar for it. */}
+              {gameKind !== 'animal' && (
+                <div className="video-top-bar">
+                  <span className="video-logo">{gameName(activeGameId)}</span>
+                  <div className="video-rank-row">
+                    {lastDraw && renderBallsRow(lastDraw.numbers)}
+                  </div>
                 </div>
-              </div>
-              {gameKind === 'lhc' ? (
+              )}
+              {gameKind === 'animal' ? (
+                <AnimalAnimation
+                  activeGameId={activeGameId}
+                />
+              ) : gameKind === 'lhc' ? (
                 <LhcAnimation
                   activeGame={activeGame}
                   gameName={gameName(activeGameId)}
@@ -1886,17 +2067,20 @@ export default function App() {
       <div className="main-layout">
         {/* Left Sidebar Menu */}
         <nav className="sidebar-menu">
-          <button
-            type="button"
-            className="follow-plan-btn"
-            onClick={() => setIsFollowPlanOpen(true)}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 20h9" />
-              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
-            </svg>
-            跟单计划
-          </button>
+          {/* 动物运动会 has no 跟单计划 entry. */}
+          {gameKind !== 'animal' && (
+            <button
+              type="button"
+              className="follow-plan-btn"
+              onClick={() => setIsFollowPlanOpen(true)}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
+              </svg>
+              跟单计划
+            </button>
+          )}
           {sidebarTabs.map((tab) => {
             const isActive = activeTab === tab.id;
             return (

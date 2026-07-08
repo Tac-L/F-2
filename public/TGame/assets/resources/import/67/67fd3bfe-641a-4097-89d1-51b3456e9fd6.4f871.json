@@ -1,0 +1,187 @@
+[
+  1,
+  ["82BRI/IgdMDJPUhQ/Lwr9G"],
+  0,
+  [
+    [
+      "sp.SkeletonData",
+      ["_name", "_atlasText", "textureNames", "_skeletonJson", "textures"],
+      -1,
+      3
+    ]
+  ],
+  [[0, 0, 1, 2, 3, 4, 5]],
+  [
+    [
+      0,
+      "jiansu",
+      "\njiansu.png\nsize: 513,357\nformat: RGBA8888\nfilter: Linear,Linear\nrepeat: none\njiansu_0000\n  rotate: false\n  xy: 2, 2\n  size: 263, 353\n  orig: 289, 375\n  offset: 13, 11\n  index: -1\njiansu_0001\n  rotate: false\n  xy: 267, 26\n  size: 205, 137\n  orig: 211, 142\n  offset: 3, 2\n  index: -1\njiansu_0002\n  rotate: true\n  xy: 267, 165\n  size: 190, 244\n  orig: 190, 244\n  offset: 0, 0\n  index: -1\n",
+      ["jiansu.png"],
+      {
+        "skeleton": {
+          "hash": "FO/ZuqNz8y6sHhoqoEaMBjvlOms",
+          "spine": "3.8.75",
+          "x": -119.68,
+          "y": -66.4,
+          "width": 289,
+          "height": 426.75,
+          "images": "",
+          "audio": ""
+        },
+        "bones": [
+          {
+            "name": "root"
+          },
+          {
+            "name": "yu",
+            "parent": "root"
+          },
+          {
+            "name": "jiansu_0002",
+            "parent": "yu"
+          },
+          {
+            "name": "jiansu_2",
+            "parent": "yu"
+          }
+        ],
+        "slots": [
+          {
+            "name": "jiansu_0000",
+            "bone": "root",
+            "attachment": "jiansu_0000"
+          },
+          {
+            "name": "jiansu_2",
+            "bone": "yu",
+            "attachment": "jiansu_2"
+          },
+          {
+            "name": "jiansu_0002",
+            "bone": "jiansu_0002",
+            "attachment": "jiansu_0002"
+          },
+          {
+            "name": "jiansu_3",
+            "bone": "jiansu_2",
+            "attachment": "jiansu_0002"
+          },
+          {
+            "name": "jiansu_0001",
+            "bone": "root",
+            "attachment": "jiansu_0001"
+          }
+        ],
+        "skins": [
+          {
+            "name": "default",
+            "attachments": {
+              "jiansu_2": {
+                "jiansu_2": {
+                  "type": "clipping",
+                  "end": "jiansu_3",
+                  "vertexCount": 4,
+                  "color": "ce3a3a00",
+                  "vertices": [
+                    -119.53, -0.42, 120.59, -1.58, 157.71, 261.74, -57.47,
+                    263.48
+                  ]
+                }
+              },
+              "jiansu_3": {
+                "jiansu_0002": {
+                  "x": 25.34,
+                  "y": 123.78,
+                  "width": 190,
+                  "height": 244
+                }
+              },
+              "jiansu_0000": {
+                "jiansu_0000": {
+                  "x": 24.82,
+                  "y": 121.1,
+                  "width": 289,
+                  "height": 375
+                }
+              },
+              "jiansu_0001": {
+                "jiansu_0001": {
+                  "x": 50.69,
+                  "y": 289.35,
+                  "width": 211,
+                  "height": 142
+                }
+              },
+              "jiansu_0002": {
+                "jiansu_0002": {
+                  "x": 25.34,
+                  "y": 123.78,
+                  "width": 190,
+                  "height": 244
+                }
+              }
+            }
+          }
+        ],
+        "animations": {
+          "jiansu": {
+            "bones": {
+              "jiansu_0002": {
+                "translate": [
+                  {
+                    "x": 58.02,
+                    "y": 260.29
+                  },
+                  {
+                    "time": 1.3333,
+                    "x": -54.1,
+                    "y": -253.23
+                  },
+                  {
+                    "time": 1.3667,
+                    "x": 58.02,
+                    "y": 260.29
+                  },
+                  {
+                    "time": 2,
+                    "x": 1.96,
+                    "y": 3.53
+                  }
+                ]
+              },
+              "jiansu_2": {
+                "translate": [
+                  {
+                    "x": 1.96,
+                    "y": 3.53
+                  },
+                  {
+                    "time": 0.6333,
+                    "x": -54.1,
+                    "y": -253.23
+                  },
+                  {
+                    "time": 0.6667,
+                    "x": 58.02,
+                    "y": 260.29
+                  },
+                  {
+                    "time": 2,
+                    "x": -54.1,
+                    "y": -253.23
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      [0]
+    ]
+  ],
+  0,
+  0,
+  [0],
+  [-1],
+  [0]
+]

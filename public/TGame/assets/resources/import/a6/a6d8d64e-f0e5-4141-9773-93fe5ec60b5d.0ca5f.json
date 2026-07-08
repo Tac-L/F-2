@@ -1,0 +1,240 @@
+[
+  1,
+  ["b6O9UmPjxH3qjx023byIZ0"],
+  0,
+  [
+    [
+      "sp.SkeletonData",
+      ["_name", "_atlasText", "textureNames", "_skeletonJson", "textures"],
+      -1,
+      3
+    ]
+  ],
+  [[0, 0, 1, 2, 3, 4, 5]],
+  [
+    [
+      0,
+      "ff",
+      "\nff.png\nsize: 589,208\nformat: RGBA8888\nfilter: Linear,Linear\nrepeat: none\nff_0000\n  rotate: true\n  xy: 2, 2\n  size: 204, 395\n  orig: 204, 395\n  offset: 0, 0\n  index: -1\nff_0001\n  rotate: false\n  xy: 399, 20\n  size: 120, 186\n  orig: 120, 186\n  offset: 0, 0\n  index: -1\nff_0002\n  rotate: false\n  xy: 521, 3\n  size: 66, 203\n  orig: 66, 203\n  offset: 0, 0\n  index: -1\n",
+      ["ff.png"],
+      {
+        "skeleton": {
+          "hash": "RGfms3G2fu890I6uYSebJVdQLaE",
+          "spine": "3.8.75",
+          "x": -143.12,
+          "y": -1.2,
+          "width": 248.82,
+          "height": 395,
+          "images": "",
+          "audio": ""
+        },
+        "bones": [
+          {
+            "name": "root"
+          },
+          {
+            "name": "ff_0000",
+            "parent": "root",
+            "length": 100,
+            "rotation": 90
+          },
+          {
+            "name": "ff_0001",
+            "parent": "root",
+            "x": 72.7,
+            "y": 225.41
+          },
+          {
+            "name": "ff_0002",
+            "parent": "root",
+            "x": -75.92,
+            "y": 231.92
+          }
+        ],
+        "slots": [
+          {
+            "name": "ff_0001",
+            "bone": "ff_0001",
+            "attachment": "ff_0002"
+          },
+          {
+            "name": "ff_0002",
+            "bone": "ff_0002",
+            "attachment": "ff_0002"
+          },
+          {
+            "name": "ff_0000",
+            "bone": "ff_0000",
+            "attachment": "ff_0000"
+          }
+        ],
+        "skins": [
+          {
+            "name": "default",
+            "attachments": {
+              "ff_0000": {
+                "ff_0000": {
+                  "x": 196.3,
+                  "rotation": -90,
+                  "width": 204,
+                  "height": 395
+                }
+              },
+              "ff_0001": {
+                "ff_0001": {
+                  "x": 59.55,
+                  "y": 72.83,
+                  "width": 120,
+                  "height": 186
+                },
+                "ff_0002": {
+                  "y": 0.5,
+                  "width": 66,
+                  "height": 203
+                }
+              },
+              "ff_0002": {
+                "ff_0002": {
+                  "x": -34.2,
+                  "y": -72.46,
+                  "width": 66,
+                  "height": 203
+                }
+              }
+            }
+          }
+        ],
+        "animations": {
+          "win": {
+            "slots": {
+              "ff_0001": {
+                "attachment": [
+                  {
+                    "name": "ff_0001"
+                  }
+                ]
+              }
+            },
+            "bones": {
+              "ff_0000": {
+                "scale": [
+                  {
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.3333,
+                    "x": 0.993,
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.6667
+                  }
+                ]
+              },
+              "ff_0002": {
+                "rotate": [
+                  {
+                    "angle": 1.87,
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.3333,
+                    "angle": 1.13,
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.6667,
+                    "angle": 1.87
+                  }
+                ],
+                "translate": [
+                  {},
+                  {
+                    "time": 0.3333,
+                    "y": -2.27
+                  },
+                  {
+                    "time": 0.6667
+                  }
+                ]
+              },
+              "ff_0001": {
+                "rotate": [
+                  {
+                    "angle": -3.92,
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.3333,
+                    "angle": -14.4,
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.6667,
+                    "angle": -3.92
+                  }
+                ],
+                "translate": [
+                  {
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.3333,
+                    "y": -3.02,
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.6667
+                  }
+                ]
+              }
+            }
+          },
+          "win2": {
+            "bones": {
+              "ff_0002": {
+                "rotate": [
+                  {
+                    "angle": 1.87
+                  }
+                ]
+              },
+              "ff_0001": {
+                "rotate": [
+                  {
+                    "angle": -0.83
+                  }
+                ],
+                "translate": [
+                  {
+                    "x": 34.66,
+                    "y": -67.15
+                  }
+                ],
+                "scale": [
+                  {
+                    "x": -1
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      [0]
+    ]
+  ],
+  0,
+  0,
+  [0],
+  [-1],
+  [0]
+]

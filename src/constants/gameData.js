@@ -767,6 +767,49 @@ export const LHC_ZHENGTE_TWO_SIDED = [
 // Chinese numerals for 正特一 .. 正特六 (used in 长龙 titles / 正特 markets).
 export const LHC_CN_NUM = ['一', '二', '三', '四', '五', '六'];
 
+// ======================= 动物运动会 (ANIMAL) Game Configurations =======================
+// 6 animals race to the finish. A draw is a permutation of 1-6: drawNumbers[rank] is
+// the animal number that finished in that rank (index 0 = 冠军 … index 5 = 第六名).
+// Play mirrors PK10 but with 6 runners: per 名次 you bet a specific animal (1-6) or
+// 大小单双 / 龙虎 on the animal number at that rank.
+
+// Small colored number badge shown on each animal ball (1-6).
+export const ANIMAL_COLORS = {
+  1: { bg: '#f97316', text: '#ffffff' }, // Orange
+  2: { bg: '#3b82f6', text: '#ffffff' }, // Blue
+  3: { bg: '#22c55e', text: '#ffffff' }, // Green
+  4: { bg: '#ef4444', text: '#ffffff' }, // Red
+  5: { bg: '#a855f7', text: '#ffffff' }, // Purple
+  6: { bg: '#eab308', text: '#ffffff' }, // Gold
+};
+
+// The 6 finishing positions (名次).
+export const ANIMAL_POSITIONS = [
+  { id: 'p1', name: '冠军', index: 0 },
+  { id: 'p2', name: '亚军', index: 1 },
+  { id: 'p3', name: '季军', index: 2 },
+  { id: 'p4', name: '第四名', index: 3 },
+  { id: 'p5', name: '第五名', index: 4 },
+  { id: 'p6', name: '第六名', index: 5 },
+];
+
+// Left sidebar tabs for 动物彩: 长龙 + one tab per 名次.
+export const ANIMAL_SIDEBAR_TABS = [
+  { id: 'long-dragon', name: '长龙' },
+  ...ANIMAL_POSITIONS.map((p) => ({ id: p.id, name: p.name })),
+];
+
+// 龙虎 applies only to the first 3 名次 (1v6, 2v5, 3v4). Odds mirror the reference.
+export const ANIMAL_ODDS = {
+  number: 5.7,   // 猜名次: a specific animal (1-6) at the chosen 名次
+  twoSided: 1.9, // 大 / 小 / 单 / 双 / 龙 / 虎
+};
+
+// Animal ball artwork lives in /public/T-ball/T1.png … T6.png (each image already
+// includes the number, so no separate number badge is drawn).
+export const animalBallSrc = (n) =>
+  `${import.meta.env.BASE_URL}T-ball/T${n}.png`;
+
 // Game categories and list for the left side drawer
 export const DRAWER_CATEGORIES = [
   {
@@ -812,6 +855,15 @@ export const DRAWER_CATEGORIES = [
       { id: 'xy28_1m', name: '一分幸运28', status: 'active', initialTime: 48, maxTime: 60 },
       { id: 'xy28_5m', name: '五分幸运28', status: 'active', initialTime: 248, maxTime: 300 },
       { id: 'xy28_10m', name: '十分幸运28', status: 'active', initialTime: 548, maxTime: 600 }
+    ]
+  },
+  {
+    id: 'animal',
+    name: '动物彩',
+    games: [
+      { id: 'animal_1m', name: '一分动物运动会', status: 'active', initialTime: 48, maxTime: 60 },
+      { id: 'animal_5m', name: '五分动物运动会', status: 'active', initialTime: 248, maxTime: 300 },
+      { id: 'animal_10m', name: '十分动物运动会', status: 'active', initialTime: 548, maxTime: 600 }
     ]
   }
 ];

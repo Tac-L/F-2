@@ -1069,6 +1069,64 @@ img.pk10-ball {
   gap: 10px;
 }
 
+/* ===================== 动物运动会 (Animal Olympics) betting ===================== */
+/* Layout mirrors PK10: a 2-column grid of horizontal cells (icon on the left,
+   odds on the right). */
+.animal-board {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.animal-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+/* Keep the .bet-button horizontal layout (space-between): icon left, odds right.
+   Fixed height so the 两面 cells match the taller animal-icon cells. */
+.animal-cell {
+  flex: none;
+  padding: 6px 12px;
+  min-height: 46px;
+  box-sizing: border-box;
+}
+.animal-ball-wrap {
+  display: flex;
+  align-items: center;
+}
+.animal-ball-img {
+  height: 30px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+.animal-ds-pill {
+  padding: 3px 12px;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.animal-ds-pill.blue { background-color: #3b82f6; }
+.animal-ds-pill.orange { background-color: #f59e0b; }
+.animal-cell-odds {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.animal-cell.selected .animal-cell-odds {
+  color: var(--orange-selected);
+  font-weight: 600;
+}
+
+/* Draw-banner / animation top-bar animal balls — larger than the default 20px. */
+.pk10-ball.animal-ball {
+  width: 28px;
+  height: 28px;
+}
+
 /* Accordion Position Sections */
 /* Tight vertical stack for the position accordions (猜号码 / 两面盘). Overrides
    the play-area's 12px gap so the drawers sit closer together. */
@@ -2463,6 +2521,29 @@ img.pk10-ball {
 }
 /* The top result row needs room for the ball + 生肖 label (clipped at 28px). */
 .video-player-container.lhc .video-top-bar { height: 42px; }
+
+/* 动物运动会 — the packaged Cocos game forces its canvas to a square (side = width).
+   Match that with a square stage so no dark letterbox shows below the scene. */
+.video-player-container.open.animal {
+  height: auto;
+  background: transparent;
+}
+.animal-stage {
+  flex: none;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: linear-gradient(180deg, #ffd9c2 0%, #ffb999 100%);
+}
+.animal-game-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
 
 /* ===================== 六合彩 开奖动画 (LhcAnimation) ===================== */
 .lhca-stage {

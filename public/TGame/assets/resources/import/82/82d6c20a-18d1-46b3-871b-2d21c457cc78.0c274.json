@@ -1,0 +1,252 @@
+[
+  1,
+  ["d9631GYxhLvqh9VaNUSwog"],
+  0,
+  [
+    [
+      "sp.SkeletonData",
+      ["_name", "_atlasText", "textureNames", "_skeletonJson", "textures"],
+      -1,
+      3
+    ]
+  ],
+  [[0, 0, 1, 2, 3, 4, 5]],
+  [
+    [
+      0,
+      "cc",
+      "\ncc.png\nsize: 315,206\nformat: RGBA8888\nfilter: Linear,Linear\nrepeat: none\ncc_0000\n  rotate: false\n  xy: 207, 107\n  size: 105, 97\n  orig: 105, 97\n  offset: 0, 0\n  index: -1\ncc_0001\n  rotate: false\n  xy: 2, 2\n  size: 203, 202\n  orig: 203, 202\n  offset: 0, 0\n  index: -1\ncc_0002\n  rotate: false\n  xy: 271, 41\n  size: 42, 64\n  orig: 42, 64\n  offset: 0, 0\n  index: -1\ncc_0003\n  rotate: false\n  xy: 207, 30\n  size: 62, 75\n  orig: 62, 75\n  offset: 0, 0\n  index: -1\n",
+      ["cc.png"],
+      {
+        "skeleton": {
+          "hash": "3hjVl/cDguUvm8MZQUL+okWJsaQ",
+          "spine": "3.8.75",
+          "x": -135.22,
+          "y": -0.46,
+          "width": 240.42,
+          "height": 301.44,
+          "images": "",
+          "audio": ""
+        },
+        "bones": [
+          {
+            "name": "root"
+          },
+          {
+            "name": "cc_0001",
+            "parent": "root",
+            "x": 0.48,
+            "y": 91.96
+          },
+          {
+            "name": "cc_0002",
+            "parent": "root",
+            "x": -48.4,
+            "y": 81.31
+          },
+          {
+            "name": "cc_0003",
+            "parent": "root",
+            "x": 39.69,
+            "y": 81.31
+          }
+        ],
+        "slots": [
+          {
+            "name": "cc_0003",
+            "bone": "cc_0003",
+            "attachment": "cc_0003"
+          },
+          {
+            "name": "cc_0002",
+            "bone": "cc_0002",
+            "attachment": "cc_0002"
+          },
+          {
+            "name": "cc_0000",
+            "bone": "root",
+            "attachment": "cc_0000"
+          },
+          {
+            "name": "cc_0001",
+            "bone": "cc_0001",
+            "attachment": "cc_0001"
+          }
+        ],
+        "skins": [
+          {
+            "name": "default",
+            "attachments": {
+              "cc_0001": {
+                "cc_0001": {
+                  "x": -15.49,
+                  "y": 89.2,
+                  "rotation": 11.95,
+                  "width": 203,
+                  "height": 202
+                }
+              },
+              "cc_0002": {
+                "cc_0002": {
+                  "x": 3.31,
+                  "y": -15.8,
+                  "width": 42,
+                  "height": 64
+                }
+              },
+              "cc_0003": {
+                "cc_0003": {
+                  "x": 18.2,
+                  "y": 13.06,
+                  "rotation": -25.04,
+                  "width": 62,
+                  "height": 75
+                }
+              },
+              "cc_0000": {
+                "cc_0000": {
+                  "y": 48.04,
+                  "width": 105,
+                  "height": 97
+                }
+              }
+            }
+          }
+        ],
+        "animations": {
+          "win": {
+            "bones": {
+              "cc_0003": {
+                "rotate": [
+                  {
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.2667,
+                    "angle": -23.34,
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.5333
+                  }
+                ],
+                "translate": [
+                  {
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.2667,
+                    "x": -0.97,
+                    "y": 3.39,
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.5333
+                  }
+                ]
+              },
+              "cc_0001": {
+                "rotate": [
+                  {
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.2667,
+                    "angle": 2.81,
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.5333
+                  }
+                ]
+              },
+              "cc_0002": {
+                "rotate": [
+                  {
+                    "angle": -4.05,
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.2667,
+                    "angle": -7.36,
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.5333,
+                    "angle": -4.05
+                  }
+                ],
+                "translate": [
+                  {
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.2667,
+                    "x": -0.25,
+                    "y": -1.74,
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.5333
+                  }
+                ]
+              }
+            }
+          },
+          "win2": {
+            "bones": {
+              "cc_0003": {
+                "rotate": [
+                  {
+                    "angle": 145.57
+                  }
+                ],
+                "translate": [
+                  {
+                    "x": -3.29,
+                    "y": 13.7
+                  }
+                ],
+                "scale": [
+                  {
+                    "x": -1
+                  }
+                ]
+              },
+              "cc_0001": {
+                "rotate": [
+                  {
+                    "angle": -10.19
+                  }
+                ]
+              },
+              "cc_0002": {
+                "rotate": [
+                  {
+                    "angle": -4.05
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      [0]
+    ]
+  ],
+  0,
+  0,
+  [0],
+  [-1],
+  [0]
+]

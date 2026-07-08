@@ -15,6 +15,7 @@ import {
   LHC_BANBO_ITEMS, LHC_WUXING, LHC_ZONGXIAO,
   LHC_QISEBO, LHC_HEXIAO_CATEGORIES, LHC_HEXIAO_CN, lhcHexiaoOdds, combinations,
   lhcNumbersForCategory, lhcBallSrc, lhcPankouFactor,
+  ANIMAL_POSITIONS, ANIMAL_ODDS, animalBallSrc,
 } from '../constants/gameData';
 import Dice from './Dice';
 
@@ -1504,7 +1505,7 @@ export default function PlayArea({
                 disabled={isClosed}
               >
                 <span className="bet-button-text" style={{
-                  backgroundColor: opt === '大' || opt === '单' ? '#3b82f6' : '#f97316',
+                  backgroundColor: opt === '大' || opt === '单' ? '#3b82f6' : '#f59e0b',
                   color: '#ffffff',
                   padding: '2px 8px',
                   borderRadius: '4px'
@@ -1631,7 +1632,7 @@ export default function PlayArea({
                           disabled={isClosed}
                         >
                           <span className="bet-button-text" style={{
-                            backgroundColor: opt === '大' || opt === '单' || opt === '龙' ? '#3b82f6' : '#f97316',
+                            backgroundColor: opt === '大' || opt === '单' || opt === '龙' ? '#3b82f6' : '#f59e0b',
                             color: '#ffffff',
                             padding: '2px 8px',
                             borderRadius: '4px'
@@ -1808,7 +1809,7 @@ export default function PlayArea({
                           disabled={isClosed}
                         >
                           <span className="bet-button-text" style={{
-                            backgroundColor: opt === '大' || opt === '单' ? '#3b82f6' : '#f97316',
+                            backgroundColor: opt === '大' || opt === '单' ? '#3b82f6' : '#f59e0b',
                             color: '#ffffff',
                             padding: '2px 8px',
                             borderRadius: '4px'
@@ -2326,7 +2327,7 @@ export default function PlayArea({
 
   // 大/大单/大双/单 render blue; 小/小单/小双/双 render orange.
   const twoSidedBg = (label) =>
-    (label.includes('大') || label === '单') ? '#3b82f6' : '#f97316';
+    (label.includes('大') || label === '单') ? '#3b82f6' : '#f59e0b';
 
   // A collapsible section header styled like a dropdown selector.
   const renderXy28Section = (id, label, content) => {
@@ -2893,7 +2894,7 @@ export default function PlayArea({
             displayTitle: `正码-${label}`,
             type: 'lhc-zhengma-twosided',
           };
-          const bg = orangeLabels.includes(label) ? '#f97316' : '#3b82f6';
+          const bg = orangeLabels.includes(label) ? '#f59e0b' : '#3b82f6';
           return (
             <button
               key={label}
@@ -2943,7 +2944,7 @@ export default function PlayArea({
             displayTitle: `特码${temaPanel}-${label}`,
             type: 'lhc-tema-twosided',
           };
-          const bg = waveBg[label] || (orangeLabels.includes(label) ? '#f97316' : '#3b82f6');
+          const bg = waveBg[label] || (orangeLabels.includes(label) ? '#f59e0b' : '#3b82f6');
           return (
             <button
               key={label}
@@ -2983,7 +2984,7 @@ export default function PlayArea({
             displayTitle: `正${label}-${opt}`,
             type: 'lhc-zhengte-twosided',
           };
-          const bg = waveBg[opt] || (orangeLabels.includes(opt) ? '#f97316' : '#3b82f6');
+          const bg = waveBg[opt] || (orangeLabels.includes(opt) ? '#f59e0b' : '#3b82f6');
           return (
             <button
               key={opt}
@@ -3589,7 +3590,7 @@ export default function PlayArea({
             displayTitle: `总肖-${label}`,
             type: 'lhc-zongxiao',
           };
-          const bg = betName === '双' ? '#f97316' : '#3b82f6';
+          const bg = betName === '双' ? '#f59e0b' : '#3b82f6';
           return (
             <button
               key={betId}
@@ -3616,7 +3617,95 @@ export default function PlayArea({
     </div>
   );
 
+  // ================= 动物运动会 (Animal Olympics) =================
+  // One tab per 名次 (冠军…第六名). Top row: pick the animal (1-6) that finishes at
+  // this 名次; bottom row: 大小单双 (+ 龙虎 for 冠/亚/季). 长龙 / 游戏玩法 are TBD.
+  const renderAnimalPosition = (pos) => {
+    const hasDragonTiger = pos.index < 3; // 冠军vs第六名, 亚军vs第五名, 季军vs第四名
+    const dsOptions = hasDragonTiger
+      ? ['大', '小', '单', '双', '龙', '虎']
+      : ['大', '小', '单', '双'];
+
+    return (
+      <div className="play-area animal-play">
+        <div className="animal-board">
+          {/* 猜名次: the 6 animals */}
+          <div className="animal-row animal-num-row">
+            {[1, 2, 3, 4, 5, 6].map((num) => {
+              const betId = `animal-${pos.id}-number-${num}`;
+              const isSelected = isBetSelected(betId);
+              const betObj = {
+                id: betId,
+                tabId: pos.id,
+                positionId: pos.id,
+                positionName: pos.name,
+                betName: num.toString(),
+                odds: ANIMAL_ODDS.number,
+                displayTitle: `${pos.name}-${num}`,
+                type: 'animal-number',
+              };
+              return (
+                <button
+                  key={num}
+                  type="button"
+                  className={`bet-button animal-cell ${isSelected ? 'selected' : ''}`}
+                  onClick={() => onToggleBet(betObj)}
+                  disabled={isClosed}
+                >
+                  <span className="animal-ball-wrap">
+                    <img className="animal-ball-img" src={animalBallSrc(num)} alt={num} />
+                  </span>
+                  <span className="animal-cell-odds">{ANIMAL_ODDS.number}</span>
+                  {renderCheckmark(isSelected)}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* 两面: 大小单双 (+ 龙虎) */}
+          <div className="animal-row animal-ds-row">
+            {dsOptions.map((opt) => {
+              const type = (opt === '龙' || opt === '虎') ? 'animal-dragontiger' : 'animal-twosided';
+              const betId = `animal-${pos.id}-${type}-${opt}`;
+              const isSelected = isBetSelected(betId);
+              const betObj = {
+                id: betId,
+                tabId: pos.id,
+                positionId: pos.id,
+                positionName: pos.name,
+                betName: opt,
+                odds: ANIMAL_ODDS.twoSided,
+                displayTitle: `${pos.name}-${opt}`,
+                type,
+              };
+              return (
+                <button
+                  key={opt}
+                  type="button"
+                  className={`bet-button animal-cell animal-ds-cell ${isSelected ? 'selected' : ''}`}
+                  onClick={() => onToggleBet(betObj)}
+                  disabled={isClosed}
+                >
+                  <span className={`animal-ds-pill ${blueSide(opt) ? 'blue' : 'orange'}`}>{opt}</span>
+                  <span className="animal-cell-odds">{ANIMAL_ODDS.twoSided}</span>
+                  {renderCheckmark(isSelected)}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Render active content area
+  if (gameKind === 'animal') {
+    const pos = ANIMAL_POSITIONS.find((p) => p.id === activeTab);
+    if (pos) return renderAnimalPosition(pos);
+    if (activeTab === 'long-dragon') return renderLongDragon();
+    return <div className="play-area">Tab Content Not Found</div>;
+  }
+
   if (gameKind === 'lhc') {
     switch (activeTab) {
       case 'long-dragon':

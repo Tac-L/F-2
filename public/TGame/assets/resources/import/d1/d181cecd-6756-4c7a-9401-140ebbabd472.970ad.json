@@ -1,0 +1,1889 @@
+[
+    1,
+    [
+        "97+FI+g81BKpmScSxP1cRL"
+    ],
+    0,
+    [
+        [
+            "sp.SkeletonData",
+            [
+                "_name",
+                "_atlasText",
+                "textureNames",
+                "_skeletonJson",
+                "textures"
+            ],
+            -1,
+            3
+        ]
+    ],
+    [
+        [
+            0,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+        ]
+    ],
+    [
+        [
+            0,
+            "a",
+            "\na.png\nsize: 509,129\nformat: RGBA8888\nfilter: Linear,Linear\nrepeat: none\na_0000\n  rotate: false\n  xy: 120, 37\n  size: 78, 90\n  orig: 78, 90\n  offset: 0, 0\n  index: -1\na_0001\n  rotate: true\n  xy: 2, 2\n  size: 125, 116\n  orig: 125, 116\n  offset: 0, 0\n  index: -1\na_0002\n  rotate: true\n  xy: 200, 41\n  size: 86, 55\n  orig: 86, 55\n  offset: 0, 0\n  index: -1\na_0003\n  rotate: true\n  xy: 326, 58\n  size: 69, 39\n  orig: 69, 39\n  offset: 0, 0\n  index: -1\na_0004\n  rotate: true\n  xy: 184, 2\n  size: 33, 20\n  orig: 33, 20\n  offset: 0, 0\n  index: -1\na_0005\n  rotate: true\n  xy: 474, 55\n  size: 31, 30\n  orig: 31, 30\n  offset: 0, 0\n  index: -1\na_0006\n  rotate: false\n  xy: 430, 11\n  size: 42, 48\n  orig: 42, 48\n  offset: 0, 0\n  index: -1\na_0007\n  rotate: true\n  xy: 403, 61\n  size: 66, 32\n  orig: 66, 32\n  offset: 0, 0\n  index: -1\na_0009\n  rotate: false\n  xy: 120, 2\n  size: 62, 33\n  orig: 62, 33\n  offset: 0, 0\n  index: -1\na_0010\n  rotate: false\n  xy: 206, 2\n  size: 68, 37\n  orig: 68, 37\n  offset: 0, 0\n  index: -1\na_0011\n  rotate: true\n  xy: 367, 60\n  size: 67, 34\n  orig: 67, 34\n  offset: 0, 0\n  index: -1\na_0012\n  rotate: false\n  xy: 257, 55\n  size: 31, 72\n  orig: 31, 72\n  offset: 0, 0\n  index: -1\na_0013\n  rotate: false\n  xy: 290, 57\n  size: 34, 70\n  orig: 34, 70\n  offset: 0, 0\n  index: -1\na_0014\n  rotate: false\n  xy: 437, 87\n  size: 34, 40\n  orig: 34, 40\n  offset: 0, 0\n  index: -1\na_0015\n  rotate: false\n  xy: 473, 88\n  size: 34, 39\n  orig: 34, 39\n  offset: 0, 0\n  index: -1\na_0016\n  rotate: false\n  xy: 276, 5\n  size: 152, 48\n  orig: 152, 48\n  offset: 0, 0\n  index: -1\n",
+            [
+                "a.png"
+            ],
+            {
+                "skeleton": {
+                    "hash": "rE/hG8SibF8/lVkgKIzEwA4vlbU",
+                    "spine": "3.8.75",
+                    "x": -75,
+                    "y": -26,
+                    "width": 153.06,
+                    "height": 265.4,
+                    "images": "",
+                    "audio": ""
+                },
+                "bones": [
+                    {
+                        "name": "root"
+                    },
+                    {
+                        "name": "yingzi",
+                        "parent": "root"
+                    },
+                    {
+                        "name": "zhongxin",
+                        "parent": "root",
+                        "rotation": 90.06,
+                        "x": -1.34,
+                        "y": 32.89
+                    },
+                    {
+                        "name": "shenti",
+                        "parent": "zhongxin",
+                        "length": 60,
+                        "x": -1.33,
+                        "y": -0.61,
+                        "color": "ff0000ff"
+                    },
+                    {
+                        "name": "tou",
+                        "parent": "shenti",
+                        "length": 70,
+                        "rotation": -1.94,
+                        "x": 82.63,
+                        "y": -12.66,
+                        "transform": "noScale",
+                        "color": "00c1ffff"
+                    },
+                    {
+                        "name": "weijin2",
+                        "parent": "shenti",
+                        "length": 20,
+                        "rotation": 86.31,
+                        "x": 86.57,
+                        "y": 21.61
+                    },
+                    {
+                        "name": "L1",
+                        "parent": "shenti",
+                        "length": 50,
+                        "rotation": -155.33,
+                        "x": 65.95,
+                        "y": 21.03
+                    },
+                    {
+                        "name": "R1",
+                        "parent": "shenti",
+                        "length": 50,
+                        "rotation": -128.63,
+                        "x": 59.32,
+                        "y": -23.94
+                    },
+                    {
+                        "name": "weiba",
+                        "parent": "shenti",
+                        "length": 20,
+                        "rotation": 84.42,
+                        "x": 30,
+                        "y": 35.15
+                    },
+                    {
+                        "name": "erduo",
+                        "parent": "tou",
+                        "length": 20,
+                        "rotation": 12.07,
+                        "x": 87.27,
+                        "y": 27.01
+                    },
+                    {
+                        "name": "erduo2",
+                        "parent": "tou",
+                        "length": 20,
+                        "rotation": -19.26,
+                        "x": 85.29,
+                        "y": -27.94,
+                        "scaleY": -1
+                    },
+                    {
+                        "name": "RR",
+                        "parent": "zhongxin",
+                        "length": 30,
+                        "rotation": 179.81,
+                        "x": 1.48,
+                        "y": -14.25
+                    },
+                    {
+                        "name": "LL",
+                        "parent": "zhongxin",
+                        "length": 30,
+                        "rotation": -179.8,
+                        "x": 1.5,
+                        "y": 8.94
+                    }
+                ],
+                "slots": [
+                    {
+                        "name": "yingzi",
+                        "bone": "yingzi",
+                        "attachment": "a_0016"
+                    },
+                    {
+                        "name": "weiba",
+                        "bone": "weiba",
+                        "attachment": "a_0005"
+                    },
+                    {
+                        "name": "RR",
+                        "bone": "RR",
+                        "attachment": "a_0015"
+                    },
+                    {
+                        "name": "R1",
+                        "bone": "R1",
+                        "attachment": "a_0013"
+                    },
+                    {
+                        "name": "shenti",
+                        "bone": "shenti",
+                        "attachment": "a_0000"
+                    },
+                    {
+                        "name": "LL",
+                        "bone": "LL",
+                        "attachment": "a_0014"
+                    },
+                    {
+                        "name": "L1",
+                        "bone": "L1",
+                        "attachment": "a_0012"
+                    },
+                    {
+                        "name": "weijin2",
+                        "bone": "weijin2",
+                        "attachment": "a_0004"
+                    },
+                    {
+                        "name": "weijin",
+                        "bone": "shenti",
+                        "attachment": "a_0003"
+                    },
+                    {
+                        "name": "erduo2",
+                        "bone": "erduo2",
+                        "attachment": "a_0006"
+                    },
+                    {
+                        "name": "erduo",
+                        "bone": "erduo",
+                        "attachment": "a_0006"
+                    },
+                    {
+                        "name": "tou",
+                        "bone": "tou",
+                        "attachment": "a_0001"
+                    },
+                    {
+                        "name": "zui",
+                        "bone": "tou",
+                        "attachment": "a_0002"
+                    },
+                    {
+                        "name": "yan",
+                        "bone": "tou",
+                        "attachment": "a_0007"
+                    }
+                ],
+                "skins": [
+                    {
+                        "name": "default",
+                        "attachments": {
+                            "RR": {
+                                "a_0015": {
+                                    "x": 15.49,
+                                    "y": 0.63,
+                                    "rotation": 90.13,
+                                    "width": 34,
+                                    "height": 39
+                                }
+                            },
+                            "tou": {
+                                "a_0001": {
+                                    "x": 48.26,
+                                    "y": 0.39,
+                                    "rotation": -88.13,
+                                    "width": 125,
+                                    "height": 116
+                                }
+                            },
+                            "zui": {
+                                "a_0002": {
+                                    "x": 25,
+                                    "y": -10.8,
+                                    "rotation": -88.13,
+                                    "width": 86,
+                                    "height": 55
+                                }
+                            },
+                            "weijin": {
+                                "a_0003": {
+                                    "x": 71.54,
+                                    "y": -8.88,
+                                    "rotation": -90.06,
+                                    "width": 69,
+                                    "height": 39
+                                }
+                            },
+                            "weiba": {
+                                "a_0005": {
+                                    "x": 13.56,
+                                    "y": -4.65,
+                                    "rotation": -174.49,
+                                    "width": 31,
+                                    "height": 30
+                                }
+                            },
+                            "weijin2": {
+                                "a_0004": {
+                                    "x": 13.4,
+                                    "y": -0.89,
+                                    "rotation": -176.37,
+                                    "width": 33,
+                                    "height": 20
+                                }
+                            },
+                            "R1": {
+                                "a_0011": {
+                                    "x": 24.01,
+                                    "y": -5.56,
+                                    "rotation": 5.68,
+                                    "width": 67,
+                                    "height": 34
+                                },
+                                "a_0013": {
+                                    "x": 27.93,
+                                    "y": -1.78,
+                                    "rotation": 74.11,
+                                    "width": 34,
+                                    "height": 70
+                                }
+                            },
+                            "erduo2": {
+                                "a_0006": {
+                                    "x": 13.49,
+                                    "y": 1.11,
+                                    "rotation": -100.2,
+                                    "width": 42,
+                                    "height": 48
+                                }
+                            },
+                            "L1": {
+                                "a_0010": {
+                                    "x": 23.85,
+                                    "y": -9.19,
+                                    "rotation": 2.96,
+                                    "width": 68,
+                                    "height": 37
+                                },
+                                "a_0012": {
+                                    "x": 26.38,
+                                    "y": 0.99,
+                                    "rotation": 101.82,
+                                    "width": 31,
+                                    "height": 72
+                                }
+                            },
+                            "yan": {
+                                "a_0007": {
+                                    "x": 65.48,
+                                    "y": -15.69,
+                                    "rotation": -88.13,
+                                    "width": 66,
+                                    "height": 32
+                                },
+                                "a_0009": {
+                                    "x": 67.33,
+                                    "y": -15.63,
+                                    "rotation": -88.13,
+                                    "width": 62,
+                                    "height": 33
+                                }
+                            },
+                            "LL": {
+                                "a_0014": {
+                                    "x": 15.58,
+                                    "y": 1.97,
+                                    "rotation": 89.73,
+                                    "width": 34,
+                                    "height": 40
+                                }
+                            },
+                            "erduo": {
+                                "a_0006": {
+                                    "x": 13.49,
+                                    "y": 1.11,
+                                    "rotation": -100.2,
+                                    "width": 42,
+                                    "height": 48
+                                }
+                            },
+                            "shenti": {
+                                "a_0000": {
+                                    "x": 43.04,
+                                    "y": -0.77,
+                                    "rotation": -90.06,
+                                    "width": 78,
+                                    "height": 90
+                                }
+                            },
+                            "yingzi": {
+                                "a_0016": {
+                                    "x": 1,
+                                    "y": -2,
+                                    "width": 152,
+                                    "height": 48
+                                }
+                            }
+                        }
+                    }
+                ],
+                "animations": {
+                    "idle": {
+                        "bones": {
+                            "L1": {
+                                "rotate": [
+                                    {
+                                        "angle": -37.31,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.5,
+                                        "angle": -40.71,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 1,
+                                        "angle": -37.31
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "x": 3.05,
+                                        "y": 1.09
+                                    }
+                                ]
+                            },
+                            "R1": {
+                                "rotate": [
+                                    {
+                                        "angle": -34.4,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.5,
+                                        "angle": -31.74,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 1,
+                                        "angle": -34.4
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "x": 13.07,
+                                        "y": -5.36
+                                    }
+                                ]
+                            },
+                            "RR": {
+                                "rotate": [
+                                    {
+                                        "angle": 0.76
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "x": 8.72,
+                                        "y": 0.32
+                                    }
+                                ]
+                            },
+                            "LL": {
+                                "rotate": [
+                                    {
+                                        "angle": -1.74
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "x": 4.47,
+                                        "y": -2.08
+                                    }
+                                ]
+                            },
+                            "zhongxin": {
+                                "translate": [
+                                    {
+                                        "y": -3.92
+                                    }
+                                ]
+                            },
+                            "shenti": {
+                                "translate": [
+                                    {
+                                        "x": -3.87,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.5,
+                                        "x": -4.34,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 1,
+                                        "x": -3.87
+                                    }
+                                ],
+                                "scale": [
+                                    {
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.5,
+                                        "x": 0.99,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 1
+                                    }
+                                ]
+                            },
+                            "weiba": {
+                                "rotate": [
+                                    {
+                                        "angle": -2.72,
+                                        "curve": 0.381,
+                                        "c2": 0.55,
+                                        "c3": 0.742
+                                    },
+                                    {
+                                        "time": 0.5,
+                                        "angle": 1.73,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 1,
+                                        "angle": -2.72
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "x": 0.43,
+                                        "y": -4.33
+                                    }
+                                ]
+                            },
+                            "tou": {
+                                "translate": [
+                                    {
+                                        "x": 0.88,
+                                        "y": 3.49
+                                    }
+                                ]
+                            },
+                            "yingzi": {
+                                "scale": [
+                                    {
+                                        "x": 0.85,
+                                        "y": 0.85
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "run": {
+                        "slots": {
+                            "L1": {
+                                "attachment": [
+                                    {
+                                        "name": "a_0010"
+                                    }
+                                ]
+                            },
+                            "R1": {
+                                "attachment": [
+                                    {
+                                        "name": "a_0011"
+                                    }
+                                ]
+                            }
+                        },
+                        "bones": {
+                            "zhongxin": {
+                                "rotate": [
+                                    {
+                                        "angle": -7.76
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "y": 8.99,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "y": -3.61,
+                                        "curve": 0,
+                                        "c2": 0.43,
+                                        "c3": 0.372
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "y": 7.25,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.5,
+                                        "y": -3.61,
+                                        "curve": 0,
+                                        "c2": 0.43,
+                                        "c3": 0.372
+                                    },
+                                    {
+                                        "time": 0.6667,
+                                        "y": 8.99
+                                    }
+                                ]
+                            },
+                            "LL": {
+                                "rotate": [
+                                    {
+                                        "angle": 51.39,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "angle": -39.53,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667,
+                                        "angle": 51.39
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "x": 3.51,
+                                        "y": -17.5,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "x": 6.93,
+                                        "y": -1.81,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667,
+                                        "x": 3.51,
+                                        "y": -17.5
+                                    }
+                                ]
+                            },
+                            "RR": {
+                                "rotate": [
+                                    {
+                                        "angle": -35.34,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "angle": 48.96,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667,
+                                        "angle": -35.34
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "x": 4.48,
+                                        "y": 17.81,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "x": 4.88,
+                                        "y": 3.11,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667,
+                                        "x": 4.48,
+                                        "y": 17.81
+                                    }
+                                ]
+                            },
+                            "L1": {
+                                "rotate": [
+                                    {
+                                        "angle": -53.18,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "angle": 12.94,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667,
+                                        "angle": -53.18
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "x": 4.86,
+                                        "y": -2.02,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "x": -0.57,
+                                        "y": -7.95,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667,
+                                        "x": 4.86,
+                                        "y": -2.02
+                                    }
+                                ]
+                            },
+                            "R1": {
+                                "rotate": [
+                                    {
+                                        "angle": -1.56,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "angle": -70.82,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667,
+                                        "angle": -1.56
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "x": 0.5,
+                                        "y": 1.98,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "x": 2.45,
+                                        "y": 15.74,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667,
+                                        "x": 0.5,
+                                        "y": 1.98
+                                    }
+                                ]
+                            },
+                            "weijin2": {
+                                "rotate": [
+                                    {
+                                        "angle": -11.45,
+                                        "curve": 0.363,
+                                        "c2": 0.44,
+                                        "c3": 0.755
+                                    },
+                                    {
+                                        "time": 0.1,
+                                        "angle": -15.97,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.2667,
+                                        "angle": -8.81,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.4333,
+                                        "angle": 1.74,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6,
+                                        "angle": -8.81,
+                                        "curve": 0.258,
+                                        "c3": 0.619,
+                                        "c4": 0.45
+                                    },
+                                    {
+                                        "time": 0.6667,
+                                        "angle": -11.45
+                                    }
+                                ]
+                            },
+                            "weiba": {
+                                "rotate": [
+                                    {
+                                        "angle": -3.14,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "angle": -19.26,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "angle": -3.14,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.5,
+                                        "angle": -19.26,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667,
+                                        "angle": -3.14
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "x": -0.07,
+                                        "y": -2.3
+                                    }
+                                ]
+                            },
+                            "tou": {
+                                "rotate": [
+                                    {
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "angle": -1.64,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.5,
+                                        "angle": -1.64,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "x": -1.47,
+                                        "y": -0.2,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.5,
+                                        "x": -1.47,
+                                        "y": -0.2,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667
+                                    }
+                                ]
+                            },
+                            "shenti": {
+                                "translate": [
+                                    {
+                                        "x": -1.29,
+                                        "y": -0.17,
+                                        "curve": 0.363,
+                                        "c2": 0.44,
+                                        "c3": 0.755
+                                    },
+                                    {
+                                        "time": 0.1,
+                                        "x": -3.51,
+                                        "y": -0.47,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.2667,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.4333,
+                                        "x": -3.51,
+                                        "y": -0.47,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6,
+                                        "curve": 0.258,
+                                        "c3": 0.619,
+                                        "c4": 0.45
+                                    },
+                                    {
+                                        "time": 0.6667,
+                                        "x": -1.29,
+                                        "y": -0.17
+                                    }
+                                ]
+                            },
+                            "erduo": {
+                                "rotate": [
+                                    {
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "angle": 3.66,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.5,
+                                        "angle": -2.82,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667
+                                    }
+                                ]
+                            },
+                            "erduo2": {
+                                "rotate": [
+                                    {
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "angle": 3.66,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.5,
+                                        "angle": -2.82,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667
+                                    }
+                                ]
+                            },
+                            "yingzi": {
+                                "scale": [
+                                    {
+                                        "x": 0.8,
+                                        "y": 0.8,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "x": 0.85,
+                                        "y": 0.85,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "x": 0.8,
+                                        "y": 0.8,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.5,
+                                        "x": 0.85,
+                                        "y": 0.85,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667,
+                                        "x": 0.8,
+                                        "y": 0.8
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "speedup": {
+                        "slots": {
+                            "L1": {
+                                "attachment": [
+                                    {
+                                        "name": "a_0010"
+                                    }
+                                ]
+                            },
+                            "yan": {
+                                "attachment": [
+                                    {
+                                        "name": "a_0009"
+                                    }
+                                ]
+                            },
+                            "R1": {
+                                "attachment": [
+                                    {
+                                        "name": "a_0011"
+                                    }
+                                ]
+                            }
+                        },
+                        "bones": {
+                            "zhongxin": {
+                                "rotate": [
+                                    {
+                                        "angle": -10.24
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "y": 8.99,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.0667,
+                                        "y": -3.61,
+                                        "curve": 0,
+                                        "c2": 0.43,
+                                        "c3": 0.372
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "y": 7.25,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.2333,
+                                        "y": -3.61,
+                                        "curve": 0,
+                                        "c2": 0.43,
+                                        "c3": 0.372
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "y": 8.99
+                                    }
+                                ]
+                            },
+                            "LL": {
+                                "rotate": [
+                                    {
+                                        "angle": 51.39,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "angle": -39.53,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "angle": 51.39
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "x": 3.51,
+                                        "y": -17.5,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "x": 6.93,
+                                        "y": -1.81,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "x": 3.51,
+                                        "y": -17.5
+                                    }
+                                ]
+                            },
+                            "RR": {
+                                "rotate": [
+                                    {
+                                        "angle": -35.34,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "angle": 48.96,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "angle": -35.34
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "x": 4.48,
+                                        "y": 17.81,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "x": 4.88,
+                                        "y": 3.11,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "x": 4.48,
+                                        "y": 17.81
+                                    }
+                                ]
+                            },
+                            "L1": {
+                                "rotate": [
+                                    {
+                                        "angle": -53.18,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "angle": 12.94,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "angle": -53.18
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "x": 4.86,
+                                        "y": -2.02,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "x": -0.57,
+                                        "y": -7.95,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "x": 4.86,
+                                        "y": -2.02
+                                    }
+                                ]
+                            },
+                            "R1": {
+                                "rotate": [
+                                    {
+                                        "angle": -1.56,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "angle": -70.82,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "angle": -1.56
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "x": 0.5,
+                                        "y": 1.98,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "x": 2.45,
+                                        "y": 15.74,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "x": 0.5,
+                                        "y": 1.98
+                                    }
+                                ]
+                            },
+                            "weijin2": {
+                                "rotate": [
+                                    {
+                                        "angle": -11.45,
+                                        "curve": 0.363,
+                                        "c2": 0.44,
+                                        "c3": 0.755
+                                    },
+                                    {
+                                        "time": 0.0667,
+                                        "angle": -15.97,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1333,
+                                        "angle": -8.81,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.2333,
+                                        "angle": 1.74,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3,
+                                        "angle": -8.81,
+                                        "curve": 0.258,
+                                        "c3": 0.619,
+                                        "c4": 0.45
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "angle": -11.45
+                                    }
+                                ]
+                            },
+                            "weiba": {
+                                "rotate": [
+                                    {
+                                        "angle": -3.14,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1,
+                                        "angle": -19.26,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "angle": -3.14,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.2667,
+                                        "angle": -19.26,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "angle": -3.14
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "x": -0.07,
+                                        "y": -2.3
+                                    }
+                                ]
+                            },
+                            "tou": {
+                                "rotate": [
+                                    {
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1,
+                                        "angle": -1.64,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.2667,
+                                        "angle": -1.64,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1,
+                                        "x": -1.47,
+                                        "y": -0.2,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.2667,
+                                        "x": -1.47,
+                                        "y": -0.2,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333
+                                    }
+                                ]
+                            },
+                            "shenti": {
+                                "rotate": [
+                                    {
+                                        "angle": -2.42
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "x": -1.29,
+                                        "y": -0.17,
+                                        "curve": 0.363,
+                                        "c2": 0.44,
+                                        "c3": 0.755
+                                    },
+                                    {
+                                        "time": 0.0667,
+                                        "x": -3.51,
+                                        "y": -0.47,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1333,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.2333,
+                                        "x": -3.51,
+                                        "y": -0.47,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3,
+                                        "curve": 0.258,
+                                        "c3": 0.619,
+                                        "c4": 0.45
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "x": -1.29,
+                                        "y": -0.17
+                                    }
+                                ]
+                            },
+                            "erduo": {
+                                "rotate": [
+                                    {
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1,
+                                        "angle": 3.66,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.2667,
+                                        "angle": -2.82,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333
+                                    }
+                                ]
+                            },
+                            "erduo2": {
+                                "rotate": [
+                                    {
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1,
+                                        "angle": 3.66,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.2667,
+                                        "angle": -2.82,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333
+                                    }
+                                ]
+                            },
+                            "yingzi": {
+                                "scale": [
+                                    {
+                                        "x": 0.8,
+                                        "y": 0.8,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.0667,
+                                        "x": 0.85,
+                                        "y": 0.85,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "x": 0.8,
+                                        "y": 0.8,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.2333,
+                                        "x": 0.85,
+                                        "y": 0.85,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "x": 0.8,
+                                        "y": 0.8
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "walk": {
+                        "bones": {
+                            "L1": {
+                                "rotate": [
+                                    {
+                                        "angle": 3.62,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "angle": -58.04,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667,
+                                        "angle": 3.62
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "x": -1.32,
+                                        "y": -9.81,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "x": -0.45,
+                                        "y": -1.21,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667,
+                                        "x": -1.32,
+                                        "y": -9.81
+                                    }
+                                ]
+                            },
+                            "R1": {
+                                "rotate": [
+                                    {
+                                        "angle": -83.59,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "angle": -15.24,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667,
+                                        "angle": -83.59
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "x": 1.32,
+                                        "y": 14.71,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "x": 5.19,
+                                        "y": 12.56,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667,
+                                        "x": 1.32,
+                                        "y": 14.71
+                                    }
+                                ]
+                            },
+                            "RR": {
+                                "rotate": [
+                                    {
+                                        "angle": 34.39,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "angle": -34.34,
+                                        "curve": 0.25,
+                                        "c3": 0.625,
+                                        "c4": 0.5
+                                    },
+                                    {
+                                        "time": 0.5,
+                                        "angle": 13.49,
+                                        "curve": 0.375,
+                                        "c2": 0.5,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667,
+                                        "angle": 34.39
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "x": 2.62,
+                                        "y": 0.32,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "x": 5.36,
+                                        "y": 25.07,
+                                        "curve": 0.25,
+                                        "c3": 0.625,
+                                        "c4": 0.5
+                                    },
+                                    {
+                                        "time": 0.5,
+                                        "x": 8.31,
+                                        "y": 8.73,
+                                        "curve": 0.375,
+                                        "c2": 0.5,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667,
+                                        "x": 2.62,
+                                        "y": 0.32
+                                    }
+                                ]
+                            },
+                            "LL": {
+                                "rotate": [
+                                    {
+                                        "angle": -34.34,
+                                        "curve": 0.25,
+                                        "c3": 0.625,
+                                        "c4": 0.5
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "angle": 16.26,
+                                        "curve": 0.375,
+                                        "c2": 0.5,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "angle": 34.39,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667,
+                                        "angle": -34.34
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "x": 4.91,
+                                        "y": 2.28,
+                                        "curve": 0.25,
+                                        "c3": 0.625,
+                                        "c4": 0.5
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "x": 7.42,
+                                        "y": -14.79,
+                                        "curve": 0.375,
+                                        "c2": 0.5,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "x": 1.31,
+                                        "y": -18.16,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667,
+                                        "x": 4.91,
+                                        "y": 2.28
+                                    }
+                                ]
+                            },
+                            "zhongxin": {
+                                "translate": [
+                                    {
+                                        "y": -3.92
+                                    }
+                                ]
+                            },
+                            "shenti": {
+                                "translate": [
+                                    {
+                                        "x": -3.87,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "x": -3.87,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.5,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667,
+                                        "x": -3.87
+                                    }
+                                ]
+                            },
+                            "weiba": {
+                                "rotate": [
+                                    {
+                                        "angle": -2.72,
+                                        "curve": 0.381,
+                                        "c2": 0.55,
+                                        "c3": 0.742
+                                    },
+                                    {
+                                        "time": 0.0667,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.2333,
+                                        "angle": 5.33,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.4,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.5667,
+                                        "angle": -7.4,
+                                        "curve": 0.245,
+                                        "c3": 0.637,
+                                        "c4": 0.56
+                                    },
+                                    {
+                                        "time": 0.6667,
+                                        "angle": -2.72
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "y": -2.15
+                                    }
+                                ]
+                            },
+                            "tou": {
+                                "rotate": [
+                                    {
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "angle": -0.77,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.5,
+                                        "angle": -0.77,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667
+                                    }
+                                ],
+                                "translate": [
+                                    {
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "x": -1.72,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.5,
+                                        "x": -1.72,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667
+                                    }
+                                ]
+                            },
+                            "yingzi": {
+                                "scale": [
+                                    {
+                                        "x": 0.85,
+                                        "y": 0.85,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.1667,
+                                        "x": 0.83,
+                                        "y": 0.83,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.3333,
+                                        "x": 0.85,
+                                        "y": 0.85,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.5,
+                                        "x": 0.83,
+                                        "y": 0.83,
+                                        "curve": 0.25,
+                                        "c3": 0.75
+                                    },
+                                    {
+                                        "time": 0.6667,
+                                        "x": 0.85,
+                                        "y": 0.85
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            [
+                0
+            ]
+        ]
+    ],
+    0,
+    0,
+    [
+        0
+    ],
+    [
+        -1
+    ],
+    [
+        0
+    ]
+]

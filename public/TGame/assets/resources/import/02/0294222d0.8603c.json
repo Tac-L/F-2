@@ -1,0 +1,241 @@
+[
+  1,
+  [
+    "1980743f8",
+    "ecpdLyjvZBwrvm+cedCcQy",
+    "19cc4c259",
+    "77fwqGd5lPvr/2V3xxH2Jh",
+    "a0idI1OZNB7q2TA4os8ZJ3",
+    "17oh2v/15DqIq5qVsBNbn+",
+    "c3JVw/32xMV5XTULx9l/+q",
+    "41UpxZpStLU6T5LJfOApvP",
+    "76tDd41zBDFIOJWTv6UbW/",
+    "aadu78za1JX7T8yHQqFaJr"
+  ],
+  ["_textureSetter", "node", "root", "data", "_spriteFrame"],
+  [
+    "cc.SpriteFrame",
+    [
+      "cc.Node",
+      [
+        "_name",
+        "_components",
+        "_prefab",
+        "_contentSize",
+        "_parent",
+        "_trs",
+        "_children",
+        "_color"
+      ],
+      2,
+      9,
+      4,
+      5,
+      1,
+      7,
+      2,
+      5
+    ],
+    ["cc.PrefabInfo", ["fileId", "root", "asset"], 2, 1, 1],
+    [
+      "cc.Sprite",
+      ["_sizeMode", "node", "_materials", "_spriteFrame"],
+      2,
+      1,
+      3,
+      6
+    ],
+    ["cc.Prefab", ["_name"], 2],
+    ["35abe1G1RRNC5TnXVHUuaNi", ["node", "sp"], 3, 1, 3],
+    [
+      "cc.Label",
+      [
+        "_string",
+        "_fontSize",
+        "_lineHeight",
+        "_N$horizontalAlign",
+        "_N$verticalAlign",
+        "node",
+        "_materials"
+      ],
+      -2,
+      1,
+      3
+    ]
+  ],
+  [
+    [2, 0, 1, 2, 2],
+    [1, 0, 4, 1, 2, 3, 5, 2],
+    [4, 0, 2],
+    [1, 0, 6, 1, 2, 3, 2],
+    [1, 0, 4, 1, 2, 7, 3, 5, 2],
+    [5, 0, 1, 1],
+    [2, 1, 2, 1],
+    [3, 0, 1, 2, 2],
+    [3, 0, 1, 2, 3, 2],
+    [6, 0, 1, 2, 3, 4, 5, 6, 6]
+  ],
+  [
+    [
+      [
+        {
+          "name": "B3",
+          "rect": [87, 171, 135, 135],
+          "offset": [0, 0],
+          "originalSize": [135, 135],
+          "capInsets": [0, 0, 0, 0]
+        }
+      ],
+      [0],
+      0,
+      [0],
+      [0],
+      [0]
+    ],
+    [
+      [
+        {
+          "name": "D3",
+          "rect": [255, 3, 135, 135],
+          "offset": [0, 0],
+          "originalSize": [135, 135],
+          "capInsets": [0, 0, 0, 0]
+        }
+      ],
+      [0],
+      0,
+      [0],
+      [0],
+      [0]
+    ],
+    [
+      [
+        {
+          "name": "E3",
+          "rect": [3, 312, 135, 135],
+          "offset": [0, 0],
+          "originalSize": [135, 135],
+          "capInsets": [0, 0, 0, 0]
+        }
+      ],
+      [0],
+      0,
+      [0],
+      [0],
+      [0]
+    ],
+    [
+      [
+        {
+          "name": "13",
+          "rect": [666, 949, 36, 36],
+          "offset": [0, 0],
+          "originalSize": [36, 36],
+          "capInsets": [0, 0, 0, 0]
+        }
+      ],
+      [0],
+      0,
+      [0],
+      [0],
+      [2]
+    ],
+    [
+      [
+        {
+          "name": "A3",
+          "rect": [228, 144, 135, 135],
+          "offset": [0, 0],
+          "originalSize": [135, 135],
+          "capInsets": [0, 0, 0, 0]
+        }
+      ],
+      [0],
+      0,
+      [0],
+      [0],
+      [0]
+    ],
+    [
+      [
+        {
+          "name": "F3",
+          "rect": [396, 3, 135, 135],
+          "offset": [0, 0],
+          "originalSize": [135, 135],
+          "capInsets": [0, 0, 0, 0]
+        }
+      ],
+      [0],
+      0,
+      [0],
+      [0],
+      [0]
+    ],
+    [
+      [
+        [2, "scoreItem"],
+        [
+          3,
+          "scoreItem",
+          [-3, -4, -5],
+          [[5, -2, [4, 5, 6, 7, 8, 9]]],
+          [6, -1, 0],
+          [5, 75, 100]
+        ],
+        [
+          1,
+          "iconSprite",
+          1,
+          [[7, 0, -6, [0]]],
+          [0, "adSTzOdwNDQ4p/u1LnaLuh", 1, 0],
+          [5, 60, 60],
+          [0, 15.785, 0, 0, 0, 0, 1, 1, 1, 1]
+        ],
+        [
+          4,
+          "scoreLabel",
+          1,
+          [[9, "99", 25, 30, 1, 1, -7, [1]]],
+          [0, "19N8+ALMVF2rhwq2o8vleT", 1, 0],
+          [4, 4278190080],
+          [5, 27.81, 37.8],
+          [13.044, -35.321, 0, 0, 0, 0, 1, 1, 1, 1]
+        ],
+        [
+          1,
+          "rankSprite",
+          1,
+          [[8, 0, -8, [2], 3]],
+          [0, "b7psjs4LlCaIcMI3krfbDP", 1, 0],
+          [5, 25, 25],
+          [-14.917, -35.722, 0, 0, 0, 0, 1, 1, 1, 1]
+        ]
+      ],
+      0,
+      [
+        0, 2, 1, 0, 1, 1, 0, -1, 2, 0, -2, 3, 0, -3, 4, 0, 1, 2, 0, 1, 3, 0, 1,
+        4, 0, 3, 1, 8
+      ],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [-1, -1, -1, 4, -1, -2, -3, -4, -5, -6],
+      [1, 1, 1, 3, 4, 5, 6, 7, 8, 9]
+    ],
+    [
+      [
+        {
+          "name": "C3",
+          "rect": [144, 312, 135, 135],
+          "offset": [0, 0],
+          "originalSize": [135, 135],
+          "capInsets": [0, 0, 0, 0]
+        }
+      ],
+      [0],
+      0,
+      [0],
+      [0],
+      [0]
+    ]
+  ]
+]

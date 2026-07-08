@@ -1,0 +1,243 @@
+[
+  1,
+  ["edXNUZLElA7p/9MmROYkeY"],
+  0,
+  [
+    [
+      "sp.SkeletonData",
+      ["_name", "_atlasText", "textureNames", "_skeletonJson", "textures"],
+      -1,
+      3
+    ]
+  ],
+  [[0, 0, 1, 2, 3, 4, 5]],
+  [
+    [
+      0,
+      "aa",
+      "\naa.png\nsize: 193,448\nformat: RGBA8888\nfilter: Linear,Linear\nrepeat: none\naa_0000\n  rotate: false\n  xy: 2, 2\n  size: 189, 201\n  orig: 189, 201\n  offset: 0, 0\n  index: -1\naa_0001\n  rotate: true\n  xy: 2, 205\n  size: 149, 172\n  orig: 149, 172\n  offset: 0, 0\n  index: -1\naa_0002\n  rotate: true\n  xy: 2, 356\n  size: 90, 101\n  orig: 91, 101\n  offset: 0, 0\n  index: -1\n",
+      ["aa.png"],
+      {
+        "skeleton": {
+          "hash": "FvdjePoQoMfD/Wgy1MEoEcGT50c",
+          "spine": "3.8.75",
+          "x": -122.15,
+          "y": -1.66,
+          "width": 255.85,
+          "height": 356.28,
+          "images": "",
+          "audio": ""
+        },
+        "bones": [
+          {
+            "name": "root"
+          },
+          {
+            "name": "aa_0002",
+            "parent": "root",
+            "length": 100,
+            "rotation": -111.93,
+            "x": -41.14,
+            "y": 136
+          },
+          {
+            "name": "aa_0000",
+            "parent": "root",
+            "length": 100,
+            "rotation": 102.15,
+            "x": 6.78,
+            "y": 161.17
+          },
+          {
+            "name": "aa_2",
+            "parent": "root",
+            "length": 100,
+            "rotation": 33.21,
+            "x": 40.66,
+            "y": 122.45
+          }
+        ],
+        "slots": [
+          {
+            "name": "aa_0002",
+            "bone": "aa_0002",
+            "attachment": "aa_0002"
+          },
+          {
+            "name": "aa_2",
+            "bone": "aa_2",
+            "attachment": "aa_0002"
+          },
+          {
+            "name": "aa_0001",
+            "bone": "root",
+            "attachment": "aa_0001"
+          },
+          {
+            "name": "aa_0000",
+            "bone": "aa_0000",
+            "attachment": "aa_0000"
+          }
+        ],
+        "skins": [
+          {
+            "name": "default",
+            "attachments": {
+              "aa_0001": {
+                "aa_0001": {
+                  "x": 17.88,
+                  "y": 84.34,
+                  "width": 149,
+                  "height": 172
+                }
+              },
+              "aa_0002": {
+                "aa_0002": {
+                  "x": 41.05,
+                  "y": 8.19,
+                  "rotation": 120.43,
+                  "width": 91,
+                  "height": 101
+                }
+              },
+              "aa_2": {
+                "aa_0002": {
+                  "x": 41.05,
+                  "y": 8.19,
+                  "rotation": 120.43,
+                  "width": 91,
+                  "height": 101
+                }
+              },
+              "aa_0000": {
+                "aa_0000": {
+                  "x": 78.36,
+                  "y": 0.27,
+                  "rotation": -90.99,
+                  "width": 189,
+                  "height": 201
+                }
+              }
+            }
+          }
+        ],
+        "animations": {
+          "win": {
+            "bones": {
+              "aa_0000": {
+                "rotate": [
+                  {
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.3333,
+                    "angle": -0.98,
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.6667
+                  }
+                ],
+                "translate": [
+                  {
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.3333,
+                    "x": 0.71,
+                    "y": -0.71,
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.6667
+                  }
+                ]
+              },
+              "aa_2": {
+                "rotate": [
+                  {
+                    "angle": 11.76,
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.3333,
+                    "angle": -0.19,
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.6667,
+                    "angle": 11.76
+                  }
+                ]
+              },
+              "aa_0002": {
+                "rotate": [
+                  {
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.3333,
+                    "angle": -0.8,
+                    "curve": 0.25,
+                    "c3": 0.75
+                  },
+                  {
+                    "time": 0.6667
+                  }
+                ]
+              }
+            }
+          },
+          "win2": {
+            "bones": {
+              "aa_0000": {
+                "rotate": [
+                  {
+                    "angle": -12.15
+                  }
+                ],
+                "translate": [
+                  {
+                    "x": -4.62,
+                    "y": -3.08
+                  }
+                ]
+              },
+              "aa_2": {
+                "rotate": [
+                  {
+                    "angle": 78.13
+                  }
+                ],
+                "translate": [
+                  {
+                    "x": 4.62,
+                    "y": 13.39
+                  }
+                ],
+                "scale": [
+                  {
+                    "x": -1
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      [0]
+    ]
+  ],
+  0,
+  0,
+  [0],
+  [-1],
+  [0]
+]

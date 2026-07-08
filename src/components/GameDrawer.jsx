@@ -58,6 +58,7 @@ export default function GameDrawer({ isOpen, onClose, onSelectGame, gameTimers =
   const CATEGORY_ICON_BASE = {
     lhc: '六合彩',
     pk10: 'PK10',
+    animal: '动物',
     ffc: '分分',
     k3: '快三',
     xy28: '28',

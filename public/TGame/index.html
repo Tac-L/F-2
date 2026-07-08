@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cocos Creator | 4399H5</title>
+    <style>
+        iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+    <iframe id="gameIframe" src=" ./rank.html" frameborder="0"></iframe>
+
+    <script>
+        function addDefaultParams() {
+            // 获取 URL 中的 gid 参数
+            const urlParams = new URLSearchParams(window.location.search);
+            const gid = urlParams.get('gid');  // 获取 URL 中的 gid 参数值
+
+            // 默认值为 1001
+            const gameUrl = gid ? `./rank.html?gid=${gid}` : `./rank.html?gid=1001`;
+
+            // 设置 iframe 的 src
+            document.getElementById('gameIframe').src = gameUrl;
+        }
+
+        function setIframeSize() {
+
+            var iframe = document.querySelector('iframe');
+            iframe.style.width = window.innerWidth + "px";
+
+            if (window.innerWidth > window.innerHeight) {
+                iframe.style.height = window.innerHeight + "px";
+            } else {
+                iframe.style.height = window.innerWidth + "px";
+            }
+        }
+
+        window.addEventListener('load', () => {
+            addDefaultParams();
+            setIframeSize();
+        });
+
+        window.addEventListener('resize', setIframeSize);
+    </script>
+</body>
+
+</html>
