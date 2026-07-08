@@ -9,8 +9,10 @@ export default function RightMenuDrawer({
   onSelectBetting,
   onSelectHistory,
   onSelectSettings,
+  onSelectPlanCenter,
   activeItem = '投注',
-  unsettledAmount = 20
+  unsettledAmount = 20,
+  elevated = false
 }) {
   // Menu items list
   const menuItems = [
@@ -21,6 +23,17 @@ export default function RightMenuDrawer({
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
           <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+      )
+    },
+    {
+      id: '计划中心',
+      name: '计划中心',
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <circle cx="12" cy="12" r="6" />
+          <circle cx="12" cy="12" r="2" />
         </svg>
       )
     },
@@ -116,7 +129,7 @@ export default function RightMenuDrawer({
   ];
 
   return (
-    <div className={`right-drawer-overlay ${isOpen ? 'open' : ''}`} onClick={onClose}>
+    <div className={`right-drawer-overlay ${isOpen ? 'open' : ''} ${elevated ? 'elevated' : ''}`} onClick={onClose}>
       <div 
         className={`right-drawer-panel ${isOpen ? 'open' : ''}`} 
         onClick={(e) => e.stopPropagation()}
@@ -160,7 +173,9 @@ export default function RightMenuDrawer({
                   type="button"
                   className={`right-drawer-menu-item ${isActive ? 'active' : ''}`}
                   onClick={() => {
-                    if (item.id === '未结明细') {
+                    if (item.id === '计划中心') {
+                      if (onSelectPlanCenter) onSelectPlanCenter();
+                    } else if (item.id === '未结明细') {
                       if (onSelectUnsettled) onSelectUnsettled();
                     } else if (item.id === '今日已结') {
                       if (onSelectSettled) onSelectSettled();

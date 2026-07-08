@@ -1510,7 +1510,9 @@ img.pk10-ball {
   top: 60px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1000;
+  /* Above 计划中心 (.fp-page, 3000) and its confirm modal (3100) so 下注/跟投
+     feedback stays visible when opened from the plan center. */
+  z-index: 3200;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2008,6 +2010,12 @@ img.pk10-ball {
 .right-drawer-overlay.open {
   background-color: rgba(0, 0, 0, 0.4);
   pointer-events: auto;
+}
+
+/* When opened from 计划中心 (.fp-page, z-index 3000) via its hamburger, the
+   drawer must slide over the plan center rather than behind it. */
+.right-drawer-overlay.elevated {
+  z-index: 3300;
 }
 
 .right-drawer-panel {
@@ -5859,6 +5867,11 @@ img.lhc-ball {
   display: flex;
   justify-content: center;
 }
+/* 计划中心 跟投/反投 opens the shared confirmation modal on top of the plan
+   center (which stays open). Lift it above .fp-page (z-index 3000). */
+.modal-overlay.modal-overlay--over-plan {
+  z-index: 3100;
+}
 .fp-modal {
   width: 100%;
   max-width: 480px;
@@ -5875,20 +5888,26 @@ img.lhc-ball {
   align-items: center;
   justify-content: center;
   padding: 14px 16px;
-  background: #fff;
-  border-bottom: 1px solid #eef0f3;
+  /* Match the 未结明细 title bar across all four skins. */
+  background-color: var(--panel-title-bg);
+  border-bottom: 1px solid var(--panel-title-border);
 }
-.fp-title { font-size: 17px; font-weight: 700; color: #1e293b; }
-.fp-my-plans {
+.fp-title { font-size: 17px; font-weight: 700; color: var(--panel-title-text); }
+.fp-menu-btn {
   position: absolute;
-  right: 14px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: none;
   border: none;
-  font-size: 14px;
-  color: #94a3b8;
+  border-radius: 4px;
+  color: var(--panel-title-btn);
   cursor: pointer;
+  padding: 4px 6px;
+  transition: background-color 0.2s;
 }
-.fp-my-plans:hover { color: #64748b; }
+.fp-menu-btn:active { background-color: var(--panel-title-btn-active-bg); }
 .fp-back {
   position: absolute;
   left: 10px;
@@ -5897,12 +5916,14 @@ img.lhc-ball {
   gap: 2px;
   background: none;
   border: none;
+  border-radius: 4px;
   font-size: 15px;
-  color: #334155;
+  color: var(--panel-title-btn);
   cursor: pointer;
   padding: 4px 6px;
+  transition: background-color 0.2s;
 }
-.fp-back:hover { color: #4f7cff; }
+.fp-back:active { background-color: var(--panel-title-btn-active-bg); }
 
 /* Big pill tabs 专家计划 / 已跟专家 */
 .fp-tabs {

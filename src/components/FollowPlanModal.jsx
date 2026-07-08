@@ -67,7 +67,10 @@ function genBalls(count, min, max) {
   return pool.slice(0, count).sort((a, b) => a - b);
 }
 
-export default function FollowPlanModal({ open, onClose, gameKind = 'pk10', activeGameId, addToast }) {
+// 反投 flips a two-sided prediction to its opposite within the same pair.
+const OPPOSITE_SIDE = { 大: '小', 小: '大', 单: '双', 双: '单' };
+
+export default function FollowPlanModal({ open, onClose, gameKind = 'pk10', activeGameId, addToast, onFollowBet, onOpenMenu }) {
   const initialCfg = PLAN_CONFIG[gameKind] || PLAN_CONFIG.pk10;
   const [tab, setTab] = useState('experts'); // 'experts' | 'followed'
   const [selectedGameId, setSelectedGameId] = useState(activeGameId);
@@ -151,6 +154,40 @@ export default function FollowPlanModal({ open, onClose, gameKind = 'pk10', acti
       setFollowed((prev) => [...prev, name]);
       addToast?.(`已开启自动跟投 ${name}`, 'success');
     }
+  };
+
+  // Resolve which 号码 / 面 a 跟投('follow') or 反投('reverse') actually stakes.
+  //   balls  : 跟投 = predicted digits; 反投 = every other ball in the pool.
+  //   twoside: 跟投 = predicted side;   反投 = the opposite side (大↔小 / 单↔双).
+  const resolveTargets = (pred, mode) => {
+    if (!pred) return [];
+    if (pred.kind === 'balls') {
+      if (mode === 'follow') return pred.value.map(String);
+      const pool = [];
+      for (let n = cfg.min; n <= cfg.max; n++) pool.push(n);
+      return pool.filter((n) => !pred.value.includes(n)).map(String);
+    }
+    const side = mode === 'follow' ? pred.value : (OPPOSITE_SIDE[pred.value] || pred.value);
+    return [side];
+  };
+
+  // Hand the resolved bet spec up to App, which turns it into real bet objects
+  // for the *selected* game and opens the shared 投注 confirmation modal.
+  const handleFollow = (expert, pred, mode) => {
+    const targets = resolveTargets(pred, mode);
+    if (!targets.length) {
+      addToast?.('本期暂无可投注号码', 'info');
+      return;
+    }
+    onFollowBet?.({
+      mode,                      // 'follow' | 'reverse'
+      gameId: selectedGameId,
+      kind: selectedKind,
+      cond2,                     // 第一球 / 和值 / 特码 …
+      predictKind: pred.kind,    // 'balls' | 'twoside'
+      targets,                   // ['2','5',…] or ['大']
+      expertName: expert.name,
+    });
   };
 
   // Config for each of the three pickers (label, title, options, how to apply).
@@ -256,8 +293,8 @@ export default function FollowPlanModal({ open, onClose, gameKind = 'pk10', acti
             <button type="button" className="fp-btn fp-btn-cancel" onClick={() => toggleFollow(expert.name)}>取消跟投</button>
           ) : (
             <>
-              <button type="button" className="fp-btn" onClick={() => addToast?.(`已跟投 ${expert.name} 本期预测`, 'success')}>跟投</button>
-              <button type="button" className="fp-btn" onClick={() => addToast?.(`已反投 ${expert.name} 本期预测`, 'info')}>反投</button>
+              <button type="button" className="fp-btn" onClick={() => handleFollow(expert, pred, 'follow')}>跟投</button>
+              <button type="button" className="fp-btn" onClick={() => handleFollow(expert, pred, 'reverse')}>反投</button>
               <button type="button" className={`fp-btn ${on ? 'fp-btn-on' : ''}`} onClick={() => toggleFollow(expert.name)}>{on ? '已跟投' : '自动跟投'}</button>
             </>
           )}
@@ -278,7 +315,13 @@ export default function FollowPlanModal({ open, onClose, gameKind = 'pk10', acti
             </svg>
           </button>
           <span className="fp-title">计划中心</span>
-          <button type="button" className="fp-my-plans" onClick={() => setTab('followed')}>我的计划</button>
+          <button type="button" className="fp-menu-btn" onClick={() => onOpenMenu?.()} aria-label="菜单">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
         </div>
 
         <div className="fp-tabs">

@@ -565,6 +565,10 @@ export default function App() {
   // Confirmation modal states
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [confirmBets, setConfirmBets] = useState([]);
+  // The game the confirmation modal is placing bets on. Normally the active game,
+  // but 计划中心 跟投/反投 can target a *different* game (independent game center);
+  // those bets still settle on that game's own draw via placedBets[].gameId.
+  const [confirmGameId, setConfirmGameId] = useState(null);
   const [bulkAmount, setBulkAmount] = useState('10');
 
   // Toast notifications
@@ -666,16 +670,24 @@ export default function App() {
     ]);
   };
 
-  // Reset selection when closed period starts
+  // Reset selection when the *active* game's closed period starts. A confirmation
+  // modal targeting another game (计划中心 跟投/反投) is left alone — its cutoff is
+  // that game's, not the active one's.
   useEffect(() => {
-    if (isClosed && (selectedBets.length > 0 || isConfirmModalOpen)) {
+    if (!isClosed) return;
+    const confirmForActive = isConfirmModalOpen && (confirmGameId ?? activeGameId) === activeGameId;
+    if (selectedBets.length > 0 || confirmForActive) {
       setTimeout(() => {
         clearSelections();
-        setIsConfirmModalOpen(false);
-        setConfirmBets([]);
+        if (confirmForActive) {
+          setIsConfirmModalOpen(false);
+          setConfirmBets([]);
+          setConfirmGameId(null);
+        }
         addToast('本期投注已截止，进入封盘时间', 'error');
       }, 0);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isClosed, selectedBets, isConfirmModalOpen]);
 
   const processGameDraw = (gameId, gameName, drawNumbers, drawIssueStr) => {
@@ -1164,7 +1176,78 @@ export default function App() {
     }));
     setConfirmBets(initialConfirmBets);
     setBulkAmount(initialAmount.toString());
+    setConfirmGameId(activeGameId);
     setIsConfirmModalOpen(true);
+  };
+
+  // 计划中心 第X球 label (第一球…第五球) -> FFC ball position name (第1球…第5球).
+  const FFC_COND_TO_POS = {
+    '第一球': '第1球', '第二球': '第2球', '第三球': '第3球', '第四球': '第4球', '第五球': '第5球',
+  };
+
+  // Turn a 跟投/反投 spec from 计划中心 into settleable bet objects (no amount yet).
+  // balls  -> one 号码 bet per target digit (FFC 猜球号 / PK10 名次号码).
+  // twoside-> a single 大小单双 bet on 和值/总和/特码.
+  const buildFollowBets = ({ kind, cond2, predictKind, targets }) => {
+    if (predictKind === 'balls') {
+      if (kind === 'ffc') {
+        const pos = FFC_POSITIONS.find(p => p.name === FFC_COND_TO_POS[cond2]);
+        if (!pos) return [];
+        return targets.map(v => ({
+          id: `ffc-${pos.id}-number-${v}`, tabId: 'guess-ball',
+          positionId: pos.id, positionName: pos.name, betName: v,
+          odds: FFC_ODDS.number, displayTitle: `${pos.name}-${v}`, type: 'ffc-number',
+        }));
+      }
+      if (kind === 'pk10') {
+        const pos = POSITIONS.find(p => p.name === cond2);
+        if (!pos) return [];
+        return targets.map(v => ({
+          id: `position-${pos.id}-number-${v}`, tabId: 'guess-ball',
+          positionId: pos.id, positionName: pos.name, betName: v,
+          odds: ODDS.number, displayTitle: `${pos.name}-${v}`, type: 'number',
+        }));
+      }
+      return [];
+    }
+    // twoside: a single 大/小/单/双 stake
+    const side = targets[0];
+    if (kind === 'k3') return [{
+      id: `k3-sum-twosided-${side}`, tabId: 'sum', positionId: 'sum', positionName: '和值',
+      betName: side, odds: K3_ODDS.sumTwoSided, displayTitle: `和值-${side}`, type: 'k3-sum-twosided',
+    }];
+    if (kind === 'xy28') return [{
+      id: `xy28-sum-twosided-${side}`, tabId: 'sum', positionId: 'sum', positionName: '总和',
+      betName: side, odds: XY28_ODDS.sumTwoSided, displayTitle: `总和-${side}`, type: 'xy28-sum-twosided',
+    }];
+    if (kind === 'lhc') return [{
+      id: `lhc-tema-A-twosided-${side}`, tabId: 'tema', positionId: 'tema', positionName: '特码A',
+      betName: side, odds: LHC_TEMA_ODDS.A.ds, displayTitle: `特码A-${side}`, type: 'lhc-tema-twosided',
+    }];
+    return [];
+  };
+
+  // 计划中心 跟投/反投: build the bets, bring them into the shared confirmation
+  // modal (targeting the plan's selected game), and close the plan center.
+  const handleFollowBet = (spec) => {
+    if (!gamesState[spec.gameId]) {
+      addToast('该游戏暂未开放投注', 'error');
+      return;
+    }
+    const bets = buildFollowBets(spec);
+    if (!bets.length) {
+      addToast('本期暂无可投注号码', 'info');
+      return;
+    }
+    const amt = parseInt(betAmount) || 10;
+    setConfirmBets(bets.map(b => ({ ...b, amount: amt })));
+    setBulkAmount(amt.toString());
+    setConfirmGameId(spec.gameId);
+    setIsConfirmModalOpen(true);
+    // Keep 计划中心 open behind the confirmation modal — the user stays in the
+    // plan center rather than being dropped onto the betting page.
+    const label = spec.mode === 'follow' ? '跟投' : '反投';
+    addToast(`已带入${label} ${spec.expertName} 本期预测，请确认投注`, 'info');
   };
 
   // Bulk modify all bet amounts in confirm modal
@@ -1219,7 +1302,13 @@ export default function App() {
     const seconds = String(now.getSeconds()).padStart(2, '0');
     const timestampStr = `${month}-${day} ${hours}:${minutes}:${seconds}`;
 
-    const activeGameName = gameName(activeGameId);
+    // Bets may target a game other than the active one (计划中心 跟投/反投); use
+    // that game's own kind / 期号 so they settle against its next draw.
+    const targetGameId = confirmGameId || activeGameId;
+    const targetGame = gamesState[targetGameId] || activeGame;
+    const targetKind = targetGame.kind || gameKind;
+    const targetIssue = targetGame.currentIssue;
+    const activeGameName = gameName(targetGameId);
     const placedAt = Date.now();
     const confirmedWithTimestamp = confirmBets.map((bet, idx) => ({
       ...bet,
@@ -1227,11 +1316,11 @@ export default function App() {
       // produces colliding React keys in the unsettled/settled lists.
       uid: `${bet.id}-${placedAt}-${idx}`,
       timestamp: timestampStr,
-      gameId: activeGameId,
+      gameId: targetGameId,
       gameName: activeGameName,
       // 六合彩 records which 盘口 (A~D) the bet was placed under, shown before 玩法.
-      pankou: gameKind === 'lhc' ? lhcPankou : undefined,
-      issue: gameKind === 'pk10' ? currentIssue.toString().padStart(5, '0') : currentIssue.toString()
+      pankou: targetKind === 'lhc' ? lhcPankou : undefined,
+      issue: targetKind === 'pk10' ? targetIssue.toString().padStart(5, '0') : targetIssue.toString()
     }));
 
     // Save to placed bets list
@@ -1243,8 +1332,9 @@ export default function App() {
     // Close modal
     setIsConfirmModalOpen(false);
     setConfirmBets([]);
-    
-    addToast(`下注成功! 共 ${confirmBets.length} 注，合计 ${totalAmountNeeded} 元`, 'success');
+    setConfirmGameId(null);
+
+    addToast(`[${activeGameName}] 下注成功! 共 ${confirmBets.length} 注，合计 ${totalAmountNeeded} 元`, 'success');
   };
 
   // Submit bets (now opens confirmation modal)
@@ -2143,15 +2233,17 @@ export default function App() {
         gameKind={gameKind}
         activeGameId={activeGameId}
         addToast={addToast}
+        onFollowBet={handleFollowBet}
+        onOpenMenu={() => setIsRightDrawerOpen(true)}
       />
 
       {/* Bet Confirmation Modal */}
       {isConfirmModalOpen && (
-        <div className="modal-overlay">
+        <div className={`modal-overlay${isFollowPlanOpen ? ' modal-overlay--over-plan' : ''}`}>
           <div className="confirm-modal-content">
             <div className="confirm-modal-header">
               <span className="confirm-modal-title">
-                {gameName(activeGameId)}
+                {gameName(confirmGameId || activeGameId)}
               </span>
               <button 
                 type="button" 
@@ -2251,13 +2343,15 @@ export default function App() {
         onClose={() => setIsRightDrawerOpen(false)}
         balance={balance}
         onRefreshBalance={handleRefreshBalance}
-        onSelectUnsettled={() => setCurrentPage('unsettled')}
-        onSelectSettled={() => setCurrentPage('settled')}
-        onSelectBetting={() => setCurrentPage('betting')}
-        onSelectHistory={() => setCurrentPage('history')}
-        onSelectSettings={() => setCurrentPage('settings')}
-        activeItem={currentPage === 'betting' ? '投注' : currentPage === 'unsettled' ? '未结明细' : currentPage === 'settled' ? '今日已结' : currentPage === 'history' ? '开奖历史' : currentPage === 'settings' ? '设置' : ''}
+        onSelectPlanCenter={() => setIsFollowPlanOpen(true)}
+        onSelectUnsettled={() => { setCurrentPage('unsettled'); setIsFollowPlanOpen(false); }}
+        onSelectSettled={() => { setCurrentPage('settled'); setIsFollowPlanOpen(false); }}
+        onSelectBetting={() => { setCurrentPage('betting'); setIsFollowPlanOpen(false); }}
+        onSelectHistory={() => { setCurrentPage('history'); setIsFollowPlanOpen(false); }}
+        onSelectSettings={() => { setCurrentPage('settings'); setIsFollowPlanOpen(false); }}
+        activeItem={isFollowPlanOpen ? '计划中心' : currentPage === 'betting' ? '投注' : currentPage === 'unsettled' ? '未结明细' : currentPage === 'settled' ? '今日已结' : currentPage === 'history' ? '开奖历史' : currentPage === 'settings' ? '设置' : ''}
         unsettledAmount={placedBets.reduce((acc, b) => acc + b.amount, 20)}
+        elevated={isFollowPlanOpen}
       />
 
       {/* Unsettled Details Full Page Overlay */}
