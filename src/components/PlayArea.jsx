@@ -422,6 +422,11 @@ export default function PlayArea({
                     <div>
                       <strong>数字：</strong>每一个号码为一投注组合，假如投注号码为开奖号码之「正码」，视为中奖，其余情形视为不中奖。
                     </div>
+                  </div>
+                )}
+
+                {lhcHelpTab === 'twoside' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
                     <div>
                       <strong>总和单双：</strong>根据「7个号码」的总和判断单双，总和是单数叫总和单，如分数总和是115、183；总和是双数叫总和双，如分数总和是108、162。
                     </div>
@@ -433,17 +438,6 @@ export default function PlayArea({
                     </div>
                     <div>
                       <strong>龙虎：</strong>第一球跟第六球比较大小，第一球号码大于第六球号码为龙，反之为虎。
-                    </div>
-                  </div>
-                )}
-
-                {lhcHelpTab === 'twoside' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
-                    <div style={{ color: '#64748b', fontSize: '13.5px', marginBottom: '4px', fontStyle: 'italic' }}>
-                      第一时间出来的叫「正码」特一，依次为「正码」特二、「正码」特三、「正码」特四、「正码」特五、「正码」特六(并不以号码大小排序)。
-                    </div>
-                    <div>
-                      <strong>数字：</strong>其下注的「正码」特号与当期之「正码」开奖顺序及开奖号码相同，视为中奖，如开奖第一个「正码」为49号，下注「正码」特一为49，视为中奖，其它号码视为不中奖。
                     </div>
                   </div>
                 )}
