@@ -3390,6 +3390,12 @@ img.pk10-ball {
   font-size: 13px;
 }
 
+/* 动物运动会 balls carry a number + animal, so keep them readable (don't shrink to 18px) */
+.history-dropdown .pk10-ball.animal-ball {
+  width: 28px;
+  height: 28px;
+}
+
 .history-result {
   display: flex;
   flex-direction: column;
