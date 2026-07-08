@@ -6057,7 +6057,7 @@ img.lhc-ball {
   border-radius: 10px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
-.fp-card-main { flex: 1; min-width: 0; }
+.fp-card-main { flex: 1; min-width: 0; text-align: left; background: none; border: none; padding: 0; cursor: pointer; }
 
 .fp-card-top {
   display: flex;
@@ -6139,3 +6139,139 @@ img.lhc-ball {
   line-height: 1.8;
   padding: 48px 16px;
 }
+
+/* ===== 自动跟投 (auto-follow): switch / config / plan cards / detail / records ===== */
+/* The plan-center body stays light across all skins (like the existing .fp-card);
+   only the header title bar is theme-aware. */
+
+/* iOS-style toggle switch */
+.fp-switch {
+  width: 42px; height: 24px; border-radius: 12px; background: #cbd5e1;
+  border: none; position: relative; cursor: pointer; padding: 0; flex-shrink: 0;
+  transition: background 0.2s;
+}
+.fp-switch.on { background: #4f7cff; }
+.fp-switch-thumb {
+  position: absolute; top: 2px; left: 2px; width: 20px; height: 20px;
+  border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s;
+}
+.fp-switch.on .fp-switch-thumb { transform: translateX(18px); }
+.fp-switch:disabled { opacity: 0.5; cursor: default; }
+
+/* Config page (图一) */
+.fp-config-body { flex: 1; overflow-y: auto; padding: 12px 14px; }
+.fp-config-card { background: #fff; border-radius: 12px; padding: 4px 14px; margin-bottom: 14px; }
+.fp-config-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 12px 0; border-bottom: 1px solid #f1f5f9;
+}
+.fp-config-card > .fp-config-row:last-child { border-bottom: none; }
+.fp-config-label { font-size: 14px; color: #475569; font-weight: 600; }
+.fp-config-label em { font-style: normal; font-weight: 400; font-size: 11px; color: #94a3b8; }
+.fp-config-box {
+  min-width: 120px; text-align: right; background: #f1f5f9; border-radius: 8px;
+  padding: 8px 12px; font-size: 14px; font-weight: 700; color: #1e293b;
+}
+.fp-config-box.readonly { color: #64748b; }
+.fp-config-input { width: 46px; border: none; background: transparent; text-align: right; font-size: 14px; font-weight: 700; color: #1e293b; }
+.fp-config-hint { color: #ef4444; font-size: 12px; text-align: right; padding: 6px 0 10px; }
+.fp-config-section-title { text-align: center; color: #64748b; font-size: 14px; font-weight: 600; margin: 4px 0 10px; }
+.fp-config-stop-row { display: flex; align-items: center; gap: 8px; padding: 12px 0; border-bottom: 1px solid #f1f5f9; font-size: 14px; color: #475569; }
+.fp-config-stop-input { flex: 1; min-width: 0; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 10px; font-size: 14px; text-align: center; background: #f8fafc; }
+.fp-config-stop-checks { display: flex; gap: 16px; padding: 12px 0; }
+.fp-config-check { display: flex; align-items: center; gap: 6px; font-size: 14px; color: #475569; }
+.fp-config-stop-row input[type="checkbox"],
+.fp-config-check input[type="checkbox"] { width: 16px; height: 16px; accent-color: #4f7cff; flex-shrink: 0; }
+.fp-config-toggle { display: block; margin: 0 auto 14px; background: none; border: none; color: #4f7cff; font-size: 14px; font-weight: 600; cursor: pointer; }
+
+/* Per-round detail table (config + shared) */
+.fp-detail-table-head,
+.fp-detail-table-row { display: grid; grid-template-columns: 0.8fr 2fr 1.1fr 1.4fr; align-items: center; gap: 6px; }
+.fp-detail-table-head { padding: 10px 0; font-size: 13px; font-weight: 700; color: #334155; text-align: center; }
+.fp-detail-table-row { padding: 10px 0; font-size: 13px; color: #475569; text-align: center; border-top: 1px solid #f1f5f9; }
+.fp-detail-table-row .fp-switch { margin: 0 auto; }
+.fp-detail-amt { width: 72px; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px; text-align: center; font-size: 13px; background: #f8fafc; }
+.fp-mono { font-variant-numeric: tabular-nums; }
+
+/* Config footer */
+.fp-config-footer { border-top: 1px solid #e2e8f0; background: #fff; padding: 10px 14px 14px; }
+.fp-config-footer-top { display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin-bottom: 10px; }
+.fp-config-balance { color: #475569; }
+.fp-config-summary { color: #64748b; }
+.fp-config-summary b { color: #ef4444; }
+.fp-config-actions { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
+.fp-config-amt-input { width: 80px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 11px; font-size: 14px; text-align: center; }
+.fp-config-btn { flex: 1; padding: 12px; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; border: 1px solid #cbd5e1; background: #fff; color: #475569; }
+.fp-config-btn.ok { background: #4f7cff; color: #fff; border-color: #4f7cff; }
+
+/* 已跟专家 plan card + status filter */
+.fp-status-tabs { margin: 4px 14px 8px; }
+.fp-plan-card { display: flex; gap: 10px; background: #fff; border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+.fp-plan-card-body { flex: 1; min-width: 0; text-align: left; background: none; border: none; padding: 0; cursor: pointer; }
+
+/* 确认停止 dialog */
+.fp-confirm-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.45); z-index: 3400; }
+.fp-confirm-dialog {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 3401;
+  width: 300px; max-width: 82vw; background: #fff; border-radius: 14px; padding: 22px 20px 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25); text-align: center;
+}
+.fp-confirm-title { font-size: 17px; font-weight: 700; color: #1e293b; margin-bottom: 12px; }
+.fp-confirm-msg { font-size: 14px; color: #64748b; margin-bottom: 20px; }
+.fp-confirm-actions { display: flex; gap: 12px; }
+.fp-confirm-btn { flex: 1; padding: 11px; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; }
+.fp-confirm-btn.cancel { background: #fff; border: 1px solid #cbd5e1; color: #475569; }
+.fp-confirm-btn.ok { background: #ef4444; border: 1px solid #ef4444; color: #fff; }
+
+/* Plan detail (图三/四) */
+.fp-detail-body { flex: 1; overflow-y: auto; padding: 12px 14px; }
+.fp-detail-band { background: #fff; border: 1px solid #eef0f3; border-radius: 12px; overflow: hidden; margin-bottom: 12px; }
+.fp-detail-band-top { display: flex; align-items: center; gap: 10px; padding: 14px; background: linear-gradient(135deg, #efe2c9, #f7f0e2); }
+.fp-detail-band-tags { margin-left: auto; font-size: 12px; color: #94795a; }
+.fp-detail-band-top .fp-expert-name { color: #94795a; }
+.fp-detail-band-content { padding: 14px; }
+.fp-detail-band-mid { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 13px; color: #64748b; }
+.fp-detail-band-mid b { color: #1e293b; }
+.fp-detail-actions { display: flex; gap: 10px; margin-bottom: 14px; }
+.fp-detail-actions .fp-btn { flex: 1; padding: 12px; font-size: 15px; }
+.fp-detail-rounds { display: flex; flex-direction: column; gap: 10px; }
+.fp-round-item { display: flex; align-items: center; gap: 10px; background: #fff; border: none; border-radius: 12px; padding: 12px; cursor: pointer; text-align: left; width: 100%; }
+.fp-round-pill { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.fp-round-pill.wait { background: #cbd5e1; }
+.fp-round-pill.win { background: #ef4444; }
+.fp-round-pill.lose { background: #22c55e; }
+.fp-round-mid { flex: 1; min-width: 0; }
+.fp-round-line { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #334155; }
+.fp-round-line.sub { margin-top: 4px; font-size: 12px; color: #64748b; }
+.fp-round-issue { font-weight: 700; color: #1e293b; }
+.fp-tag-sm { font-size: 11px; padding: 1px 6px; border-radius: 4px; background: #eef2ff; color: #6366f1; }
+.fp-tag-sm.wait { background: #f1f5f9; color: #94a3b8; }
+.fp-round-mode { color: #4f7cff; }
+.fp-round-balls { display: flex; gap: 4px; flex-shrink: 0; }
+.fp-round-balls .fp-ball { width: 22px; height: 22px; font-size: 12px; }
+.fp-round-caret { color: #cbd5e1; flex-shrink: 0; }
+.fp-ball-hit { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #ef4444; }
+
+/* 跟单记录 (图五) */
+.fp-records-body { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+
+/* 专家计划详情 (expert track record) */
+.fp-header-balance { position: absolute; right: 14px; font-size: 13px; color: var(--panel-title-text); font-weight: 600; }
+.fp-expert-predict-row { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 12px; gap: 10px; }
+.fp-ep-left { flex: 1; min-width: 0; }
+.fp-ep-right { text-align: right; flex-shrink: 0; }
+.fp-ep-timer { font-size: 14px; font-weight: 700; color: #ef4444; margin-top: 2px; }
+.fp-expert-detail-actions { display: flex; gap: 10px; margin-top: 14px; }
+.fp-expert-detail-actions .fp-btn { flex: 1; padding: 10px; font-size: 14px; }
+.fp-hist-row { display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+.fp-hist-info { flex: 1; min-width: 0; }
+.fp-hist-issue { font-size: 13.5px; font-weight: 700; color: #1e293b; margin-bottom: 6px; }
+.fp-hist-stats { display: flex; gap: 28px; }
+.fp-hist-col { display: flex; flex-direction: column; gap: 2px; }
+.fp-hist-lbl { font-size: 12px; color: #94a3b8; }
+.fp-hist-val { font-size: 13px; color: #334155; font-weight: 600; }
+.fp-hist-balls { display: flex; gap: 5px; flex-shrink: 0; }
+.fp-hist-ball-wrap { position: relative; display: inline-flex; }
+.fp-hist-ball { width: 24px; height: 24px; font-size: 12px; }
+.fp-hist-dot { position: absolute; top: -2px; right: -2px; width: 7px; height: 7px; border-radius: 50%; background: #ef4444; border: 1px solid #fff; }

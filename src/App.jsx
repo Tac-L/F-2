@@ -93,6 +93,53 @@ const generateRandomDraw = () => {
   return nums;
 };
 
+// ===== 计划中心 自动跟投 (auto-follow) helpers =====
+// Per-kind prediction shape. balls kinds pick N distinct 号码 from a pool;
+// twoside kinds pick a single 大小/单双 side.
+const PLAN_KIND_META = {
+  pk10: { predictKind: 'balls', min: 1, max: 10 },
+  ffc: { predictKind: 'balls', min: 0, max: 9 },
+  k3: { predictKind: 'twoside' },
+  lhc: { predictKind: 'twoside' },
+  xy28: { predictKind: 'twoside' },
+};
+const FOLLOW_OPPOSITE = { 大: '小', 小: '大', 单: '双', 双: '单' };
+
+// Pick `count` distinct numbers in [min,max], ascending.
+const genFollowBalls = (count, min, max) => {
+  const pool = [];
+  for (let n = min; n <= max; n++) pool.push(n);
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return pool.slice(0, count).sort((a, b) => a - b);
+};
+
+// Fresh prediction for one round. Returns { predictKind, predicted } where
+// predicted is a number[] (balls) or a single-side string[] (twoside).
+const genFollowPrediction = (kind, cond1, ballCount) => {
+  const meta = PLAN_KIND_META[kind] || PLAN_KIND_META.pk10;
+  if (meta.predictKind === 'balls') {
+    return { predictKind: 'balls', predicted: genFollowBalls(ballCount, meta.min, meta.max) };
+  }
+  const opts = cond1 === '单双计划' ? ['单', '双'] : ['大', '小'];
+  return { predictKind: 'twoside', predicted: [opts[Math.floor(Math.random() * opts.length)]] };
+};
+
+// Resolve the actual bet targets for 正投('follow') / 反投('reverse').
+const resolveFollowTargets = (kind, predicted, mode) => {
+  const meta = PLAN_KIND_META[kind] || PLAN_KIND_META.pk10;
+  if (meta.predictKind === 'balls') {
+    if (mode === 'follow') return predicted.map(String);
+    const pool = [];
+    for (let n = meta.min; n <= meta.max; n++) pool.push(n);
+    return pool.filter((n) => !predicted.includes(n)).map(String);
+  }
+  const side = predicted[0];
+  return [mode === 'follow' ? side : (FOLLOW_OPPOSITE[side] || side)];
+};
+
 // Generates mock draw history (20 rounds)
 // Seeding the latest two draws to match Screenshot 1 and Screenshot 4
 const generateMockHistory = (startIssue) => {
@@ -515,6 +562,10 @@ export default function App() {
   const [clearNonce, setClearNonce] = useState(0);
   const [placedBets, setPlacedBets] = useState([]);
   const [settledBets, setSettledBets] = useState([]);
+  // 计划中心 自动跟投 plans. Each auto-bets one round per real draw of its game;
+  // its bets live in placedBets/settledBets (tagged planId) so they stay
+  // consistent with the betting page, 未结/已结 and 报表.
+  const [followPlans, setFollowPlans] = useState([]);
   
   // Custom chip options (can be edited by the user)
   const [chipValues, setChipValues] = useState([10, 20, 40, 60, 100]);
@@ -590,6 +641,20 @@ export default function App() {
   useEffect(() => {
     gamesStateRef.current = gamesState;
   }, [gamesState]);
+
+  // Refs so the background draw timer can read the latest plans / balance
+  // without stale closures when it auto-settles and re-places follow rounds.
+  const followPlansRef = useRef(followPlans);
+  useEffect(() => {
+    followPlansRef.current = followPlans;
+  }, [followPlans]);
+  const balanceRef = useRef(balance);
+  useEffect(() => {
+    balanceRef.current = balance;
+  }, [balance]);
+  // settleFollowPlans is defined further down but called by processGameDraw
+  // (also above). Bridge them through a ref to avoid a forward reference.
+  const settleFollowPlansRef = useRef(null);
 
   // Sync balance to localStorage
   useEffect(() => {
@@ -1024,6 +1089,11 @@ export default function App() {
 
       // Clear placed bets for this game
       setPlacedBets(prev => prev.filter(b => b.gameId !== gameId));
+
+      // 自动跟投: record this round's result for any running plan on this game
+      // and place the next round. Runs after the clear above so the appended
+      // next-round bets survive.
+      settleFollowPlansRef.current?.(gameId, drawIssueStr, drawNumbers, processedSettled);
     }
 
     // Update the history item with the calculated win/loss
@@ -1249,6 +1319,176 @@ export default function App() {
     const label = spec.mode === 'follow' ? '跟投' : '反投';
     addToast(`已带入${label} ${spec.expertName} 本期预测，请确认投注`, 'info');
   };
+
+  // ===== 计划中心 自动跟投 (auto-follow) engine =====
+  const fmtFollowIssue = (kind, issueNum) =>
+    kind === 'pk10' ? issueNum.toString().padStart(5, '0') : issueNum.toString();
+
+  const fpNowStr = () => {
+    const now = new Date();
+    const p = (n) => String(n).padStart(2, '0');
+    return `${p(now.getMonth() + 1)}-${p(now.getDate())} ${p(now.getHours())}:${p(now.getMinutes())}:${p(now.getSeconds())}`;
+  };
+
+  // Build one round's bets + round record for a plan (no state writes).
+  const buildFollowRound = (plan, roundIdx, issueStr) => {
+    const override = (plan.perRoundOverrides || []).find((o) => o.idx === roundIdx);
+    const mode = override?.mode ?? plan.globalMode;
+    const amount = override?.amount ?? plan.amountPerBall;
+    const { predictKind, predicted } = genFollowPrediction(plan.kind, plan.cond1, plan.ballCount);
+    const targets = resolveFollowTargets(plan.kind, predicted, mode);
+    const base = buildFollowBets({ kind: plan.kind, cond2: plan.cond2, predictKind, targets });
+    const ts = fpNowStr();
+    const stamp = Date.now();
+    const bets = base.map((b, i) => ({
+      ...b,
+      amount,
+      uid: `${plan.id}-r${roundIdx}-${i}-${stamp}`,
+      orderId: `20${stamp}${roundIdx}${i}`,
+      planId: plan.id,
+      followRound: roundIdx,
+      gameId: plan.gameId,
+      gameName: plan.gameName,
+      issue: issueStr,
+      timestamp: ts,
+      pankou: plan.kind === 'lhc' ? lhcPankou : undefined,
+    }));
+    const cost = bets.reduce((s, b) => s + b.amount, 0);
+    const roundEntry = {
+      idx: roundIdx, issue: issueStr, mode, amount, predicted,
+      predictKind, drawNumbers: null, settled: false, winLoss: 0,
+      betUids: bets.map((b) => b.uid),
+    };
+    return { bets, roundEntry, cost };
+  };
+
+  // Create a plan from the config page and place its first round immediately.
+  const onCreatePlan = (config) => {
+    const game = gamesState[config.gameId];
+    if (!game) { addToast('该游戏暂未开放投注', 'error'); return; }
+    const plan = {
+      id: `plan-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      expertName: config.expertName,
+      gameId: config.gameId,
+      gameName: config.gameName,
+      kind: config.kind,
+      cond1: config.cond1,
+      cond2: config.cond2,
+      ballCount: config.ballCount,
+      roundsTotal: config.roundsTotal,
+      amountPerBall: config.amountPerBall,
+      globalMode: config.globalMode,
+      stop: config.stop,
+      perRoundOverrides: config.perRoundOverrides || [],
+      status: 'running',
+      stopReason: null,
+      rounds: [],
+      totalWinLoss: 0,
+      winRounds: 0,
+      settledRounds: 0,
+      createdAt: Date.now(),
+    };
+    const { bets, roundEntry, cost } = buildFollowRound(plan, 0, fmtFollowIssue(plan.kind, game.currentIssue));
+    if (balanceRef.current < cost) { addToast('余额不足，无法创建自动跟投', 'error'); return; }
+    plan.rounds = [roundEntry];
+    setBalance((b) => b - cost);
+    setPlacedBets((prev) => [...prev, ...bets]);
+    setFollowPlans((prev) => {
+      const next = [plan, ...prev];
+      followPlansRef.current = next;
+      return next;
+    });
+    addToast(`已创建自动跟投 ${plan.expertName}（${plan.roundsTotal}期）`, 'success');
+  };
+
+  // Edit a running plan's *future* settings (already-placed rounds are immutable).
+  const onEditPlan = (planId, config) => {
+    setFollowPlans((prev) => {
+      const next = prev.map((p) => (p.id === planId ? {
+        ...p,
+        roundsTotal: config.roundsTotal,
+        amountPerBall: config.amountPerBall,
+        globalMode: config.globalMode,
+        stop: config.stop,
+        perRoundOverrides: config.perRoundOverrides || [],
+      } : p));
+      followPlansRef.current = next;
+      return next;
+    });
+    addToast('已更新跟投计划', 'success');
+  };
+
+  // Manually stop a plan: withdraw + refund its in-flight (unsettled) round.
+  const onStopPlan = (planId) => {
+    const plan = followPlansRef.current.find((p) => p.id === planId);
+    if (!plan || plan.status !== 'running') return;
+    const refund = placedBetsRef.current
+      .filter((b) => b.planId === planId)
+      .reduce((s, b) => s + b.amount, 0);
+    if (refund > 0) {
+      setPlacedBets((prev) => prev.filter((b) => b.planId !== planId));
+      setBalance((b) => b + refund);
+    }
+    setFollowPlans((prev) => {
+      const next = prev.map((p) => (p.id === planId
+        ? { ...p, status: 'stopped', stopReason: '手动停止', rounds: p.rounds.filter((r) => r.settled) }
+        : p));
+      followPlansRef.current = next;
+      return next;
+    });
+    addToast('已停止自动跟投', 'info');
+  };
+
+  // Called by processGameDraw after a game draws: record each running plan's
+  // just-settled round, evaluate stop-conditions, and place the next round.
+  const settleFollowPlans = (gameId, drawIssueStr, drawNumbers, settledForGame) => {
+    const plans = followPlansRef.current;
+    if (!plans.some((p) => p.status === 'running' && p.gameId === gameId)) return;
+    const nextIssueNum = parseInt(drawIssueStr, 10) + 1;
+    const newPlacedBets = [];
+    let extraStake = 0;
+    const nextPlans = plans.map((plan) => {
+      if (plan.status !== 'running' || plan.gameId !== gameId) return plan;
+      const roundIdx = plan.rounds.findIndex((r) => !r.settled && r.issue === drawIssueStr);
+      if (roundIdx === -1) return plan;
+      const planBets = settledForGame.filter((b) => b.planId === plan.id && b.followRound === plan.rounds[roundIdx].idx);
+      const roundWinLoss = planBets.reduce((s, b) => s + b.winLoss, 0);
+      const rounds = plan.rounds.map((r, i) => (i === roundIdx
+        ? { ...r, settled: true, drawNumbers, winLoss: roundWinLoss }
+        : r));
+      const settledRounds = plan.settledRounds + 1;
+      const winRounds = plan.winRounds + (roundWinLoss > 0 ? 1 : 0);
+      const totalWinLoss = plan.totalWinLoss + roundWinLoss;
+      let status = 'running';
+      let stopReason = null;
+      const stop = plan.stop || {};
+      if (stop.profitAbove?.on && totalWinLoss >= stop.profitAbove.val) { status = 'stopped'; stopReason = '触发止盈'; }
+      else if (stop.profitBelow?.on && totalWinLoss <= stop.profitBelow.val) { status = 'stopped'; stopReason = '触发止损'; }
+      else if (stop.stopOnWin && roundWinLoss > 0) { status = 'stopped'; stopReason = '中奖停止'; }
+      else if (stop.stopOnLose && roundWinLoss <= 0) { status = 'stopped'; stopReason = '不中奖停止'; }
+      else if (settledRounds >= plan.roundsTotal) { status = 'done'; stopReason = '已完成'; }
+      const updated = { ...plan, rounds, settledRounds, winRounds, totalWinLoss, status, stopReason };
+      if (status === 'running') {
+        const nextIdx = plan.rounds[roundIdx].idx + 1;
+        const built = buildFollowRound(updated, nextIdx, fmtFollowIssue(plan.kind, nextIssueNum));
+        if (balanceRef.current - extraStake >= built.cost) {
+          newPlacedBets.push(...built.bets);
+          extraStake += built.cost;
+          updated.rounds = [...updated.rounds, built.roundEntry];
+        } else {
+          updated.status = 'stopped';
+          updated.stopReason = '余额不足';
+        }
+      }
+      return updated;
+    });
+    followPlansRef.current = nextPlans;
+    setFollowPlans(nextPlans);
+    if (newPlacedBets.length) setPlacedBets((prev) => [...prev, ...newPlacedBets]);
+    if (extraStake > 0) setBalance((b) => b - extraStake);
+  };
+  // Keep the bridge ref pointing at the latest settleFollowPlans closure.
+  useEffect(() => { settleFollowPlansRef.current = settleFollowPlans; });
 
   // Bulk modify all bet amounts in confirm modal
   const handleBulkAmountChange = (val) => {
@@ -2235,6 +2475,15 @@ export default function App() {
         addToast={addToast}
         onFollowBet={handleFollowBet}
         onOpenMenu={() => setIsRightDrawerOpen(true)}
+        followPlans={followPlans}
+        placedBets={placedBets}
+        settledBets={settledBets}
+        gamesState={gamesState}
+        balance={balance}
+        formatIssue={fmtFollowIssue}
+        onCreatePlan={onCreatePlan}
+        onEditPlan={onEditPlan}
+        onStopPlan={onStopPlan}
       />
 
       {/* Bet Confirmation Modal */}
