@@ -2038,6 +2038,8 @@ export default function App() {
               {gameKind === 'animal' ? (
                 <AnimalAnimation
                   activeGameId={activeGameId}
+                  activeGame={activeGame}
+                  lockSeconds={lockSeconds}
                 />
               ) : gameKind === 'lhc' ? (
                 <LhcAnimation

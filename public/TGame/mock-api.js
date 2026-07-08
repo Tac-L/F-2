@@ -63,17 +63,36 @@
     return out;
   }
 
+  // Show only the last 5 digits of an issue number.
+  function last5(v) {
+    var s = String(v == null ? '' : v);
+    return s.length > 5 ? s.slice(-5) : s;
+  }
+
+  // The app (top window, same origin) publishes the authoritative game state so the
+  // animation plays the app's result + issue. Falls back to self-generated data.
+  function appFeed() {
+    try {
+      return (window.top && window.top.__ANIMAL_FEED__) || null;
+    } catch (e) {
+      return null; // cross-origin (shouldn't happen when embedded normally)
+    }
+  }
+
   function buildResponse(url) {
     var data;
+    var feed = appFeed();
     if (url.indexOf('/getinfo') !== -1) {
       data = {
-        issueId: currentIssue(),
-        countdown: BETTING_SECS,
-        countdown1: RACE_SECS,
+        issueId: last5(feed ? feed.issue : currentIssue()),
+        countdown: feed ? feed.countdown : BETTING_SECS,
+        countdown1: feed ? (feed.countdown1 || RACE_SECS) : RACE_SECS,
         leaderboard: leaderboard(),
       };
     } else if (url.indexOf('/GetSettle') !== -1) {
-      data = { lotteryCode: randomLotteryCode(), issueId: currentIssue() };
+      data = (feed && feed.lotteryCode)
+        ? { lotteryCode: feed.lotteryCode, issueId: last5(feed.lastIssue) }
+        : { lotteryCode: randomLotteryCode(), issueId: last5(currentIssue()) };
     } else if (url.indexOf('/Rank') !== -1) {
       data = { list: [], myrank: null };
     } else {
