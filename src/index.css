@@ -3739,6 +3739,14 @@ img.pk10-ball {
   font-family: monospace;
 }
 
+/* 动物运动会 result artwork in the 开奖结果 modal */
+.modal-animal-ball {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  display: block;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { PK10_COLORS, DRAWER_CATEGORIES } from '../constants/gameData';
+import { PK10_COLORS, DRAWER_CATEGORIES, animalBallSrc } from '../constants/gameData';
 
 export default function SettledDetails({
   onBack,
@@ -125,6 +125,7 @@ export default function SettledDetails({
       
       return {
         id: bet.id,
+        gameId: bet.gameId,
         gameName: bet.gameName || '一分极速赛车',
         issue: formatFullIssue(bet.issue),
         orderId,
@@ -299,7 +300,7 @@ export default function SettledDetails({
                   <button 
                     type="button" 
                     className="view-result-btn"
-                    onClick={() => setResultModalData({ gameName: bet.gameName, issue: bet.issue, drawNumbers: bet.drawNumbers })}
+                    onClick={() => setResultModalData({ gameName: bet.gameName, issue: bet.issue, drawNumbers: bet.drawNumbers, gameId: bet.gameId })}
                   >
                     开奖结果
                   </button>
@@ -394,6 +395,17 @@ export default function SettledDetails({
             <div className="result-modal-body">
               <div className="result-modal-balls">
                 {resultModalData.drawNumbers && resultModalData.drawNumbers.map((num, idx) => {
+                  // 动物运动会 shows the animal artwork instead of a numbered chip.
+                  if (resultModalData.gameId && resultModalData.gameId.startsWith('animal')) {
+                    return (
+                      <img
+                        key={idx}
+                        className="modal-animal-ball"
+                        src={animalBallSrc(num)}
+                        alt={num}
+                      />
+                    );
+                  }
                   const color = PK10_COLORS[num] || { bg: '#9ca3af', text: '#ffffff' };
                   return (
                     <span
