@@ -2428,11 +2428,8 @@ export default function App() {
               className="follow-plan-btn"
               onClick={() => setIsFollowPlanOpen(true)}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 20h9" />
-                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
-              </svg>
-              跟单计划
+              {/* 边框 + 铅笔来自 public/plan.png（用 CSS mask 按皮肤主色上色） */}
+              <span className="follow-plan-btn-label">跟单计划</span>
             </button>
           )}
           {sidebarTabs.map((tab) => {

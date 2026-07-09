@@ -349,6 +349,28 @@
   color: var(--mn-text-2);
 }
 
+/* Midnight: toast 语义变体在深色下改为深色底 + 高亮语义色，info 跟随皮肤主色 */
+[data-theme^="midnight-"] .toast.success,
+[data-theme^="midnight-"] .toast.error,
+[data-theme^="midnight-"] .toast.info {
+  background: var(--mn-surface);
+}
+[data-theme^="midnight-"] .toast.success {
+  border-color: rgba(52, 211, 153, 0.55);
+  color: #6ee7b7;
+}
+[data-theme^="midnight-"] .toast.success .toast-icon { color: #34d399; }
+[data-theme^="midnight-"] .toast.error {
+  border-color: rgba(248, 113, 113, 0.55);
+  color: #fca5a5;
+}
+[data-theme^="midnight-"] .toast.error .toast-icon { color: #f87171; }
+[data-theme^="midnight-"] .toast.info {
+  border-color: var(--primary-blue);
+  color: var(--primary-blue);
+}
+[data-theme^="midnight-"] .toast.info .toast-icon { color: var(--primary-blue); }
+
 /* Midnight-blue: muted text → muted lavender */
 [data-theme^="midnight-"] .unsettled-summary-card .summary-label,
 [data-theme^="midnight-"] .bet-card-header .issue-text,
@@ -5833,6 +5855,7 @@ img.lhc-ball {
 
 /* Red-outlined button pinned to the top of the 长龙 rail. */
 .follow-plan-btn {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -5841,16 +5864,25 @@ img.lhc-ball {
   padding: 8px 2px;
   font-size: 12px;
   font-weight: 700;
-  color: #ef4444;
-  background: #fff;
-  border: 1.5px solid #ef4444;
-  border-radius: 8px;
+  color: var(--primary-blue);
+  background: transparent;
+  border: none;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: transform 0.15s;
   flex-shrink: 0;
   white-space: nowrap;
 }
-.follow-plan-btn:hover { background: #fef2f2; }
+/* 边框 + 铅笔图形来自 public/plan.png，用 CSS mask 上色，随皮肤主色变化 */
+.follow-plan-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--primary-blue);
+  -webkit-mask: url("/plan.png") no-repeat center / 100% 100%;
+  mask: url("/plan.png") no-repeat center / 100% 100%;
+  pointer-events: none;
+}
+.follow-plan-btn-label { position: relative; z-index: 1; }
 .follow-plan-btn:active { transform: scale(0.97); }
 
 /* Full-screen page (opened from the 长龙 rail). */
