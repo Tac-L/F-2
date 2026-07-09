@@ -531,6 +531,22 @@ export default function App() {
     }
   }, [theme]);
 
+  // 跟单计划 feature toggle (设置里可开关，默认关闭)。关闭时隐藏左侧「跟单计划」
+  // tab 与右侧菜单的「计划中心」入口。
+  const [followPlanEnabled, setFollowPlanEnabled] = useState(() => {
+    const saved = typeof localStorage !== 'undefined' ? localStorage.getItem('followPlanEnabled') : null;
+    return saved === 'true';
+  });
+  useEffect(() => {
+    try {
+      localStorage.setItem('followPlanEnabled', String(followPlanEnabled));
+    } catch {
+      // ignore storage errors
+    }
+    // 关闭功能时顺手收起可能已打开的跟单计划弹窗
+    if (!followPlanEnabled) setIsFollowPlanOpen(false);
+  }, [followPlanEnabled]);
+
   // Language: app is authored in Simplified; convert to Traditional at runtime
   // when 繁体中文 is selected. Switching language reloads to apply cleanly.
   const [lang] = useState(getLang);
@@ -2405,8 +2421,8 @@ export default function App() {
       <div className="main-layout">
         {/* Left Sidebar Menu */}
         <nav className="sidebar-menu">
-          {/* 动物运动会 has no 跟单计划 entry. */}
-          {gameKind !== 'animal' && (
+          {/* 动物运动会 has no 跟单计划 entry；且需在设置中开启此功能。 */}
+          {followPlanEnabled && gameKind !== 'animal' && (
             <button
               type="button"
               className="follow-plan-btn"
@@ -2593,6 +2609,7 @@ export default function App() {
         balance={balance}
         onRefreshBalance={handleRefreshBalance}
         onSelectPlanCenter={() => setIsFollowPlanOpen(true)}
+        showPlanCenter={followPlanEnabled}
         onSelectUnsettled={() => { setCurrentPage('unsettled'); setIsFollowPlanOpen(false); }}
         onSelectSettled={() => { setCurrentPage('settled'); setIsFollowPlanOpen(false); }}
         onSelectBetting={() => { setCurrentPage('betting'); setIsFollowPlanOpen(false); }}
@@ -2641,6 +2658,8 @@ export default function App() {
           onChangeTheme={setTheme}
           lang={lang}
           onChangeLang={handleChangeLang}
+          followPlanEnabled={followPlanEnabled}
+          onToggleFollowPlan={setFollowPlanEnabled}
           onLogout={handleLogout}
           hideLogout={EMBED.embedded}
         />

@@ -10,11 +10,12 @@ export default function RightMenuDrawer({
   onSelectHistory,
   onSelectSettings,
   onSelectPlanCenter,
+  showPlanCenter = false,
   activeItem = '投注',
   unsettledAmount = 20,
   elevated = false
 }) {
-  // Menu items list
+  // Menu items list（「计划中心」需在设置中开启跟单计划功能才显示）
   const menuItems = [
     {
       id: '投注',
@@ -165,7 +166,7 @@ export default function RightMenuDrawer({
 
           {/* Menu Items */}
           <nav className="right-drawer-menu-list">
-            {menuItems.map((item) => {
+            {menuItems.filter((item) => item.id !== '计划中心' || showPlanCenter).map((item) => {
               const isActive = activeItem === item.id;
               return (
                 <button

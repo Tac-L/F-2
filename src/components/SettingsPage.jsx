@@ -67,7 +67,7 @@ const CheckIcon = () => (
   </svg>
 );
 
-export default function SettingsPage({ onBack, onOpenMenu, theme, onChangeTheme, lang, onChangeLang, onLogout, hideLogout }) {
+export default function SettingsPage({ onBack, onOpenMenu, theme, onChangeTheme, lang, onChangeLang, followPlanEnabled = false, onToggleFollowPlan, onLogout, hideLogout }) {
   const [subPage, setSubPage] = React.useState('menu'); // 'menu' | 'skin' | 'password' | 'language'
 
   const title =
@@ -151,6 +151,32 @@ export default function SettingsPage({ onBack, onOpenMenu, theme, onChangeTheme,
                   <span className="settings-row-arrow"><ChevronRight /></span>
                 </button>
               ))}
+
+              {/* 跟单计划功能开关：关闭时隐藏投注页左侧 tab 与右侧菜单入口 */}
+              <div
+                className="settings-row settings-row-toggle"
+                role="button"
+                tabIndex={0}
+                onClick={() => onToggleFollowPlan?.(!followPlanEnabled)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggleFollowPlan?.(!followPlanEnabled); } }}
+              >
+                <span className="settings-row-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                  </svg>
+                </span>
+                <span className="settings-row-name">跟单计划</span>
+                <button
+                  type="button"
+                  className={`fp-switch ${followPlanEnabled ? 'on' : ''}`}
+                  aria-pressed={followPlanEnabled}
+                  aria-label="跟单计划开关"
+                  onClick={(e) => { e.stopPropagation(); onToggleFollowPlan?.(!followPlanEnabled); }}
+                >
+                  <span className="fp-switch-thumb" />
+                </button>
+              </div>
             </nav>
 
             {/* 嵌入模式下隐藏「退出登录」 */}
