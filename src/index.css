@@ -18,7 +18,7 @@
   --light-blue-bg: #e8edff;
 
   /* Top app header */
-  --header-bg: #547cfd;
+  --header-bg: linear-gradient(to left, #4568e6 0%, #547cfd 40%, #7d99ff 100%);
   --header-text: #ffffff;
   --header-border: rgba(255, 255, 255, 0.18);
   --header-btn-bg: rgba(255, 255, 255, 0.16);
@@ -66,7 +66,7 @@
   --primary-blue-rgb: 59, 130, 246;
   --light-blue-bg: #e0f2fe;
 
-  --header-bg: #e0f2fe;
+  --header-bg: linear-gradient(to left, #d3eaff 0%, #e1f0ff 35%, #f2f9ff 68%);
   --header-text: #2563eb;
   --header-border: transparent;
   --header-btn-bg: #ffffff;
@@ -128,7 +128,7 @@
   --light-blue-bg: #26356f;
 
   /* Top app header */
-  --header-bg: #1c2a63;
+  --header-bg: linear-gradient(to left, #131c47 0%, #1c2a63 40%, #2a3c82 100%);
   --header-text: var(--mn-text);
   --header-border: rgba(255, 255, 255, 0.14);
   --header-btn-bg: rgba(255, 255, 255, 0.12);
@@ -198,7 +198,7 @@
   --light-blue-bg: #362673;
 
   /* Top app header */
-  --header-bg: #2a1c63;
+  --header-bg: linear-gradient(to left, #1e1449 0%, #2a1c63 40%, #3c2a82 100%);
   --header-text: var(--mn-text);
   --header-border: rgba(255, 255, 255, 0.14);
   --header-btn-bg: rgba(255, 255, 255, 0.12);
@@ -588,7 +588,8 @@ body {
 /* Header Styles */
 .app-header {
   height: 50px;
-  background-color: var(--header-bg);
+  /* 顶部标题栏底色：左浅右深渐变（各皮肤在 --header-bg 里各自定义） */
+  background: var(--header-bg);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -6200,9 +6201,10 @@ img.lhc-ball {
 /* Plan detail (图三/四) */
 .fp-detail-body { flex: 1; overflow-y: auto; padding: 12px 14px; }
 .fp-detail-band { background: #fff; border: 1px solid #eef0f3; border-radius: 12px; overflow: hidden; margin-bottom: 12px; }
-.fp-detail-band-top { display: flex; align-items: center; gap: 10px; padding: 14px; background: linear-gradient(135deg, #efe2c9, #f7f0e2); }
-.fp-detail-band-tags { margin-left: auto; font-size: 12px; color: #94795a; }
-.fp-detail-band-top .fp-expert-name { color: #94795a; }
+/* 顶部 band 跟随皮肤主色：主色低透明度渐变 + 主色文字（浅色/午夜皆适用） */
+.fp-detail-band-top { display: flex; align-items: center; gap: 10px; padding: 14px; background: linear-gradient(135deg, rgba(var(--primary-blue-rgb), 0.22), rgba(var(--primary-blue-rgb), 0.07)); }
+.fp-detail-band-tags { margin-left: auto; font-size: 12px; color: var(--primary-blue); }
+.fp-detail-band-top .fp-expert-name { color: var(--primary-blue); }
 .fp-detail-band-content { padding: 14px; }
 .fp-detail-band-mid { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 13px; color: #64748b; }
 .fp-detail-band-mid b { color: #1e293b; }
@@ -6342,14 +6344,6 @@ img.lhc-ball {
 /* 停止跟投 / 取消 保持红色语义，仅让底色跟随深色 */
 [data-theme^="midnight-"] .fp-btn-cancel:hover {
   background: rgba(239, 68, 68, 0.12);
-}
-/* 专家详情顶部 band 由米色改为深色，文字转亮 */
-[data-theme^="midnight-"] .fp-detail-band-top {
-  background: var(--mn-surface-hover);
-}
-[data-theme^="midnight-"] .fp-detail-band-top .fp-expert-name,
-[data-theme^="midnight-"] .fp-detail-band-tags {
-  color: var(--mn-text);
 }
 /* Config 页输入框 / 分隔线 */
 [data-theme^="midnight-"] .fp-config-box,
