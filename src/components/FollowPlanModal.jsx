@@ -185,6 +185,14 @@ export default function FollowPlanModal({
   const selectedKind = kindOfGame(selectedGameId) || gameKind;
   const cfgSel = PLAN_CONFIG[selectedKind] || PLAN_CONFIG.pk10;
   const selectedGameName = (ALL_GAMES.find((g) => g.id === selectedGameId) || {}).name || '';
+  // 封盘窗口：pk10 提前 15s，其余玩法 10s。封盘时倒计时显示「已封盘」，
+  // 且跟投/反投不可点（专家计划列表与专家详情共用）。
+  const selGame = gamesState[selectedGameId] || {};
+  const sealLockSeconds = selectedKind === 'pk10' ? 15 : 10;
+  const isSealed = selGame.timeLeft != null && selGame.timeLeft <= sealLockSeconds;
+  // 倒计时与投注页同步：直接用该游戏的 timeLeft（同一 gamesState 时钟），
+  // 封盘时显示「已封盘」。
+  const countdownText = selGame.timeLeft == null ? '加载中' : isSealed ? '已封盘' : fmtCountdown(selGame.timeLeft);
 
   const handleSelectGame = (id) => {
     const newKind = kindOfGame(id);
@@ -349,25 +357,28 @@ export default function FollowPlanModal({
     const pred = predictions[idx];
     return (
       <div key={expert.name} className="fp-card">
-        <button type="button" className="fp-card-main" onClick={() => openExpertDetail(expert, idx)}>
-          <div className="fp-card-top">
-            <span className="fp-expert-name">{expert.name}</span>
-            <span className="fp-tag">{selectedGameName}</span>
-            <span className="fp-tag">{cond1}</span>
-            <span className="fp-tag">{cond2}</span>
-          </div>
-          <div className="fp-stats">
-            <div className="fp-stat"><span className="fp-stat-label">长龙</span><span className="fp-stat-val">{expert.dragon ? `${expert.dragon}期` : '--'}</span></div>
-            <div className="fp-stat"><span className="fp-stat-label">总胜率</span><span className="fp-stat-val fp-rate">{expert.winRate.toFixed(2)}%</span></div>
-            <div className="fp-stat"><span className="fp-stat-label">总输赢</span><span className="fp-stat-val">￥0.00</span></div>
-          </div>
-          <div className="fp-predict-label">本期预测</div>
-          <div className="fp-predict">{renderPrediction(pred)}</div>
+        {/* 标题整行占满卡片宽度（延伸到右侧按钮上方），标签不再换行 */}
+        <button type="button" className="fp-card-top" onClick={() => openExpertDetail(expert, idx)}>
+          <span className="fp-expert-name">{expert.name}</span>
+          <span className="fp-tag">{selectedGameName}</span>
+          <span className="fp-tag">{cond1}</span>
+          <span className="fp-tag">{cond2}</span>
         </button>
-        <div className="fp-card-actions">
-          <button type="button" className="fp-btn" onClick={() => handleFollow(expert, pred, 'follow')}>跟投</button>
-          <button type="button" className="fp-btn" onClick={() => handleFollow(expert, pred, 'reverse')}>反投</button>
-          <button type="button" className="fp-btn" onClick={() => startAutoFollow(expert)}>自动跟投</button>
+        <div className="fp-card-row">
+          <button type="button" className="fp-card-main" onClick={() => openExpertDetail(expert, idx)}>
+            <div className="fp-stats">
+              <div className="fp-stat"><span className="fp-stat-label">长龙</span><span className="fp-stat-val">{expert.dragon ? `${expert.dragon}期` : '--'}</span></div>
+              <div className="fp-stat"><span className="fp-stat-label">总胜率</span><span className="fp-stat-val fp-rate">{expert.winRate.toFixed(2)}%</span></div>
+              <div className="fp-stat"><span className="fp-stat-label">总输赢</span><span className="fp-stat-val">￥0.00</span></div>
+            </div>
+            <div className="fp-predict-label">本期预测</div>
+            <div className="fp-predict">{renderPrediction(pred)}</div>
+          </button>
+          <div className="fp-card-actions">
+            <button type="button" className="fp-btn" disabled={isSealed} onClick={() => handleFollow(expert, pred, 'follow')}>跟投</button>
+            <button type="button" className="fp-btn" disabled={isSealed} onClick={() => handleFollow(expert, pred, 'reverse')}>反投</button>
+            <button type="button" className="fp-btn" onClick={() => startAutoFollow(expert)}>自动跟投</button>
+          </div>
         </div>
       </div>
     );
@@ -555,8 +566,8 @@ export default function FollowPlanModal({
     if (!expertView) { setView('main'); return null; }
     const { idx, expert, history } = expertView;
     const pred = predictions[idx];
-    const game = gamesState[selectedGameId] || {};
-    const cd = game.timeLeft != null ? fmtCountdown(game.timeLeft) : '加载中';
+    // 封盘状态与倒计时文案沿用组件级 isSealed / countdownText（见上方定义）。
+    const cd = countdownText;
     return (
       <div className="fp-detail-body">
         <div className="fp-detail-band">
@@ -577,12 +588,12 @@ export default function FollowPlanModal({
               </div>
               <div className="fp-ep-right">
                 <div className="fp-predict-label">倒计时</div>
-                <div className="fp-ep-timer">{cd}</div>
+                <div className={`fp-ep-timer ${isSealed ? 'sealed' : ''}`}>{cd}</div>
               </div>
             </div>
             <div className="fp-expert-detail-actions">
-              <button type="button" className="fp-btn" onClick={() => handleFollow(expert, pred, 'follow')}>跟投</button>
-              <button type="button" className="fp-btn" onClick={() => handleFollow(expert, pred, 'reverse')}>反投</button>
+              <button type="button" className="fp-btn" disabled={isSealed} onClick={() => handleFollow(expert, pred, 'follow')}>跟投</button>
+              <button type="button" className="fp-btn" disabled={isSealed} onClick={() => handleFollow(expert, pred, 'reverse')}>反投</button>
               <button type="button" className="fp-btn" onClick={() => startAutoFollow(expert)}>自动跟投</button>
             </div>
           </div>
@@ -784,7 +795,7 @@ export default function FollowPlanModal({
                 </div>
                 <div className="fp-round-row">
                   <span className="fp-round">当前轮数：{round} / {TOTAL_ROUNDS}</span>
-                  <span className="fp-timer">倒计时 <span className="fp-timer-val">00:{String(countdown).padStart(2, '0')}</span></span>
+                  <span className="fp-timer">倒计时 <span className="fp-timer-val">{countdownText}</span></span>
                 </div>
                 <div className="fp-list">
                   {EXPERTS.map((e, i) => renderExpertCard(e, i))}

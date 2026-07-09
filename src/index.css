@@ -2101,6 +2101,10 @@ img.pk10-ball {
   gap: 8px;
   box-shadow: var(--rmenu-card-shadow);
 }
+/* 浅蓝皮肤：会员卡底色改为左上→右下对角渐变（深→浅→深） */
+[data-theme="light-blue"] .right-drawer-member-card {
+  background: linear-gradient(135deg, #d5e7ff 0%, #f6f8ff 78%, #d5e7ff 100%);
+}
 
 .right-drawer-member-row {
   display: grid;
@@ -6045,12 +6049,15 @@ img.lhc-ball {
 
 .fp-card {
   display: flex;
+  flex-direction: column;
   gap: 10px;
   padding: 12px;
   background: #fff;
   border-radius: 10px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
+/* 标题下方：左侧统计/预测 + 右侧操作按钮 */
+.fp-card-row { display: flex; gap: 10px; }
 .fp-card-main { flex: 1; min-width: 0; text-align: left; background: none; border: none; padding: 0; cursor: pointer; }
 
 .fp-card-top {
@@ -6058,7 +6065,12 @@ img.lhc-ball {
   align-items: center;
   flex-wrap: wrap;
   gap: 6px;
-  margin-bottom: 10px;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
 }
 .fp-expert-name { font-size: 15px; font-weight: 700; color: #4f7cff; margin-right: 2px; }
 .fp-tag {
@@ -6127,7 +6139,7 @@ img.lhc-ball {
   cursor: pointer;
   transition: all 0.15s;
 }
-.fp-btn:hover { background: #eef2ff; }
+.fp-btn:not(:disabled):hover { background: #eef2ff; }
 .fp-btn-on { background: #4f7cff; color: #fff; }
 .fp-btn-cancel { color: #ef4444; border-color: #ef4444; }
 .fp-btn-cancel:hover { background: #fef2f2; }
@@ -6266,6 +6278,10 @@ img.lhc-ball {
 .fp-ep-left { flex: 1; min-width: 0; }
 .fp-ep-right { text-align: right; flex-shrink: 0; }
 .fp-ep-timer { font-size: 14px; font-weight: 700; color: #ef4444; margin-top: 2px; }
+/* 已封盘时倒计时显示红色，与倒数时间保持醒目一致 */
+.fp-ep-timer.sealed { color: #ef4444; }
+/* 封盘时跟投/反投置灰不可点（用透明度，浅色/午夜都适用） */
+.fp-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .fp-expert-detail-actions { display: flex; gap: 10px; margin-top: 14px; }
 .fp-expert-detail-actions .fp-btn { flex: 1; padding: 10px; font-size: 14px; }
 .fp-hist-row { display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
@@ -6360,7 +6376,7 @@ img.lhc-ball {
   border-color: var(--primary-blue);
   color: var(--primary-blue);
 }
-[data-theme^="midnight-"] .fp-btn:hover {
+[data-theme^="midnight-"] .fp-btn:not(:disabled):hover {
   background: var(--mn-surface-hover);
 }
 [data-theme^="midnight-"] .fp-btn-on {
