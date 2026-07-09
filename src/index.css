@@ -479,10 +479,6 @@
   background: var(--mn-surface-hover);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
 }
-[data-theme^="midnight-"] .history-card-top {
-  border-bottom-color: var(--mn-border);
-}
-
 /* Midnight: left game-category icons → masked tint (deep unselected, light selected) */
 [data-theme^="midnight-"] .drawer-sidebar-tab .tab-icon {
   display: none;
@@ -5044,7 +5040,6 @@ img.lhc-ball {
   gap: 8px 12px;
   padding-bottom: 12px;
   margin-bottom: 12px;
-  border-bottom: 1px dashed #e2e8f0;
 }
 .history-card-top.cols-2 { grid-template-columns: 1fr 1fr; }
 .history-card-top.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
@@ -6092,7 +6087,7 @@ img.lhc-ball {
   border: none; position: relative; cursor: pointer; padding: 0; flex-shrink: 0;
   transition: background 0.2s;
 }
-.fp-switch.on { background: #4f7cff; }
+.fp-switch.on { background: var(--primary-blue); }
 .fp-switch-thumb {
   position: absolute; top: 2px; left: 2px; width: 20px; height: 20px;
   border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
@@ -6220,3 +6215,144 @@ img.lhc-ball {
 .fp-hist-ball-wrap { position: relative; display: inline-flex; }
 .fp-hist-ball { width: 24px; height: 24px; font-size: 12px; }
 .fp-hist-dot { position: absolute; top: -2px; right: -2px; width: 7px; height: 7px; border-radius: 50%; background: #ef4444; border: 1px solid #fff; }
+
+/* =============================================================
+   午夜主题 (midnight) — 计划中心 (FollowPlanModal) 深色适配
+   Header 已经用 --panel-title-* 变量跟随皮肤，此处补全 body。
+   ============================================================= */
+/* App base surface */
+[data-theme^="midnight-"] .fp-page,
+[data-theme^="midnight-"] .fp-modal {
+  background: var(--mn-bg);
+}
+/* Card / panel surfaces → indigo surface */
+[data-theme^="midnight-"] .fp-tab,
+[data-theme^="midnight-"] .fp-card,
+[data-theme^="midnight-"] .fp-plan-card,
+[data-theme^="midnight-"] .fp-round-item,
+[data-theme^="midnight-"] .fp-detail-band,
+[data-theme^="midnight-"] .fp-config-card,
+[data-theme^="midnight-"] .fp-config-footer,
+[data-theme^="midnight-"] .fp-confirm-dialog,
+[data-theme^="midnight-"] .fp-hist-row {
+  background: var(--mn-surface);
+  border-color: var(--mn-border);
+}
+/* Inactive pill tab text */
+[data-theme^="midnight-"] .fp-tab {
+  color: var(--mn-text-muted);
+}
+[data-theme^="midnight-"] .fp-tab.active {
+  background: var(--primary-blue);
+  border-color: var(--primary-blue);
+  color: #fff;
+}
+/* Strong / heading text → light */
+[data-theme^="midnight-"] .fp-stat-val,
+[data-theme^="midnight-"] .fp-round-issue,
+[data-theme^="midnight-"] .fp-round-line,
+[data-theme^="midnight-"] .fp-detail-band-mid b,
+[data-theme^="midnight-"] .fp-hist-issue,
+[data-theme^="midnight-"] .fp-hist-val,
+[data-theme^="midnight-"] .fp-confirm-title,
+[data-theme^="midnight-"] .fp-config-label {
+  color: var(--mn-text);
+}
+/* Secondary / muted text → lavender */
+[data-theme^="midnight-"] .fp-stat-label,
+[data-theme^="midnight-"] .fp-predict-label,
+[data-theme^="midnight-"] .fp-round-row,
+[data-theme^="midnight-"] .fp-round-line.sub,
+[data-theme^="midnight-"] .fp-round-field-lbl,
+[data-theme^="midnight-"] .fp-empty,
+[data-theme^="midnight-"] .fp-detail-band-mid,
+[data-theme^="midnight-"] .fp-hist-lbl,
+[data-theme^="midnight-"] .fp-confirm-msg,
+[data-theme^="midnight-"] .fp-config-summary {
+  color: var(--mn-text-muted);
+}
+/* Round-status caret / neutral icons */
+[data-theme^="midnight-"] .fp-round-caret {
+  color: var(--mn-text-muted);
+}
+/* Accent text → theme primary */
+[data-theme^="midnight-"] .fp-expert-name,
+[data-theme^="midnight-"] .fp-round-mode {
+  color: var(--primary-blue);
+}
+/* Tags (游戏 / 计划 / 球号 / 已投) → tinted surface + accent text */
+[data-theme^="midnight-"] .fp-tag,
+[data-theme^="midnight-"] .fp-tag-sm {
+  background: var(--mn-surface-hover);
+  color: var(--primary-blue);
+}
+[data-theme^="midnight-"] .fp-tag-sm.wait {
+  background: var(--mn-surface-2);
+  color: var(--mn-text-muted);
+}
+/* Outline action buttons (跟投 / 反投 / 自动跟投 / 编辑计划 / 重新跟投) */
+[data-theme^="midnight-"] .fp-btn {
+  background: var(--mn-surface);
+  border-color: var(--primary-blue);
+  color: var(--primary-blue);
+}
+[data-theme^="midnight-"] .fp-btn:hover {
+  background: var(--mn-surface-hover);
+}
+[data-theme^="midnight-"] .fp-btn-on {
+  background: var(--primary-blue);
+  color: #fff;
+}
+/* 停止跟投 / 取消 保持红色语义，仅让底色跟随深色 */
+[data-theme^="midnight-"] .fp-btn-cancel:hover {
+  background: rgba(239, 68, 68, 0.12);
+}
+/* 专家详情顶部 band 由米色改为深色，文字转亮 */
+[data-theme^="midnight-"] .fp-detail-band-top {
+  background: var(--mn-surface-hover);
+}
+[data-theme^="midnight-"] .fp-detail-band-top .fp-expert-name,
+[data-theme^="midnight-"] .fp-detail-band-tags {
+  color: var(--mn-text);
+}
+/* Config 页输入框 / 分隔线 */
+[data-theme^="midnight-"] .fp-config-box,
+[data-theme^="midnight-"] .fp-config-stop-input,
+[data-theme^="midnight-"] .fp-config-amt-input,
+[data-theme^="midnight-"] .fp-config-btn,
+[data-theme^="midnight-"] .fp-confirm-btn.cancel,
+[data-theme^="midnight-"] .fp-detail-amt {
+  background: var(--mn-surface-2);
+  border-color: var(--mn-border);
+  color: var(--mn-text);
+}
+[data-theme^="midnight-"] .fp-config-row,
+[data-theme^="midnight-"] .fp-config-stop-row,
+[data-theme^="midnight-"] .fp-detail-table-row {
+  border-color: var(--mn-border);
+}
+[data-theme^="midnight-"] .fp-config-btn.ok {
+  background: var(--primary-blue);
+  border-color: var(--primary-blue);
+  color: #fff;
+}
+/* Config 页剩余文字（停止条件、明细表、余额）→ 转亮避免灰暗看不清 */
+[data-theme^="midnight-"] .fp-config-input,
+[data-theme^="midnight-"] .fp-detail-table-head {
+  color: var(--mn-text);
+}
+[data-theme^="midnight-"] .fp-config-section-title,
+[data-theme^="midnight-"] .fp-config-stop-row,
+[data-theme^="midnight-"] .fp-config-check,
+[data-theme^="midnight-"] .fp-detail-table-row {
+  color: var(--mn-text-2);
+}
+[data-theme^="midnight-"] .fp-config-balance {
+  color: var(--mn-text-muted);
+}
+/* 号码金额输入框（明细表每行）→ 深色底 + 亮字 */
+[data-theme^="midnight-"] .fp-detail-amt {
+  background: var(--mn-surface-2);
+  border-color: var(--mn-border);
+  color: var(--mn-text);
+}
