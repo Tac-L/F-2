@@ -28,7 +28,7 @@ const TABS_BY_CATEGORY = {
   ],
   animal: [
     { id: 'numbers', name: '号码' },
-    { id: 'other', name: '其他' },
+    { id: 'other', name: '龙虎' },
   ],
 };
 
