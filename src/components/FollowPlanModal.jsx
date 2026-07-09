@@ -622,7 +622,7 @@ export default function FollowPlanModal({
             <span className="fp-detail-band-tags">{plan.cond1} | {plan.gameName} | {plan.cond2}</span>
           </div>
           <div className="fp-detail-band-content">
-            <div className="fp-stats">
+            <div className="fp-stats fp-stats-inline">
               <div className="fp-stat"><span className="fp-stat-label">跟投期</span><span className="fp-stat-val">{plan.settledRounds}/{plan.roundsTotal}</span></div>
               <div className="fp-stat"><span className="fp-stat-label">总胜率</span><span className="fp-stat-val fp-rate">{winRateOf(plan)}%</span></div>
               <div className="fp-stat"><span className="fp-stat-label">总输赢</span><span className={`fp-stat-val ${plan.totalWinLoss > 0 ? 'win-text' : plan.totalWinLoss < 0 ? 'loss-text' : ''}`}>￥{plan.totalWinLoss.toFixed(2)}</span></div>
@@ -633,26 +633,20 @@ export default function FollowPlanModal({
                 : <span>提前结束：<b>{plan.stopReason}</b></span>}
               {running && <span className="fp-timer">倒计时 <span className="fp-timer-val">{fmtCountdown(game.timeLeft)}</span></span>}
             </div>
-            {running && cur && !cur.settled && (
-              <>
-                <div className="fp-predict-label">本期预测</div>
-                <div className="fp-predict">{renderRoundPredict(plan, cur)}</div>
-              </>
-            )}
+            <div className="fp-detail-actions">
+              {running ? (
+                <>
+                  <button type="button" className="fp-btn" onClick={() => openConfig({ ...plan, editingPlanId: plan.id, seed: plan })}>编辑计划</button>
+                  <button type="button" className="fp-btn fp-btn-cancel" onClick={() => setConfirmStopId(plan.id)}>停止跟投</button>
+                </>
+              ) : (
+                <>
+                  <button type="button" className="fp-btn" onClick={() => openConfig({ ...plan, seed: plan })}>重新跟投</button>
+                  <button type="button" className="fp-btn" disabled>已取消</button>
+                </>
+              )}
+            </div>
           </div>
-        </div>
-        <div className="fp-detail-actions">
-          {running ? (
-            <>
-              <button type="button" className="fp-btn" onClick={() => openConfig({ ...plan, editingPlanId: plan.id, seed: plan })}>编辑计划</button>
-              <button type="button" className="fp-btn fp-btn-cancel" onClick={() => setConfirmStopId(plan.id)}>停止跟投</button>
-            </>
-          ) : (
-            <>
-              <button type="button" className="fp-btn" onClick={() => openConfig({ ...plan, seed: plan })}>重新跟投</button>
-              <button type="button" className="fp-btn" disabled>已取消</button>
-            </>
-          )}
         </div>
 
         <div className="fp-detail-rounds">
@@ -664,7 +658,7 @@ export default function FollowPlanModal({
                 <div className="fp-round-mid">
                   <div className="fp-round-line">
                     <span className="fp-round-issue">{r.issue}期</span>
-                    {r.settled ? <span className="fp-tag-sm">已投</span> : <span className="fp-tag-sm wait">待开奖</span>}
+                    <span className="fp-tag-sm">已投</span>
                   </div>
                   <div className="fp-round-line sub">
                     <span className="fp-round-field">
@@ -765,8 +759,8 @@ export default function FollowPlanModal({
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
           </button>
           <span className="fp-title">{headerTitle}</span>
-          {view === 'expertDetail' ? (
-            <span className="fp-header-balance">余额：￥{balance.toFixed(2)}</span>
+          {view === 'expertDetail' || view === 'detail' ? (
+            <span className="fp-header-balance">余额: {balance.toLocaleString()}</span>
           ) : view === 'main' ? (
             <button type="button" className="fp-menu-btn" onClick={() => onOpenMenu?.()} aria-label="菜单">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></svg>

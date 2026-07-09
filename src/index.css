@@ -27,7 +27,7 @@
   --header-btn-hover-bg: rgba(255, 255, 255, 0.28);
 
   /* Full-page (drawer) title bars */
-  --panel-title-bg: #547cfd;
+  --panel-title-bg: linear-gradient(to left, #4568e6 0%, #547cfd 40%, #7d99ff 100%);
   --panel-title-text: #ffffff;
   --panel-title-border: rgba(255, 255, 255, 0.18);
   --panel-title-btn: #ffffff;
@@ -74,7 +74,7 @@
   --header-btn-text: #2563eb;
   --header-btn-hover-bg: #f0f7ff;
 
-  --panel-title-bg: #e0efff;
+  --panel-title-bg: linear-gradient(to left, #d3eaff 0%, #e1f0ff 35%, #f2f9ff 68%);
   --panel-title-text: #1e293b;
   --panel-title-border: transparent;
   --panel-title-btn: #1e293b;
@@ -137,7 +137,7 @@
   --header-btn-hover-bg: rgba(255, 255, 255, 0.2);
 
   /* Full-page (drawer) title bars */
-  --panel-title-bg: #1c2a63;
+  --panel-title-bg: linear-gradient(to left, #131c47 0%, #1c2a63 40%, #2a3c82 100%);
   --panel-title-text: var(--mn-text);
   --panel-title-border: rgba(255, 255, 255, 0.14);
   --panel-title-btn: var(--mn-text);
@@ -207,7 +207,7 @@
   --header-btn-hover-bg: rgba(255, 255, 255, 0.2);
 
   /* Full-page (drawer) title bars */
-  --panel-title-bg: #2a1c63;
+  --panel-title-bg: linear-gradient(to left, #1e1449 0%, #2a1c63 40%, #3c2a82 100%);
   --panel-title-text: var(--mn-text);
   --panel-title-border: rgba(255, 255, 255, 0.14);
   --panel-title-btn: var(--mn-text);
@@ -1787,11 +1787,34 @@ img.pk10-ball {
 
 .confirm-modal-footer {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 12px;
+}
+/* 余额显示在左侧，占用取消/确认缩小后腾出的空间；配色同投注页页脚 */
+.confirm-modal-balance {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--text-muted);
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.confirm-modal-balance strong {
+  color: var(--text-dark);
+  font-weight: 700;
+}
+.confirm-modal-footer-btns {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .confirm-btn-cancel {
-  flex: 1;
+  width: 88px;
+  padding: 0;
   height: 38px;
   background-color: #ffffff;
   border: 1px solid #cbd5e1;
@@ -1807,7 +1830,8 @@ img.pk10-ball {
 }
 
 .confirm-btn-ok {
-  flex: 1;
+  width: 88px;
+  padding: 0;
   height: 38px;
   background: linear-gradient(180deg, #60a5fa 0%, var(--primary-blue) 100%);
   border: 1px solid var(--primary-blue-hover);
@@ -2235,7 +2259,7 @@ img.pk10-ball {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: var(--panel-title-bg);
+  background: var(--panel-title-bg);
   padding: 12px 14px;
   border-bottom: 1px solid var(--panel-title-border);
   flex-shrink: 0;
@@ -3481,7 +3505,7 @@ img.pk10-ball {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: var(--panel-title-bg);
+  background: var(--panel-title-bg);
   padding: 12px 14px;
   border-bottom: 1px solid var(--panel-title-border);
   flex-shrink: 0;
@@ -5351,7 +5375,7 @@ img.lhc-ball {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: var(--panel-title-bg);
+  background: var(--panel-title-bg);
   padding: 12px 14px;
   border-bottom: 1px solid var(--panel-title-border);
   flex-shrink: 0;
@@ -5918,7 +5942,7 @@ img.lhc-ball {
   justify-content: center;
   padding: 14px 16px;
   /* Match the 未结明细 title bar across all four skins. */
-  background-color: var(--panel-title-bg);
+  background: var(--panel-title-bg);
   border-bottom: 1px solid var(--panel-title-border);
 }
 .fp-title { font-size: 17px; font-weight: 700; color: var(--panel-title-text); }
@@ -6048,6 +6072,8 @@ img.lhc-ball {
 
 .fp-stats { display: flex; gap: 18px; margin-bottom: 10px; }
 .fp-stat { display: flex; flex-direction: column; gap: 3px; }
+/* 跟单计划详情：标题与数值同行显示，不换行 */
+.fp-stats-inline .fp-stat { flex-direction: row; align-items: baseline; gap: 5px; white-space: nowrap; }
 .fp-stat-label { font-size: 12px; color: #94a3b8; }
 .fp-stat-val { font-size: 14px; font-weight: 600; color: #334155; }
 .fp-rate { color: #16a34a; }
@@ -6208,7 +6234,7 @@ img.lhc-ball {
 .fp-detail-band-content { padding: 14px; }
 .fp-detail-band-mid { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 13px; color: #64748b; }
 .fp-detail-band-mid b { color: #1e293b; }
-.fp-detail-actions { display: flex; gap: 10px; margin-bottom: 14px; }
+.fp-detail-actions { display: flex; gap: 10px; margin-top: 14px; }
 .fp-detail-actions .fp-btn { flex: 1; padding: 12px; font-size: 15px; }
 .fp-detail-rounds { display: flex; flex-direction: column; gap: 10px; }
 .fp-round-item { display: flex; align-items: center; gap: 10px; background: #fff; border: none; border-radius: 12px; padding: 12px; cursor: pointer; text-align: left; width: 100%; }
