@@ -5956,9 +5956,19 @@ img.lhc-ball {
   gap: 8px;
   padding: 10px 14px 4px;
 }
-/* 游戏名称最长（如「十分极速赛车」），给它更宽的比例避免下拉项换行 */
+/* 游戏名称最长（如「十分极速赛车」），给它更宽的比例让触发按钮完整显示 */
 .fp-filters .history-picker-wrap--game {
   flex: 1.6;
+}
+/* 下拉菜单按内容自适应宽度（至少与触发按钮同宽），避免选项文字换行 */
+.fp-filters .history-dropdown-menu {
+  right: auto;
+  width: max-content;
+  min-width: 100%;
+  max-width: 260px;
+}
+.fp-filters .history-dropdown-item {
+  white-space: nowrap;
 }
 
 .fp-round-row {
