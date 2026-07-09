@@ -668,8 +668,14 @@ export default function FollowPlanModal({
                     {r.settled ? <span className="fp-tag-sm">已投</span> : <span className="fp-tag-sm wait">待开奖</span>}
                   </div>
                   <div className="fp-round-line sub">
-                    <span>正反投 <b className="fp-round-mode">{r.mode === 'follow' ? '正投' : '反投'}</b></span>
-                    <span>输赢 {r.settled ? <b className={r.winLoss > 0 ? 'win-text' : r.winLoss < 0 ? 'loss-text' : ''}>￥{r.winLoss.toFixed(2)}</b> : '--'}</span>
+                    <span className="fp-round-field">
+                      <span className="fp-round-field-lbl">正反投</span>
+                      <b className="fp-round-mode">{r.mode === 'follow' ? '正投' : '反投'}</b>
+                    </span>
+                    <span className="fp-round-field">
+                      <span className="fp-round-field-lbl">输赢</span>
+                      {r.settled ? <b className={r.winLoss > 0 ? 'win-text' : r.winLoss < 0 ? 'loss-text' : ''}>￥{r.winLoss.toFixed(2)}</b> : <span>--</span>}
+                    </span>
                   </div>
                 </div>
                 <div className="fp-round-balls">{renderRoundPredict(plan, r)}</div>
@@ -748,8 +754,9 @@ export default function FollowPlanModal({
     onClose();
   };
   const headerTitle = view === 'config' ? '跟单计划'
-    : view === 'detail' || view === 'expertDetail' ? '专家计划详情'
-      : view === 'records' ? '跟单记录' : '计划中心';
+    : view === 'detail' ? '跟单计划详情'
+      : view === 'expertDetail' ? '专家计划详情'
+        : view === 'records' ? '跟单记录' : '计划中心';
 
   return (
     <div className="fp-page">

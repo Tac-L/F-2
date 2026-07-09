@@ -6185,7 +6185,10 @@ img.lhc-ball {
 .fp-round-pill.lose { background: #22c55e; }
 .fp-round-mid { flex: 1; min-width: 0; }
 .fp-round-line { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #334155; }
-.fp-round-line.sub { margin-top: 4px; font-size: 12px; color: #64748b; }
+.fp-round-line.sub { margin-top: 4px; font-size: 12px; color: #64748b; gap: 28px; align-items: flex-start; }
+/* 正反投 / 输赢：标题在上、内容在下 */
+.fp-round-field { display: flex; flex-direction: column; gap: 2px; }
+.fp-round-field-lbl { color: #94a3b8; }
 .fp-round-issue { font-weight: 700; color: #1e293b; }
 .fp-tag-sm { font-size: 11px; padding: 1px 6px; border-radius: 4px; background: #eef2ff; color: #6366f1; }
 .fp-tag-sm.wait { background: #f1f5f9; color: #94a3b8; }
