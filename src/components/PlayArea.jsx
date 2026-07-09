@@ -2846,11 +2846,12 @@ export default function PlayArea({
                 key={cat}
                 type="button"
                 className={`lhc-quick-cat ${isSelected ? 'active' : ''}`}
-                style={waveColor[cat] ? { color: isSelected ? '#fff' : waveColor[cat], fontWeight: 700 } : undefined}
+                style={waveColor[cat] ? { color: waveColor[cat], fontWeight: 700 } : undefined}
                 onClick={() => handleQuickCategory(market, cat)}
                 disabled={isClosed}
               >
                 {cat}
+                {renderCheckmark(isSelected)}
               </button>
             );
           })}

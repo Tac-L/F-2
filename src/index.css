@@ -9,6 +9,9 @@
   --orange-selected-bg: #fffaf0;
   --success-green: #22c55e;
   --danger-red: #ef4444;
+  /* 选中 tab / 投注按钮 的渐变（特码A/B、四全中等类别抽屉、投注 共用）；
+     各皮肤在自己的 theme 区块里覆盖，此处为深蓝默认。 */
+  --tab-active-gradient: linear-gradient(to right, #7b93ff 0%, #2f4fd8 100%);
 
   /* ============ THEME: 深藍白 (deep-blue, default = b1) ============ */
   /* Accent palette */
@@ -67,6 +70,7 @@
   --light-blue-bg: #e0f2fe;
 
   --header-bg: linear-gradient(to left, #d3eaff 0%, #e1f0ff 35%, #f2f9ff 68%);
+  --tab-active-gradient: linear-gradient(to right, #7788f8 0%, #195cc7 100%);
   --header-text: #2563eb;
   --header-border: transparent;
   --header-btn-bg: #ffffff;
@@ -129,6 +133,7 @@
 
   /* Top app header */
   --header-bg: linear-gradient(to left, #131c47 0%, #1c2a63 40%, #2a3c82 100%);
+  --tab-active-gradient: linear-gradient(to right, #8397ff 0%, #2e409c 100%);
   --header-text: var(--mn-text);
   --header-border: rgba(255, 255, 255, 0.14);
   --header-btn-bg: rgba(255, 255, 255, 0.12);
@@ -199,6 +204,7 @@
 
   /* Top app header */
   --header-bg: linear-gradient(to left, #1e1449 0%, #2a1c63 40%, #3c2a82 100%);
+  --tab-active-gradient: linear-gradient(to right, #ac8fff 0%, #5c37c4 100%);
   --header-text: var(--mn-text);
   --header-border: rgba(255, 255, 255, 0.14);
   --header-btn-bg: rgba(255, 255, 255, 0.12);
@@ -461,6 +467,7 @@
 /* Midnight: PK10 position tab (1~10) & bet cell selected state → dark orange tint */
 [data-theme^="midnight-"] .shortcut-pos-tab.selected,
 [data-theme^="midnight-"] .bet-button.selected,
+[data-theme^="midnight-"] .lhc-quick-cat.active,
 [data-theme^="midnight-"] .lhc-xiao-card.selected {
   background-color: rgba(249, 115, 22, 0.16) !important;
   border-color: var(--orange-selected) !important;
@@ -1358,18 +1365,19 @@ img.pk10-ball {
 
 .btn-submit {
   flex: 1.5;
-  background: linear-gradient(180deg, #60a5fa 0%, var(--primary-blue) 100%);
-  border: 1px solid var(--primary-blue-hover);
+  background: var(--tab-active-gradient);
+  border: none;
   border-radius: 6px;
   font-size: 14px;
   font-weight: 600;
   color: #ffffff;
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(var(--primary-blue-rgb), 0.2);
+  transition: filter 0.15s;
 }
 
 .btn-submit:active {
-  background: linear-gradient(180deg, var(--primary-blue) 0%, var(--primary-blue-hover) 100%);
+  filter: brightness(0.94);
 }
 
 .btn-submit:disabled,
@@ -5189,8 +5197,8 @@ img.lhc-ball {
   transition: all 0.15s;
 }
 .lhc-panel-tab.active {
-  background: var(--primary-blue);
-  border-color: var(--primary-blue);
+  background: var(--tab-active-gradient);
+  border-color: transparent;
   color: #fff;
 }
 
@@ -5212,8 +5220,8 @@ img.lhc-ball {
   transition: all 0.15s;
 }
 .lhc-pos-tab.active {
-  background: var(--primary-blue);
-  border-color: var(--primary-blue);
+  background: var(--tab-active-gradient);
+  border-color: transparent;
   color: #fff;
 }
 
@@ -5225,6 +5233,7 @@ img.lhc-ball {
   gap: 8px;
 }
 .lhc-quick-cat {
+  position: relative;
   padding: 8px 0;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
@@ -5235,10 +5244,11 @@ img.lhc-ball {
   transition: all 0.15s;
 }
 .lhc-quick-cat:active { background: #eef2f7; }
+/* 选中样式与「点位选择」一致：橘色描边 + 米色底 + 右上角橘色折角 */
 .lhc-quick-cat.active {
-  background: var(--primary-blue);
-  border-color: var(--primary-blue);
-  color: #fff !important;
+  background: var(--orange-selected-bg);
+  border-color: var(--orange-selected);
+  color: var(--orange-selected);
 }
 .lhc-quick-cat:disabled { opacity: 0.5; cursor: not-allowed; }
 
