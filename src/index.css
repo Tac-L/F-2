@@ -5210,7 +5210,8 @@ img.lhc-ball {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s;
+  /* 只过渡颜色，避免边框宽度(1px↔0)动画导致切换时点位区域上下抖动 */
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
 }
 .lhc-panel-tab.active {
   background: var(--tab-active-gradient);
@@ -5233,7 +5234,8 @@ img.lhc-ball {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s;
+  /* 只过渡颜色，避免边框宽度(1px↔0)动画导致切换时点位区域上下抖动 */
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
 }
 .lhc-pos-tab.active {
   background: var(--tab-active-gradient);
