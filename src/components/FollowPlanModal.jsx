@@ -147,7 +147,6 @@ export default function FollowPlanModal({
   const [round, setRound] = useState(1);
   const [countdown, setCountdown] = useState(ROUND_SECONDS);
   const [openMenu, setOpenMenu] = useState(null); // 'game' | 'cond1' | 'cond2' | null
-  const [tempValue, setTempValue] = useState(null);
   const [followedFilter, setFollowedFilter] = useState('all'); // 'all' | 'running' | 'stopped'
   const [activePlanId, setActivePlanId] = useState(null);
   const [recordsRoundIdx, setRecordsRoundIdx] = useState(null);
@@ -273,46 +272,44 @@ export default function FollowPlanModal({
     cond1: { current: cond1, title: '请选择计划', options: cfgSel.cond1.map((c) => ({ value: c, label: c })), apply: setCond1 },
     cond2: { current: cond2, title: '请选择', options: cfgSel.cond2.map((c) => ({ value: c, label: c })), apply: setCond2 },
   };
-  const openSheet = (key) => { setTempValue(pickerConfig[key].current); setOpenMenu(key); };
-  const confirmSheet = () => { if (openMenu) pickerConfig[openMenu].apply(tempValue); setOpenMenu(null); };
+  const selectValue = (key, value) => { pickerConfig[key].apply(value); setOpenMenu(null); };
 
+  // Dropdown-drawer picker (matches the 报表 filters): trigger + inline menu below it.
   const renderTrigger = (key) => {
     const { current, options } = pickerConfig[key];
     return (
-      <div className="history-picker-wrap">
-        <button type="button" className={`history-picker ${openMenu === key ? 'open' : ''}`} onClick={() => openSheet(key)}>
+      <div className={`history-picker-wrap history-picker-wrap--${key}`}>
+        <button type="button" className={`history-picker ${openMenu === key ? 'open' : ''}`} onClick={() => setOpenMenu(openMenu === key ? null : key)}>
           <span className="history-picker-value">{(options.find((o) => o.value === current) || {}).label}</span>
           <svg className="history-picker-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="6 9 12 15 18 9" />
           </svg>
         </button>
+        {openMenu === key && (
+          <div className="history-dropdown-menu">
+            {options.map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                className={`history-dropdown-item ${opt.value === current ? 'active' : ''}`}
+                onClick={() => selectValue(key, opt.value)}
+              >
+                <span>{opt.label}</span>
+                {opt.value === current && (
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                )}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     );
   };
 
-  const renderSheet = () => {
-    if (!openMenu) return null;
-    const { title, options } = pickerConfig[openMenu];
-    return (
-      <>
-        <div className="fp-sheet-backdrop" onClick={() => setOpenMenu(null)} />
-        <div className="fp-sheet">
-          <div className="fp-sheet-header">
-            <button type="button" className="fp-sheet-cancel" onClick={() => setOpenMenu(null)}>取消</button>
-            <span className="fp-sheet-title">{title}</span>
-            <button type="button" className="fp-sheet-confirm" onClick={confirmSheet}>确认</button>
-          </div>
-          <div className="fp-sheet-list">
-            {options.map((opt) => (
-              <button key={opt.value} type="button" className={`fp-sheet-item ${opt.value === tempValue ? 'active' : ''}`} onClick={() => setTempValue(opt.value)}>
-                {opt.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </>
-    );
-  };
+  // Transparent click-catcher to close the dropdown when tapping outside.
+  const renderSheet = () => (openMenu ? <div className="history-picker-backdrop" onClick={() => setOpenMenu(null)} /> : null);
 
   // ---- shared renderers ----
   const renderBalls = (nums, winValue) => nums.map((num) => (
