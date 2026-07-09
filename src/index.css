@@ -1841,18 +1841,20 @@ img.pk10-ball {
   width: 88px;
   padding: 0;
   height: 38px;
-  background: linear-gradient(180deg, #60a5fa 0%, var(--primary-blue) 100%);
-  border: 1px solid var(--primary-blue-hover);
+  /* 与外部「投注」按钮同款渐变 */
+  background: var(--tab-active-gradient);
+  border: none;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
   color: #ffffff;
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(var(--primary-blue-rgb), 0.2);
+  transition: filter 0.15s;
 }
 
 .confirm-btn-ok:active {
-  background: linear-gradient(180deg, var(--primary-blue) 0%, var(--primary-blue-hover) 100%);
+  filter: brightness(0.94);
 }
 
 /* ================= Game Drawer / Left Sidebar Menu ================= */
