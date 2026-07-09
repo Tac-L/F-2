@@ -888,6 +888,11 @@ img.pk10-ball {
   font-weight: bold;
   position: relative;
 }
+/* 浅蓝皮肤：侧边 tab 选中的左侧竖线与文字用 #195CC7 */
+[data-theme="light-blue"] .sidebar-tab.active {
+  color: #195cc7;
+  border-left-color: #195cc7;
+}
 
 /* The selected fill sweeps into the neighbouring rows on the RIGHT side only,
    with a concave curve — flat on the left, reaching out on the right. */
@@ -5941,6 +5946,9 @@ img.lhc-ball {
 }
 .follow-plan-btn-label { position: relative; z-index: 1; }
 .follow-plan-btn:active { transform: scale(0.97); }
+/* 浅蓝皮肤：跟单计划遮罩(边框+铅笔)与文字统一用 #195CC7 */
+[data-theme="light-blue"] .follow-plan-btn { color: #195cc7; }
+[data-theme="light-blue"] .follow-plan-btn::before { background-color: #195cc7; }
 
 /* Full-screen page (opened from the 长龙 rail). */
 .fp-page {
