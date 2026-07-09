@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# 本地文档，不纳入版本控制
+docs/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
