@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { ffcBallSrc, pk10BallSrc } from '../constants/gameData';
 
 // ============================================================
 // 跟单计划 (Follow-Plan / 计划中心)
@@ -33,11 +34,8 @@ const PLAN_CONFIG = {
   xy28: { cond1: ['大小计划', '单双计划'], cond2: ['总和'], predict: 'twoside' },
 };
 
-// Colored lottery-ball palette keyed by digit.
-const BALL_COLORS = {
-  0: '#9ca3af', 1: '#f59e0b', 2: '#3b82f6', 3: '#374151', 4: '#f97316',
-  5: '#06b6d4', 6: '#8b5cf6', 7: '#10b981', 8: '#ef4444', 9: '#ec4899', 10: '#22c55e',
-};
+// 球图使用与投注页开奖球一致的图片素材（pk10 / ffc 两种玩法才有球号预测）。
+const ballSrc = (kind, n) => (kind === 'ffc' ? ffcBallSrc(n) : pk10BallSrc(n));
 
 // cond2 → index into the draw array, for highlighting the winning ball.
 const POS_INDEX = {
@@ -312,12 +310,13 @@ export default function FollowPlanModal({
   const renderSheet = () => (openMenu ? <div className="history-picker-backdrop" onClick={() => setOpenMenu(null)} /> : null);
 
   // ---- shared renderers ----
-  const renderBalls = (nums, winValue) => nums.map((num) => (
-    <span
+  const renderBalls = (nums, winValue, kind = selectedKind) => nums.map((num) => (
+    <img
       key={num}
-      className={`fp-ball ${winValue != null && num === winValue ? 'fp-ball-hit' : ''}`}
-      style={{ backgroundColor: BALL_COLORS[num] || '#6b7280' }}
-    >{num}</span>
+      className={`pk10-ball fp-img-ball ${winValue != null && num === winValue ? 'fp-ball-hit' : ''}`}
+      src={ballSrc(kind, num)}
+      alt={num}
+    />
   ));
 
   const renderPrediction = (pred) => {
@@ -339,7 +338,7 @@ export default function FollowPlanModal({
     if (!roundEntry) return null;
     if (roundEntry.predictKind === 'twoside') return renderSidePill(roundEntry.predicted[0]);
     const winValue = roundEntry.drawNumbers ? roundEntry.drawNumbers[POS_INDEX[plan.cond2]] : null;
-    return renderBalls(roundEntry.predicted, winValue);
+    return renderBalls(roundEntry.predicted, winValue, plan.kind);
   };
 
   const currentRoundOf = (plan) => plan.rounds.find((r) => !r.settled) || plan.rounds[plan.rounds.length - 1];
@@ -546,7 +545,7 @@ export default function FollowPlanModal({
     if (!r.isBalls) return renderSidePill(r.predicted[0]);
     return r.predicted.map((num) => (
       <span key={num} className="fp-hist-ball-wrap">
-        <span className="fp-ball fp-hist-ball" style={{ backgroundColor: BALL_COLORS[num] || '#6b7280' }}>{num}</span>
+        <img className="pk10-ball fp-img-ball fp-hist-ball" src={ballSrc(selectedKind, num)} alt={num} />
         {num === r.winNumber && <span className="fp-hist-dot" />}
       </span>
     ));

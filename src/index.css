@@ -6064,6 +6064,10 @@ img.lhc-ball {
   align-items: center;
   justify-content: center;
 }
+/* 球号预测使用投注页同款开奖球图片；保持跟单卡片内原有的尺寸占位 */
+.fp-img-ball { width: 26px; height: 26px; border-radius: 6px; }
+.fp-round-balls .fp-img-ball { width: 22px; height: 22px; }
+.fp-hist-balls .fp-img-ball { width: 24px; height: 24px; }
 .fp-side-pill {
   min-width: 34px;
   height: 26px;
