@@ -536,6 +536,7 @@
 html {
   height: 100%;
   background-color: var(--app-bg);
+  overflow-x: hidden;
 }
 
 body {
@@ -1517,18 +1518,21 @@ img.pk10-ball {
   opacity: 0.85;
 }
 
+/* 与投注确认弹窗按钮一致：恢复默认=白底描边，保存=主色渐变 */
 .modal-btn-cancel {
-  background-color: #f1f5f9;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
   color: var(--text-dark);
 }
 
 .modal-btn-save {
-  background-color: var(--primary-blue);
+  background: var(--tab-active-gradient);
   color: #ffffff;
+  box-shadow: 0 2px 4px rgba(var(--primary-blue-rgb), 0.2);
 }
 
-.modal-btn-save:hover {
-  background-color: var(--primary-blue-hover);
+.modal-btn-save:active {
+  filter: brightness(0.94);
 }
 
 /* Toast Notifications */
@@ -1648,6 +1652,11 @@ img.pk10-ball {
   background-color: var(--modal-title-bg);
   border-radius: 16px 16px 0 0;
   position: relative;
+}
+/* 浅蓝皮肤：投注确认 / 快捷金额编辑弹窗标题栏跟随最新浅蓝标题渐变（同玩法说明） */
+[data-theme="light-blue"] .confirm-modal-header,
+[data-theme="light-blue"] .modal-header {
+  background: var(--panel-title-bg);
 }
 
 .confirm-modal-title {
@@ -2058,6 +2067,8 @@ img.pk10-ball {
   transition: background-color 0.3s ease-out;
   display: flex;
   justify-content: flex-end;
+  /* 关闭时把移出屏幕的白色抽屉面板裁掉，避免右侧露出白边 */
+  overflow: hidden;
 }
 
 .right-drawer-overlay.open {
@@ -2111,9 +2122,11 @@ img.pk10-ball {
   gap: 8px;
   box-shadow: var(--rmenu-card-shadow);
 }
-/* 浅蓝皮肤：会员卡底色改为左上→右下对角渐变（深→浅→深） */
+/* 浅蓝皮肤：会员卡底色改为左上→右下对角渐变（深→浅→深）；
+   去掉 1px 透明边框，避免渐变在圆角处露出锯齿（右上角「破掉」） */
 [data-theme="light-blue"] .right-drawer-member-card {
   background: linear-gradient(135deg, #d5e7ff 0%, #f6f8ff 78%, #d5e7ff 100%);
+  border: none;
 }
 
 .right-drawer-member-row {
@@ -4855,7 +4868,8 @@ img.lhc-ball {
 }
 /* Light-blue theme: give the 玩法说明 title a soft blue bar */
 [data-theme="light-blue"] .play-help-header {
-  background-color: var(--light-blue-bg);
+  /* 跟随最新浅蓝标题栏渐变 */
+  background: var(--panel-title-bg);
 }
 .play-help-title {
   font-size: 17px;

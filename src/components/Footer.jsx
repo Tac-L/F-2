@@ -94,8 +94,7 @@ export default function Footer({
           type="button"
           className="edit-chip-btn"
           onClick={handleOpenEdit}
-          disabled={isClosed}
-          title="修改快选金额"
+          title="编辑快捷金额"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
@@ -137,7 +136,7 @@ export default function Footer({
         <div className="modal-overlay">
           <form className="modal-content" onSubmit={handleSaveChips}>
             <div className="modal-header">
-              <div className="modal-title">自定义快选金额</div>
+              <div className="modal-title">编辑快捷金额</div>
               <button
                 type="button"
                 className="confirm-modal-close"
