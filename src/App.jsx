@@ -15,6 +15,7 @@ import Dice from './components/Dice';
 import PlayArea from './components/PlayArea';
 import FollowPlanModal from './components/FollowPlanModal';
 import Footer from './components/Footer';
+import ChipEditModal from './components/ChipEditModal';
 import GameDrawer from './components/GameDrawer';
 import RightMenuDrawer from './components/RightMenuDrawer';
 import UnsettledDetails from './components/UnsettledDetails';
@@ -118,12 +119,14 @@ const genFollowBalls = (count, min, max) => {
 
 // Fresh prediction for one round. Returns { predictKind, predicted } where
 // predicted is a number[] (balls) or a single-side string[] (twoside).
-const genFollowPrediction = (kind, cond1, ballCount) => {
+const genFollowPrediction = (kind, cond1, ballCount, cond2 = '') => {
   const meta = PLAN_KIND_META[kind] || PLAN_KIND_META.pk10;
   if (meta.predictKind === 'balls') {
     return { predictKind: 'balls', predicted: genFollowBalls(ballCount, meta.min, meta.max) };
   }
-  const opts = cond1 === '单双计划' ? ['单', '双'] : ['大', '小'];
+  // 大小/单双：xy28 由 cond1 决定；lhc/k3 由 cond2（特码单双/和值单双）决定
+  const isOddEven = cond1 === '单双计划' || (cond2 || '').includes('单双');
+  const opts = isOddEven ? ['单', '双'] : ['大', '小'];
   return { predictKind: 'twoside', predicted: [opts[Math.floor(Math.random() * opts.length)]] };
 };
 
@@ -518,7 +521,8 @@ export default function App() {
     // URL skin param wins on entry (used when embedded in a parent site).
     if (EMBED.skin) return EMBED.skin;
     const saved = typeof localStorage !== 'undefined' ? localStorage.getItem('appTheme') : null;
-    return saved === 'light-blue' || saved === 'deep-blue' || saved === 'midnight-blue' || saved === 'midnight-purple' ? saved : 'deep-blue';
+    // 新用户默认浅蓝皮肤
+    return saved === 'light-blue' || saved === 'deep-blue' || saved === 'midnight-blue' || saved === 'midnight-purple' ? saved : 'light-blue';
   });
 
   // Apply the selected theme to the document root and persist it
@@ -585,6 +589,8 @@ export default function App() {
   
   // Custom chip options (can be edited by the user)
   const [chipValues, setChipValues] = useState([10, 20, 40, 60, 100]);
+  // 编辑快捷金额弹窗（投注页 footer 与 自动跟投 共用）
+  const [isChipEditOpen, setIsChipEditOpen] = useState(false);
   const [betAmount, setBetAmount] = useState('10'); // Default bet amount is 10
 
   // Derived selected bets in Shortcut tab dynamically
@@ -1351,7 +1357,7 @@ export default function App() {
     const override = (plan.perRoundOverrides || []).find((o) => o.idx === roundIdx);
     const mode = override?.mode ?? plan.globalMode;
     const amount = override?.amount ?? plan.amountPerBall;
-    const { predictKind, predicted } = genFollowPrediction(plan.kind, plan.cond1, plan.ballCount);
+    const { predictKind, predicted } = genFollowPrediction(plan.kind, plan.cond1, plan.ballCount, plan.cond2);
     const targets = resolveFollowTargets(plan.kind, predicted, mode);
     const base = buildFollowBets({ kind: plan.kind, cond2: plan.cond2, predictKind, targets });
     const ts = fpNowStr();
@@ -2476,7 +2482,7 @@ export default function App() {
         onSubmit={handleSubmitBets}
         isClosed={isClosed}
         chipValues={chipValues}
-        onUpdateChips={handleUpdateChips}
+        onOpenChipEdit={() => setIsChipEditOpen(true)}
       />
 
       {/* 跟单计划 (Follow-Plan) Modal */}
@@ -2494,9 +2500,20 @@ export default function App() {
         gamesState={gamesState}
         balance={balance}
         formatIssue={fmtFollowIssue}
+        chipValues={chipValues}
+        onOpenChipEdit={() => setIsChipEditOpen(true)}
         onCreatePlan={onCreatePlan}
         onEditPlan={onEditPlan}
         onStopPlan={onStopPlan}
+      />
+
+      {/* 编辑快捷金额弹窗（投注页 footer 与 自动跟投 共用） */}
+      <ChipEditModal
+        open={isChipEditOpen}
+        chipValues={chipValues}
+        onSave={handleUpdateChips}
+        onClose={() => setIsChipEditOpen(false)}
+        overPlan={isFollowPlanOpen}
       />
 
       {/* Bet Confirmation Modal */}

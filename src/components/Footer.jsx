@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 export default function Footer({
   balance,
   onRefreshBalance,
@@ -11,38 +9,13 @@ export default function Footer({
   onSubmit,
   isClosed,
   chipValues,
-  onUpdateChips
+  onOpenChipEdit
 }) {
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [tempChips, setTempChips] = useState(() => chipValues.map(String));
-
   // Total stake for the current selection. Prefer the parent-computed total
   // (which honours 快捷投注 per-号码 amounts); fall back to count × amount.
   const totalBetAmount = selectedBetsTotal != null
     ? selectedBetsTotal
     : selectedBetsCount * (parseInt(betAmount) || 0);
-
-  // Open modal and initialize values
-  const handleOpenEdit = () => {
-    setTempChips(chipValues.map(String));
-    setIsEditModalOpen(true);
-  };
-
-  // Restore default chips
-  const handleRestoreDefault = () => {
-    setTempChips(['10', '20', '40', '60', '100']);
-  };
-
-  // Save customized chips
-  const handleSaveChips = (e) => {
-    e.preventDefault();
-    const sanitizedChips = tempChips.map(val => {
-      const parsed = parseInt(val);
-      return (isNaN(parsed) || parsed <= 0) ? 1 : parsed;
-    });
-    onUpdateChips(sanitizedChips);
-    setIsEditModalOpen(false);
-  };
 
   // Handle click on a quick chip
   const handleChipClick = (val) => {
@@ -51,7 +24,7 @@ export default function Footer({
   };
 
   return (
-    <footer className={`app-footer${isEditModalOpen ? ' modal-open' : ''}`}>
+    <footer className="app-footer">
       {/* Row 1: Balance and Current Selections Summary */}
       <div className="footer-info-row">
         <div className="balance-box">
@@ -93,7 +66,7 @@ export default function Footer({
         <button
           type="button"
           className="edit-chip-btn"
-          onClick={handleOpenEdit}
+          onClick={onOpenChipEdit}
           title="编辑快捷金额"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -130,59 +103,6 @@ export default function Footer({
           投注
         </button>
       </div>
-
-      {/* Custom Chips Editor Modal */}
-      {isEditModalOpen && (
-        <div className="modal-overlay">
-          <form className="modal-content" onSubmit={handleSaveChips}>
-            <div className="modal-header">
-              <div className="modal-title">编辑快捷金额</div>
-              <button
-                type="button"
-                className="confirm-modal-close"
-                onClick={() => setIsEditModalOpen(false)}
-              >
-                &times;
-              </button>
-            </div>
-            <div className="modal-inputs">
-              {tempChips.map((val, idx) => (
-                <div key={idx} className="modal-input-group">
-                  <span className="chip-index">{idx + 1}</span>
-                  <div className="chip-input-wrap">
-                    <input
-                      type="number"
-                      inputMode="numeric"
-                      value={val}
-                      onChange={(e) => {
-                        const newChips = [...tempChips];
-                        newChips[idx] = e.target.value;
-                        setTempChips(newChips);
-                      }}
-                    />
-                    <span className="chip-input-suffix">元</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="modal-actions">
-              <button
-                type="button"
-                className="modal-btn modal-btn-cancel"
-                onClick={handleRestoreDefault}
-              >
-                恢复默认
-              </button>
-              <button
-                type="submit"
-                className="modal-btn modal-btn-save"
-              >
-                保存
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
     </footer>
   );
 }

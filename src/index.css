@@ -6034,12 +6034,13 @@ img.lhc-ball {
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
 }
+/* 与「投注」按钮同款渐变 */
 .fp-tab.active {
-  background: #4f7cff;
+  background: var(--tab-active-gradient);
+  border: none;
   color: #fff;
-  border-color: #4f7cff;
 }
 
 /* Filter dropdowns */
@@ -6359,8 +6360,8 @@ img.lhc-ball {
   color: var(--mn-text-muted);
 }
 [data-theme^="midnight-"] .fp-tab.active {
-  background: var(--primary-blue);
-  border-color: var(--primary-blue);
+  background: var(--tab-active-gradient);
+  border: none;
   color: #fff;
 }
 /* Strong / heading text → light */

@@ -9,7 +9,7 @@ import { ffcBallSrc, pk10BallSrc } from '../constants/gameData';
 // auto-bet one round per real game draw through the App engine (props below),
 // and are tracked under 已跟专家 → plan detail → 跟单记录.
 //   时时彩(=分分彩/ffc) & PK10 : N码计划  × 第X球 / 名次
-//   快3(k3) & 六合彩(lhc)      : 大小/单双计划 × 和值 / 特码
+//   快3(k3) & 六合彩(lhc)      : 两面计划 × 和值大小/和值单双 · 特码大小/特码单双
 //   幸运28(xy28)               : 大小/单双计划 × 总和
 // ============================================================
 
@@ -29,8 +29,8 @@ const kindOfGame = (id) => (ALL_GAMES.find((g) => g.id === id) || {}).kind;
 const PLAN_CONFIG = {
   pk10: { cond1: ['5码计划', '6码计划', '7码计划', '8码计划'], cond2: ['冠军', '亚军', '第三名', '第四名', '第五名', '第六名', '第七名', '第八名', '第九名', '第十名'], predict: 'balls', min: 1, max: 10 },
   ffc: { cond1: ['5码计划', '6码计划', '7码计划', '8码计划'], cond2: ['第一球', '第二球', '第三球', '第四球', '第五球'], predict: 'balls', min: 0, max: 9 },
-  k3: { cond1: ['大小计划', '单双计划'], cond2: ['和值'], predict: 'twoside' },
-  lhc: { cond1: ['大小计划', '单双计划'], cond2: ['特码'], predict: 'twoside' },
+  k3: { cond1: ['两面计划'], cond2: ['和值大小', '和值单双'], predict: 'twoside' },
+  lhc: { cond1: ['两面计划'], cond2: ['特码大小', '特码单双'], predict: 'twoside' },
   xy28: { cond1: ['大小计划', '单双计划'], cond2: ['总和'], predict: 'twoside' },
 };
 
@@ -57,7 +57,6 @@ const EXPERTS = [
 
 const TOTAL_ROUNDS = 24;
 const ROUND_SECONDS = 20;
-const CONFIG_CHIPS = [50, 100, 200, 500, 1000];
 
 function genBalls(count, min, max) {
   const pool = [];
@@ -95,7 +94,7 @@ function genExpertHistory(expert, kind, cond1, cond2, curIssueNum, formatIssue) 
         winNumber = pool.length ? pool[Math.floor(Math.random() * pool.length)] : null;
       }
     } else {
-      const opts = cond1 === '单双计划' ? ['单', '双'] : ['大', '小'];
+      const opts = (cond1 === '单双计划' || cond2.includes('单双')) ? ['单', '双'] : ['大', '小'];
       predicted = [opts[Math.floor(Math.random() * opts.length)]];
     }
     cum += win ? 1 : 0;
@@ -135,6 +134,7 @@ export default function FollowPlanModal({
   open, onClose, gameKind = 'pk10', activeGameId, addToast, onFollowBet, onOpenMenu,
   followPlans = [], placedBets = [], settledBets = [], gamesState = {}, balance = 0,
   formatIssue, onCreatePlan, onEditPlan, onStopPlan,
+  chipValues = [10, 20, 40, 60, 100], onOpenChipEdit,
 }) {
   const initialCfg = PLAN_CONFIG[gameKind] || PLAN_CONFIG.pk10;
   const [tab, setTab] = useState('experts'); // 'experts' | 'followed'
@@ -212,7 +212,7 @@ export default function FollowPlanModal({
         const n = parseInt(cond1, 10) || 5;
         return { kind: 'balls', value: genBalls(n, c.min, c.max) };
       }
-      const opts = cond1 === '单双计划' ? ['单', '双'] : ['大', '小'];
+      const opts = (cond1 === '单双计划' || cond2.includes('单双')) ? ['单', '双'] : ['大', '小'];
       return { kind: 'twoside', value: opts[Math.floor(Math.random() * opts.length)] };
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -507,7 +507,7 @@ export default function FollowPlanModal({
           {cfg.detailOpen && (
             <div className="fp-config-card">
               <div className="fp-detail-table-head">
-                <span>期数</span><span>期号</span><span>正反投</span><span>金额(每个球号)</span>
+                <span>期数</span><span>期号</span><span>正反投</span><span>金额(每球)</span>
               </div>
               {rows.map((i) => (
                 <div key={i} className="fp-detail-table-row">
@@ -527,9 +527,14 @@ export default function FollowPlanModal({
             <span className="fp-config-summary"><b>{headCount}</b>个号码，<b>{cfg.roundsTotal}</b>期，共<b>{configTotal()}</b>元</span>
           </div>
           <div className="chips-row">
-            {CONFIG_CHIPS.map((v) => (
-              <button key={v} type="button" className={`chip-btn ${cfg.amountPerBall === v ? 'active' : ''}`} onClick={() => setGlobalAmount(v)}>{v}</button>
+            {chipValues.map((v, i) => (
+              <button key={i} type="button" className={`chip-btn ${cfg.amountPerBall === v ? 'active' : ''}`} onClick={() => setGlobalAmount(v)}>{v}</button>
             ))}
+            <button type="button" className="edit-chip-btn" onClick={onOpenChipEdit} title="编辑快捷金额">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+              </svg>
+            </button>
           </div>
           <div className="fp-config-actions">
             <input type="number" className="fp-config-amt-input" value={cfg.amountPerBall} onChange={(e) => setGlobalAmount(parseInt(e.target.value, 10) || 0)} />
