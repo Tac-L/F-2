@@ -1283,7 +1283,8 @@ export default function App() {
     setConfirmBets(initialConfirmBets);
     setBulkAmount(initialAmount.toString());
     setBulkMode(confirmBulkDefault);
-    setActiveMultiplier(null);
+    // 倍数模式默认选中 1 倍（金额 = 基础额 × 1，保持不变）
+    setActiveMultiplier(1);
     setConfirmGameId(activeGameId);
     setIsConfirmModalOpen(true);
   };
@@ -1351,7 +1352,8 @@ export default function App() {
     setConfirmBets(bets.map(b => ({ ...b, amount: amt, baseAmount: amt })));
     setBulkAmount(amt.toString());
     setBulkMode(confirmBulkDefault);
-    setActiveMultiplier(null);
+    // 倍数模式默认选中 1 倍（金额 = 基础额 × 1，保持不变）
+    setActiveMultiplier(1);
     setConfirmGameId(spec.gameId);
     setIsConfirmModalOpen(true);
     // Keep 计划中心 open behind the confirmation modal — the user stays in the
