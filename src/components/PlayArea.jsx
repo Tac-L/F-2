@@ -3184,13 +3184,29 @@ export default function PlayArea({
     syncHexiao(hexiaoZodiacs, cat); // recompute combos for the new category
   };
 
+  // 快选: 随机选出当前类别所需数量的生肖，组成 1 注
+  const quickSelectHexiao = () => {
+    if (isClosed) return;
+    const pool = [...LHC_ZODIACS];
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    const picks = pool
+      .slice(0, hexiaoCat)
+      .sort((a, b) => LHC_ZODIACS.indexOf(a) - LHC_ZODIACS.indexOf(b));
+    setHexiaoZodiacs(picks);
+    syncHexiao(picks, hexiaoCat);
+    addToast?.(`已快选生肖：${picks.join(', ')}`, 'success');
+  };
+
   const renderLhcHexiao = () => {
     const odds = adj(lhcHexiaoOdds(hexiaoCat));
     const M = hexiaoZodiacs.length;
     const noteCount = M >= hexiaoCat ? combinations(hexiaoZodiacs, hexiaoCat).length : 0;
     return (
       <div className="play-area">
-        {renderPlayHelpBar()}
+        {renderPlayHelpBar(quickSelectHexiao)}
         {renderPlayHelpModal()}
         {/* Collapsible Sub-tab Selection Drawer for Hexiao */}
         <div className="subtab-drawer">
@@ -3310,7 +3326,7 @@ export default function PlayArea({
     const picks = pickRandomNumbers(LIANMA_REQUIRED_COUNTS[lianmaSubTab]);
     setLianmaNumbers(picks);
     syncLianma(picks, lianmaSubTab);
-    const formatted = picks.map((n) => n.toString().padStart(2, '0')).join(' ');
+    const formatted = picks.map((n) => n.toString().padStart(2, '0')).join(', ');
     addToast?.(`已快选号码：${formatted}`, 'success');
   };
 
@@ -3440,7 +3456,7 @@ export default function PlayArea({
     const picks = pickRandomNumbers(BUZHONG_REQUIRED_COUNTS[buzhongSubTab]);
     setBuzhongNumbers(picks);
     syncBuzhong(picks, buzhongSubTab);
-    const formatted = picks.map((n) => n.toString().padStart(2, '0')).join(' ');
+    const formatted = picks.map((n) => n.toString().padStart(2, '0')).join(', ');
     addToast?.(`已快选号码：${formatted}`, 'success');
   };
 

@@ -641,6 +641,8 @@ export default function App() {
   // Confirmation modal states
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [confirmBets, setConfirmBets] = useState([]);
+  // 上一次成功送出的注单快照（供「同上单」重复带入）
+  const [lastBetSlip, setLastBetSlip] = useState(null);
   // The game the confirmation modal is placing bets on. Normally the active game,
   // but 计划中心 跟投/反投 can target a *different* game (independent game center);
   // those bets still settle on that game's own draw via placedBets[].gameId.
@@ -1650,7 +1652,14 @@ export default function App() {
 
     // Save to placed bets list
     setPlacedBets(prev => [...prev, ...confirmedWithTimestamp]);
-    
+
+    // 记录本次注单快照，供「同上单」重复带入（保留每注原始额与倍数）
+    setLastBetSlip({
+      gameId: targetGameId,
+      multiplier: betMultiplier,
+      bets: confirmBets.map(b => ({ ...b })),
+    });
+
     // Clear selections
     clearSelections();
     
@@ -1660,6 +1669,25 @@ export default function App() {
     setConfirmGameId(null);
 
     addToast(`[${activeGameName}] 下注成功! 共 ${confirmBets.length} 注，合计 ${totalAmountNeeded} 元`, 'success');
+  };
+
+  // 同上单：把上一次送出的注单内容重复带入，并打开投注确认弹窗
+  const handleRepeatLastSlip = () => {
+    if (!lastBetSlip || !lastBetSlip.bets.length) {
+      addToast('暂无可重复的注单', 'info');
+      return;
+    }
+    if (!gamesState[lastBetSlip.gameId]) {
+      addToast('该游戏暂未开放投注', 'error');
+      return;
+    }
+    const bets = lastBetSlip.bets.map(b => ({ ...b }));
+    setConfirmBets(bets);
+    setBulkAmount((bets[0]?.amount ?? 0).toString());
+    setBulkMode(confirmBulkDefault);
+    setBetMultiplier(lastBetSlip.multiplier || 1);
+    setConfirmGameId(lastBetSlip.gameId);
+    setIsConfirmModalOpen(true);
   };
 
   // Submit bets (now opens confirmation modal)
@@ -2549,6 +2577,8 @@ export default function App() {
         onOpenChipEdit={() => setIsChipEditOpen(true)}
         betMultiplier={betMultiplier}
         onCycleMultiplier={handleCycleMultiplier}
+        canRepeat={!!lastBetSlip}
+        onRepeatLastSlip={handleRepeatLastSlip}
       />
 
       {/* 跟单计划 (Follow-Plan) Modal */}

@@ -11,7 +11,9 @@ export default function Footer({
   chipValues,
   onOpenChipEdit,
   betMultiplier = 1,
-  onCycleMultiplier
+  onCycleMultiplier,
+  canRepeat = false,
+  onRepeatLastSlip
 }) {
   // Total stake for the current selection. Prefer the parent-computed total
   // (which honours 快捷投注 per-号码 amounts); fall back to count × amount.
@@ -45,6 +47,15 @@ export default function Footer({
           </button>
         </div>
         <div className="bet-summary">
+          <button
+            type="button"
+            className="repeat-slip-btn"
+            onClick={onRepeatLastSlip}
+            disabled={!canRepeat}
+            title="重复上一次注单"
+          >
+            同上单
+          </button>
           共 <span>{selectedBetsCount}</span> 注 下注金额: <span>{totalBetAmount}</span>
         </div>
       </div>

@@ -1278,11 +1278,42 @@ img.pk10-ball {
 
 .bet-summary {
   color: var(--text-dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .bet-summary span {
   color: var(--orange-selected);
   font-weight: 600;
+}
+
+/* 同上单：重复上一次注单 */
+.repeat-slip-btn {
+  flex: 0 0 auto;
+  padding: 4px 10px;
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--primary-blue);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary-blue);
+  cursor: pointer;
+}
+
+.repeat-slip-btn:active {
+  background-color: #eff6ff;
+}
+
+.repeat-slip-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+[data-theme^="midnight-"] .repeat-slip-btn {
+  background: var(--mn-surface-2);
+  border-color: var(--primary-blue);
+  color: var(--mn-text-2);
 }
 
 /* Quick Chips Row */
