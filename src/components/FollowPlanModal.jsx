@@ -352,14 +352,23 @@ export default function FollowPlanModal({
   const currentRoundOf = (plan) => plan.rounds.find((r) => !r.settled) || plan.rounds[plan.rounds.length - 1];
   const winRateOf = (plan) => (plan.settledRounds > 0 ? Math.round((plan.winRounds / plan.settledRounds) * 100) : 0);
 
+  // 某专家（当前游戏/计划/球号上下文）是否已有一笔进行中的自动跟投。
+  // 一个专家只能有一笔自动跟投：已跟时卡片显示「编辑/停止跟投」而非「自动跟投」。
+  const runningPlanFor = (expertName) => followPlans.find((p) =>
+    p.expertName === expertName && p.gameId === selectedGameId
+    && p.cond1 === cond1 && p.cond2 === cond2 && p.status === 'running'
+  );
+
   // =========================== 专家计划 card ===========================
   const renderExpertCard = (expert, idx) => {
     const pred = predictions[idx];
+    const followedPlan = runningPlanFor(expert.name);
     return (
       <div key={expert.name} className="fp-card">
         {/* 标题整行占满卡片宽度（延伸到右侧按钮上方），标签不再换行 */}
         <button type="button" className="fp-card-top" onClick={() => openExpertDetail(expert, idx)}>
           <span className="fp-expert-name">{expert.name}</span>
+          {followedPlan && <span className="fp-followed-badge">已跟</span>}
           <span className="fp-tag">{selectedGameName}</span>
           <span className="fp-tag">{cond1}</span>
           <span className="fp-tag">{cond2}</span>
@@ -375,9 +384,18 @@ export default function FollowPlanModal({
             <div className="fp-predict">{renderPrediction(pred)}</div>
           </button>
           <div className="fp-card-actions">
-            <button type="button" className="fp-btn" disabled={isSealed} onClick={() => handleFollow(expert, pred, 'follow')}>跟投</button>
-            <button type="button" className="fp-btn" disabled={isSealed} onClick={() => handleFollow(expert, pred, 'reverse')}>反投</button>
-            <button type="button" className="fp-btn" onClick={() => startAutoFollow(expert)}>自动跟投</button>
+            {followedPlan ? (
+              <>
+                <button type="button" className="fp-btn" onClick={() => openConfig({ ...followedPlan, editingPlanId: followedPlan.id, seed: followedPlan })}>编辑跟投</button>
+                <button type="button" className="fp-btn fp-btn-cancel" onClick={() => setConfirmStopId(followedPlan.id)}>停止跟投</button>
+              </>
+            ) : (
+              <>
+                <button type="button" className="fp-btn" disabled={isSealed} onClick={() => handleFollow(expert, pred, 'follow')}>跟投</button>
+                <button type="button" className="fp-btn" disabled={isSealed} onClick={() => handleFollow(expert, pred, 'reverse')}>反投</button>
+                <button type="button" className="fp-btn" onClick={() => startAutoFollow(expert)}>自动跟投</button>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -552,7 +570,7 @@ export default function FollowPlanModal({
     if (editingPlanId) onEditPlan?.(editingPlanId, planConfig);
     else onCreatePlan?.(planConfig);
     setView('main');
-    setTab('followed');
+    // 确认后保持在原本的标签页（如「专家计划」），不强制跳到「已跟专家」
     setCfg(null);
   };
 
@@ -571,6 +589,7 @@ export default function FollowPlanModal({
     if (!expertView) { setView('main'); return null; }
     const { idx, expert, history } = expertView;
     const pred = predictions[idx];
+    const followedPlan = runningPlanFor(expert.name);
     // 封盘状态与倒计时文案沿用组件级 isSealed / countdownText（见上方定义）。
     const cd = countdownText;
     return (
@@ -578,6 +597,7 @@ export default function FollowPlanModal({
         <div className="fp-detail-band">
           <div className="fp-detail-band-top">
             <span className="fp-expert-name">{expert.name}</span>
+            {followedPlan && <span className="fp-followed-badge">已跟</span>}
             <span className="fp-detail-band-tags">{cond1} | {selectedGameName} | {cond2}</span>
           </div>
           <div className="fp-detail-band-content">
@@ -597,9 +617,18 @@ export default function FollowPlanModal({
               </div>
             </div>
             <div className="fp-expert-detail-actions">
-              <button type="button" className="fp-btn" disabled={isSealed} onClick={() => handleFollow(expert, pred, 'follow')}>跟投</button>
-              <button type="button" className="fp-btn" disabled={isSealed} onClick={() => handleFollow(expert, pred, 'reverse')}>反投</button>
-              <button type="button" className="fp-btn" onClick={() => startAutoFollow(expert)}>自动跟投</button>
+              {followedPlan ? (
+                <>
+                  <button type="button" className="fp-btn" onClick={() => openConfig({ ...followedPlan, editingPlanId: followedPlan.id, seed: followedPlan })}>编辑跟投</button>
+                  <button type="button" className="fp-btn fp-btn-cancel" onClick={() => setConfirmStopId(followedPlan.id)}>停止跟投</button>
+                </>
+              ) : (
+                <>
+                  <button type="button" className="fp-btn" disabled={isSealed} onClick={() => handleFollow(expert, pred, 'follow')}>跟投</button>
+                  <button type="button" className="fp-btn" disabled={isSealed} onClick={() => handleFollow(expert, pred, 'reverse')}>反投</button>
+                  <button type="button" className="fp-btn" onClick={() => startAutoFollow(expert)}>自动跟投</button>
+                </>
+              )}
             </div>
           </div>
         </div>

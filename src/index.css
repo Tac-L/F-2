@@ -6342,6 +6342,21 @@ img.lhc-ball {
   text-align: left;
 }
 .fp-expert-name { font-size: 15px; font-weight: 700; color: #4f7cff; margin-right: 2px; }
+/* 「已跟」小标记：紧跟在专家名右侧 */
+.fp-followed-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: #16a34a;
+  background: #dcfce7;
+  border-radius: 8px;
+  padding: 1px 6px;
+  margin-right: 4px;
+  white-space: nowrap;
+}
+[data-theme^="midnight-"] .fp-followed-badge {
+  color: #4ade80;
+  background: rgba(74, 222, 128, 0.16);
+}
 .fp-tag {
   font-size: 11px;
   color: #4f7cff;
