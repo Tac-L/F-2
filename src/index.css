@@ -5867,7 +5867,8 @@ img.lhc-ball {
   box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
 }
 
-[data-theme="light-blue"] .subtab-drawer .accordion-header {
+[data-theme="light-blue"] .subtab-drawer .accordion-header,
+[data-theme="deep-blue"] .subtab-drawer .accordion-header {
   background-color: #ffffff;
 }
 
