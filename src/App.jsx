@@ -643,6 +643,20 @@ export default function App() {
   // those bets still settle on that game's own draw via placedBets[].gameId.
   const [confirmGameId, setConfirmGameId] = useState(null);
   const [bulkAmount, setBulkAmount] = useState('10');
+  // 设置项「投注确认金额」：投注确认弹窗批量修改行的默认模式（默认「修改倍数」）
+  const [confirmBulkDefault, setConfirmBulkDefault] = useState(() => {
+    const saved = typeof localStorage !== 'undefined' ? localStorage.getItem('confirmBulkDefault') : null;
+    return saved === 'amount' || saved === 'multiplier' ? saved : 'multiplier';
+  });
+  useEffect(() => {
+    localStorage.setItem('confirmBulkDefault', confirmBulkDefault);
+  }, [confirmBulkDefault]);
+  // 批量修改行的模式：'amount' 修改金额（绝对值）/ 'multiplier' 修改倍数（基础额×倍数）
+  const [bulkMode, setBulkMode] = useState('amount');
+  // 快捷倍数（可编辑，样式复用编辑快捷金额弹窗）
+  const [multiplierValues, setMultiplierValues] = useState([1, 2, 5, 10, 20]);
+  const [activeMultiplier, setActiveMultiplier] = useState(null);
+  const [isMultiplierEditOpen, setIsMultiplierEditOpen] = useState(false);
 
   // Toast notifications
   const [toasts, setToasts] = useState([]);
@@ -1262,12 +1276,14 @@ export default function App() {
     const initialAmount = parseInt(betAmount) || 10;
     // 快捷投注 bets carry their own per-号码 amount; everything else uses the
     // shared 投注金额 from the footer.
-    const initialConfirmBets = selectedBets.map(bet => ({
-      ...bet,
-      amount: bet.amount != null ? bet.amount : initialAmount
-    }));
+    const initialConfirmBets = selectedBets.map(bet => {
+      const amt = bet.amount != null ? bet.amount : initialAmount;
+      return { ...bet, amount: amt, baseAmount: amt };
+    });
     setConfirmBets(initialConfirmBets);
     setBulkAmount(initialAmount.toString());
+    setBulkMode(confirmBulkDefault);
+    setActiveMultiplier(null);
     setConfirmGameId(activeGameId);
     setIsConfirmModalOpen(true);
   };
@@ -1332,8 +1348,10 @@ export default function App() {
       return;
     }
     const amt = parseInt(betAmount) || 10;
-    setConfirmBets(bets.map(b => ({ ...b, amount: amt })));
+    setConfirmBets(bets.map(b => ({ ...b, amount: amt, baseAmount: amt })));
     setBulkAmount(amt.toString());
+    setBulkMode(confirmBulkDefault);
+    setActiveMultiplier(null);
     setConfirmGameId(spec.gameId);
     setIsConfirmModalOpen(true);
     // Keep 计划中心 open behind the confirmation modal — the user stays in the
@@ -1515,6 +1533,7 @@ export default function App() {
   // Bulk modify all bet amounts in confirm modal
   const handleBulkAmountChange = (val) => {
     setBulkAmount(val);
+    setActiveMultiplier(null);
     const numVal = parseInt(val) || 0;
     setConfirmBets(prev => prev.map(bet => ({
       ...bet,
@@ -1522,8 +1541,27 @@ export default function App() {
     })));
   };
 
+  // 修改倍数：所有投注金额 = 基础额（进弹窗时的原始金额）× 倍数
+  const handleBulkMultiplierChange = (mult) => {
+    setActiveMultiplier(mult);
+    setConfirmBets(prev => prev.map(bet => ({
+      ...bet,
+      amount: (bet.baseAmount != null ? bet.baseAmount : bet.amount) * mult
+    })));
+  };
+
+  // 保存编辑后的快捷倍数
+  const handleUpdateMultipliers = (newVals) => {
+    setMultiplierValues(newVals);
+    if (activeMultiplier != null && !newVals.includes(activeMultiplier)) {
+      setActiveMultiplier(null);
+    }
+    addToast('快选倍数修改成功', 'success');
+  };
+
   // Edit individual bet amount in confirm modal
   const handleIndividualAmountChange = (betId, val) => {
+    setActiveMultiplier(null);
     const numVal = parseInt(val) || 0;
     setConfirmBets(prev => prev.map(bet => {
       if (bet.id === betId) {
@@ -2516,6 +2554,18 @@ export default function App() {
         overPlan={isFollowPlanOpen}
       />
 
+      {/* 编辑快捷倍数弹窗（投注确认弹窗-批量修改倍数，样式复用编辑快捷金额） */}
+      <ChipEditModal
+        open={isMultiplierEditOpen}
+        chipValues={multiplierValues}
+        onSave={handleUpdateMultipliers}
+        onClose={() => setIsMultiplierEditOpen(false)}
+        overConfirm
+        title="编辑快捷倍数"
+        suffix="倍"
+        defaultValues={['1', '2', '5', '10', '20']}
+      />
+
       {/* Bet Confirmation Modal */}
       {isConfirmModalOpen && (
         <div className={`modal-overlay${isFollowPlanOpen ? ' modal-overlay--over-plan' : ''}`}>
@@ -2572,15 +2622,53 @@ export default function App() {
             </div>
             
             <div className="confirm-modal-bulk">
-              <span className="bulk-label">批量修改:</span>
-              <input
-                type="number"
-                pattern="[0-9]*"
-                className="confirm-bulk-input"
-                value={bulkAmount}
-                onChange={(e) => handleBulkAmountChange(e.target.value)}
-                placeholder="修改所有投注金额"
-              />
+              <button
+                type="button"
+                className="bulk-mode-toggle"
+                onClick={() => setBulkMode(m => (m === 'amount' ? 'multiplier' : 'amount'))}
+                title={bulkMode === 'amount' ? '切换为修改倍数' : '切换为修改金额'}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="4" y1="8" x2="20" y2="8" />
+                  <polyline points="16 4 20 8 16 12" />
+                  <line x1="20" y1="16" x2="4" y2="16" />
+                  <polyline points="8 12 4 16 8 20" />
+                </svg>
+              </button>
+              <span className="bulk-label">{bulkMode === 'amount' ? '修改金额:' : '修改倍数:'}</span>
+              {bulkMode === 'amount' ? (
+                <input
+                  type="number"
+                  pattern="[0-9]*"
+                  className="confirm-bulk-input"
+                  value={bulkAmount}
+                  onChange={(e) => handleBulkAmountChange(e.target.value)}
+                  placeholder="修改所有投注金额"
+                />
+              ) : (
+                <div className="bulk-multiplier-row">
+                  {multiplierValues.map((m, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      className={`chip-btn ${activeMultiplier === m ? 'active' : ''}`}
+                      onClick={() => handleBulkMultiplierChange(m)}
+                    >
+                      {m}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    className="edit-chip-btn"
+                    onClick={() => setIsMultiplierEditOpen(true)}
+                    title="编辑快捷倍数"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                    </svg>
+                  </button>
+                </div>
+              )}
             </div>
             
             <div className="confirm-modal-footer">
@@ -2690,6 +2778,8 @@ export default function App() {
           onChangeLang={handleChangeLang}
           followPlanEnabled={followPlanEnabled}
           onToggleFollowPlan={setFollowPlanEnabled}
+          confirmBulkDefault={confirmBulkDefault}
+          onChangeConfirmBulkDefault={setConfirmBulkDefault}
           onLogout={handleLogout}
           hideLogout={EMBED.embedded}
         />

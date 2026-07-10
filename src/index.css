@@ -1807,6 +1807,64 @@ img.pk10-ball {
   border-color: var(--primary-blue);
 }
 
+/* 批量修改：金额 / 倍数 模式切换按钮 */
+.bulk-mode-toggle {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--primary-blue);
+}
+
+.bulk-mode-toggle:hover {
+  background-color: #f8fafc;
+}
+
+[data-theme^="midnight-"] .bulk-mode-toggle {
+  border-color: var(--mn-border);
+}
+
+[data-theme^="midnight-"] .bulk-mode-toggle:hover {
+  background-color: var(--mn-surface-hover);
+}
+
+.bulk-label {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  color: var(--text-dark);
+}
+
+/* 批量修改倍数：快选倍数按钮行（复用 .chip-btn / .edit-chip-btn，尺寸收紧） */
+.bulk-multiplier-row {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.bulk-multiplier-row .chip-btn {
+  height: 32px;
+  font-size: 12px;
+  padding: 0 2px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.bulk-multiplier-row .edit-chip-btn {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+}
+
+
 .confirm-modal-footer {
   display: flex;
   align-items: center;
@@ -5505,6 +5563,110 @@ img.lhc-ball {
   color: #cbd5e1;
 }
 
+/* 带下拉选择的设置行（如「投注确认金额」） */
+.settings-row-select {
+  cursor: default;
+}
+
+.settings-picker-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.settings-picker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: var(--primary-blue);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 6px 10px 6px 12px;
+  cursor: pointer;
+  outline: none;
+}
+
+.settings-picker-value {
+  white-space: nowrap;
+}
+
+.settings-picker-caret {
+  transition: transform 0.2s ease;
+}
+
+.settings-picker.open .settings-picker-caret {
+  transform: rotate(180deg);
+}
+
+/* 下拉抽屉：点击后从选择框下方展开的选项面板 */
+.settings-picker-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+
+.settings-picker-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 41;
+  min-width: 132px;
+  background: #ffffff;
+  border: 1px solid #eef2f7;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.14);
+  padding: 4px;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.settings-picker-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-dark);
+  cursor: pointer;
+  text-align: left;
+}
+
+.settings-picker-item:active {
+  background-color: #f1f5f9;
+}
+
+.settings-picker-item.active {
+  color: var(--primary-blue);
+  font-weight: 600;
+}
+
+[data-theme^="midnight-"] .settings-picker {
+  background: var(--mn-surface-2);
+  border-color: var(--mn-border);
+  color: var(--mn-text-2);
+}
+
+[data-theme^="midnight-"] .settings-picker-menu {
+  background: var(--mn-surface);
+  border-color: var(--mn-border);
+}
+
+[data-theme^="midnight-"] .settings-picker-item {
+  color: var(--mn-text);
+}
+
+[data-theme^="midnight-"] .settings-picker-item:active {
+  background-color: var(--mn-surface-2);
+}
+
 /* Skin switch sub-page */
 .settings-section-label {
   font-size: 13px;
@@ -5964,6 +6126,10 @@ img.lhc-ball {
    center (which stays open). Lift it above .fp-page (z-index 3000). */
 .modal-overlay.modal-overlay--over-plan {
   z-index: 3100;
+}
+/* 编辑快捷倍数弹窗从投注确认弹窗内部打开，需盖在确认弹窗之上（含计划中心场景 3100）。 */
+.modal-overlay.modal-overlay--over-confirm {
+  z-index: 3150;
 }
 .fp-modal {
   position: relative;

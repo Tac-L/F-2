@@ -67,8 +67,15 @@ const CheckIcon = () => (
   </svg>
 );
 
-export default function SettingsPage({ onBack, onOpenMenu, theme, onChangeTheme, lang, onChangeLang, followPlanEnabled = false, onToggleFollowPlan, onLogout, hideLogout }) {
+const CONFIRM_BULK_OPTIONS = [
+  { id: 'amount', name: '修改金额' },
+  { id: 'multiplier', name: '修改倍数' },
+];
+
+export default function SettingsPage({ onBack, onOpenMenu, theme, onChangeTheme, lang, onChangeLang, followPlanEnabled = false, onToggleFollowPlan, confirmBulkDefault = 'multiplier', onChangeConfirmBulkDefault, onLogout, hideLogout }) {
   const [subPage, setSubPage] = React.useState('menu'); // 'menu' | 'skin' | 'password' | 'language'
+  const [bulkPickerOpen, setBulkPickerOpen] = React.useState(false);
+  const bulkCurrent = CONFIRM_BULK_OPTIONS.find(o => o.id === confirmBulkDefault) || CONFIRM_BULK_OPTIONS[1];
 
   const title =
     subPage === 'skin' ? '皮肤切换'
@@ -176,6 +183,58 @@ export default function SettingsPage({ onBack, onOpenMenu, theme, onChangeTheme,
                 >
                   <span className="fp-switch-thumb" />
                 </button>
+              </div>
+
+              {/* 投注确认金额：控制投注确认弹窗批量修改行的默认模式 */}
+              <div className="settings-row settings-row-select">
+                <span className="settings-row-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="4" width="18" height="16" rx="2" />
+                    <path d="M8 10h8M8 14h5" />
+                  </svg>
+                </span>
+                <span className="settings-row-name">投注确认金额</span>
+                <div className="settings-picker-wrap">
+                  {bulkPickerOpen && (
+                    <div
+                      className="settings-picker-backdrop"
+                      onClick={(e) => { e.stopPropagation(); setBulkPickerOpen(false); }}
+                    />
+                  )}
+                  <button
+                    type="button"
+                    className={`settings-picker ${bulkPickerOpen ? 'open' : ''}`}
+                    aria-haspopup="listbox"
+                    aria-expanded={bulkPickerOpen}
+                    onClick={() => setBulkPickerOpen(o => !o)}
+                  >
+                    <span className="settings-picker-value">{bulkCurrent.name}</span>
+                    <svg className="settings-picker-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </button>
+                  {bulkPickerOpen && (
+                    <div className="settings-picker-menu" role="listbox">
+                      {CONFIRM_BULK_OPTIONS.map((opt) => (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          role="option"
+                          aria-selected={opt.id === confirmBulkDefault}
+                          className={`settings-picker-item ${opt.id === confirmBulkDefault ? 'active' : ''}`}
+                          onClick={() => { onChangeConfirmBulkDefault?.(opt.id); setBulkPickerOpen(false); }}
+                        >
+                          <span>{opt.name}</span>
+                          {opt.id === confirmBulkDefault && (
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </nav>
 

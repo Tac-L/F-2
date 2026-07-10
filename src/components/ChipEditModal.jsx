@@ -2,7 +2,18 @@ import { useState, useEffect } from 'react';
 
 // 编辑快捷金额弹窗（投注页 footer 与 计划中心-自动跟投 共用同一套快捷金额）。
 // overPlan=true 时抬到计划中心 (.fp-page z-index 3000) 之上。
-export default function ChipEditModal({ open, chipValues, onSave, onClose, overPlan = false }) {
+// 通过 title/suffix/defaultValues 复用同一套样式来编辑「快捷倍数」等其它快选项。
+export default function ChipEditModal({
+  open,
+  chipValues,
+  onSave,
+  onClose,
+  overPlan = false,
+  overConfirm = false,
+  title = '编辑快捷金额',
+  suffix = '元',
+  defaultValues = ['10', '20', '40', '60', '100'],
+}) {
   const [tempChips, setTempChips] = useState(() => chipValues.map(String));
 
   // Re-seed the inputs each time the modal opens.
@@ -12,7 +23,7 @@ export default function ChipEditModal({ open, chipValues, onSave, onClose, overP
 
   if (!open) return null;
 
-  const handleRestoreDefault = () => setTempChips(['10', '20', '40', '60', '100']);
+  const handleRestoreDefault = () => setTempChips([...defaultValues]);
 
   const handleSave = (e) => {
     e.preventDefault();
@@ -25,10 +36,10 @@ export default function ChipEditModal({ open, chipValues, onSave, onClose, overP
   };
 
   return (
-    <div className={`modal-overlay${overPlan ? ' modal-overlay--over-plan' : ''}`}>
+    <div className={`modal-overlay${overPlan ? ' modal-overlay--over-plan' : ''}${overConfirm ? ' modal-overlay--over-confirm' : ''}`}>
       <form className="modal-content" onSubmit={handleSave}>
         <div className="modal-header">
-          <div className="modal-title">编辑快捷金额</div>
+          <div className="modal-title">{title}</div>
           <button type="button" className="confirm-modal-close" onClick={onClose}>
             &times;
           </button>
@@ -48,7 +59,7 @@ export default function ChipEditModal({ open, chipValues, onSave, onClose, overP
                     setTempChips(newChips);
                   }}
                 />
-                <span className="chip-input-suffix">元</span>
+                <span className="chip-input-suffix">{suffix}</span>
               </div>
             </div>
           ))}
