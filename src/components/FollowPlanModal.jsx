@@ -406,35 +406,39 @@ export default function FollowPlanModal({
   const renderPlanCard = (plan) => {
     const cur = currentRoundOf(plan);
     const stopped = plan.status !== 'running';
+    const openDetail = () => { setActivePlanId(plan.id); setView('detail'); };
     return (
-      <div key={plan.id} className="fp-plan-card">
-        <button type="button" className="fp-plan-card-body" onClick={() => { setActivePlanId(plan.id); setView('detail'); }}>
-          <div className="fp-card-top">
-            <span className="fp-expert-name">{plan.expertName}</span>
-            <span className="fp-tag">{plan.gameName}</span>
-            <span className="fp-tag">{plan.cond1}</span>
-            <span className="fp-tag">{plan.cond2}</span>
-          </div>
-          <div className="fp-stats">
-            <div className="fp-stat"><span className="fp-stat-label">跟投期</span><span className="fp-stat-val">{plan.settledRounds}/{plan.roundsTotal}</span></div>
-            <div className="fp-stat"><span className="fp-stat-label">总胜率</span><span className="fp-stat-val fp-rate">{winRateOf(plan)}%</span></div>
-            <div className="fp-stat"><span className="fp-stat-label">总输赢</span><span className={`fp-stat-val ${plan.totalWinLoss > 0 ? 'win-text' : plan.totalWinLoss < 0 ? 'loss-text' : ''}`}>￥{plan.totalWinLoss.toFixed(2)}</span></div>
-          </div>
-          <div className="fp-predict-label">本期预测</div>
-          <div className="fp-predict">{renderRoundPredict(plan, cur)}</div>
+      <div key={plan.id} className="fp-card">
+        {/* 标题行占满整卡宽度（条件标记延伸到右侧按钮上方），与「专家计划」卡片一致 */}
+        <button type="button" className="fp-card-top" onClick={openDetail}>
+          <span className="fp-expert-name">{plan.expertName}</span>
+          <span className="fp-tag">{plan.gameName}</span>
+          <span className="fp-tag">{plan.cond1}</span>
+          <span className="fp-tag">{plan.cond2}</span>
         </button>
-        <div className="fp-card-actions">
-          {stopped ? (
-            <>
-              <button type="button" className="fp-btn" onClick={() => openConfig({ ...plan, seed: plan })}>重新跟投</button>
-              <button type="button" className="fp-btn" disabled>已取消</button>
-            </>
-          ) : (
-            <>
-              <button type="button" className="fp-btn" onClick={() => openConfig({ ...plan, editingPlanId: plan.id, seed: plan })}>编辑跟投</button>
-              <button type="button" className="fp-btn fp-btn-cancel" onClick={() => setConfirmStopId(plan.id)}>停止跟投</button>
-            </>
-          )}
+        <div className="fp-card-row">
+          <button type="button" className="fp-card-main" onClick={openDetail}>
+            <div className="fp-stats">
+              <div className="fp-stat"><span className="fp-stat-label">跟投期</span><span className="fp-stat-val">{plan.settledRounds}/{plan.roundsTotal}</span></div>
+              <div className="fp-stat"><span className="fp-stat-label">总胜率</span><span className="fp-stat-val fp-rate">{winRateOf(plan)}%</span></div>
+              <div className="fp-stat"><span className="fp-stat-label">总输赢</span><span className={`fp-stat-val ${plan.totalWinLoss > 0 ? 'win-text' : plan.totalWinLoss < 0 ? 'loss-text' : ''}`}>￥{plan.totalWinLoss.toFixed(2)}</span></div>
+            </div>
+            <div className="fp-predict-label">本期预测</div>
+            <div className="fp-predict">{renderRoundPredict(plan, cur)}</div>
+          </button>
+          <div className="fp-card-actions">
+            {stopped ? (
+              <>
+                <button type="button" className="fp-btn" onClick={() => openConfig({ ...plan, seed: plan })}>重新跟投</button>
+                <button type="button" className="fp-btn" disabled>已取消</button>
+              </>
+            ) : (
+              <>
+                <button type="button" className="fp-btn" onClick={() => openConfig({ ...plan, editingPlanId: plan.id, seed: plan })}>编辑跟投</button>
+                <button type="button" className="fp-btn fp-btn-cancel" onClick={() => setConfirmStopId(plan.id)}>停止跟投</button>
+              </>
+            )}
+          </div>
         </div>
       </div>
     );
