@@ -677,6 +677,28 @@ export default function App() {
   // Toast notifications
   const [toasts, setToasts] = useState([]);
 
+  // 游戏音效开关（右侧菜单底部控制）：投注、中奖通知音效受其控制
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    const saved = typeof localStorage !== 'undefined' ? localStorage.getItem('gameSoundEnabled') : null;
+    return saved == null ? true : saved === 'true';
+  });
+  const soundEnabledRef = useRef(soundEnabled);
+  soundEnabledRef.current = soundEnabled;
+  useEffect(() => {
+    localStorage.setItem('gameSoundEnabled', String(soundEnabled));
+  }, [soundEnabled]);
+  // 播放音效（public/<name>.mp3）；关闭时静音。用 ref 读取避免过期闭包。
+  const playSound = (name) => {
+    if (!soundEnabledRef.current) return;
+    try {
+      const audio = new Audio(`${import.meta.env.BASE_URL}${name}.mp3`);
+      audio.play().catch(() => {});
+    } catch { /* 忽略无法播放的情况 */ }
+  };
+
+  // 每个游戏累积的中奖总额（开奖时累加，刷新余额时返回并清空）
+  const [pendingWins, setPendingWins] = useState({});
+
   // Ref for timer interval
   const timerRef = useRef(null);
 
@@ -714,15 +736,18 @@ export default function App() {
   }, [balance]);
 
   // Toast trigger helper
-  const addToast = (message, type = 'info') => {
+  // 底层：推入任意结构的 toast（普通消息或中奖变体），duration 后自动移除。
+  const pushToast = (toast, duration = 3000) => {
     // Combine the timestamp with a random suffix so toasts fired in the same
     // millisecond (e.g. on game switch) don't collide on their React key.
     const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    setToasts(prev => [...prev, { id, message, type }]);
+    setToasts(prev => [...prev, { id, ...toast }]);
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id));
-    }, 3000);
+    }, duration);
   };
+
+  const addToast = (message, type = 'info') => pushToast({ message, type });
 
   // Circular badge icon shown at the left of a toast (check / cross / info).
   const renderToastIcon = (type) => {
@@ -1130,11 +1155,12 @@ export default function App() {
 
       winLoss = totalWinnings - totalBetAmount;
 
+      // 中奖额不即时入账，按游戏累积；刷新余额时统一返回并通知（见 handleRefreshBalance）。
       if (totalWinnings > 0) {
-        setBalance(prev => prev + totalWinnings);
-        addToast(`🎉 [${gameName}] 第${drawIssueStr}期开奖: 恭喜您中奖! 赢回 ${totalWinnings} 元! (${winningDetails.join(', ')})`, 'success');
-      } else {
-        addToast(`[${gameName}] 第${drawIssueStr}期开奖: 未中奖，下期继续努力！`, 'info');
+        setPendingWins(prev => ({
+          ...prev,
+          [gameId]: { gameName, amount: (prev[gameId]?.amount || 0) + totalWinnings },
+        }));
       }
 
       setSettledBets(prev => [...processedSettled, ...prev]);
@@ -1282,8 +1308,36 @@ export default function App() {
 
   // Refresh balance (mock)
   const handleRefreshBalance = () => {
-    setBalance(110000);
-    addToast('余额已成功重置为 110,000 元', 'success');
+    // 获取余额：返回各游戏累积的中奖额，逐笔通知（含音效），随后清空记录。
+    const entries = Object.values(pendingWins).filter((g) => g.amount > 0);
+    if (entries.length === 0) {
+      addToast('暂无可领取的奖金', 'info');
+      return;
+    }
+    const total = entries.reduce((s, g) => s + g.amount, 0);
+    const gameCount = entries.length;
+
+    // 返回奖金到余额
+    setBalance((prev) => prev + total);
+
+    // 每个游戏一个提示框 + money.mp3，最多显示三笔
+    const shown = entries.slice(0, 3);
+    shown.forEach((g, i) => {
+      setTimeout(() => {
+        pushToast({ variant: 'win-game', gameName: g.gameName, amount: g.amount }, 4000);
+        playSound('money');
+      }, i * 500);
+    });
+
+    // 金额超过 3000 或游戏超过 3 个时，额外弹出恭喜中奖总额提示框
+    if (total > 3000 || gameCount > 3) {
+      setTimeout(() => {
+        pushToast({ variant: 'win-grand', gameCount, total }, 5000);
+        playSound(total > 10000 ? 'win2' : 'win1');
+      }, shown.length * 500);
+    }
+
+    setPendingWins({});
   };
 
   // Open confirmation modal helper
@@ -1617,6 +1671,9 @@ export default function App() {
       return;
     }
     
+    // 下注音效
+    playSound('bet');
+
     // Deduct balance
     setBalance(prev => prev - totalAmountNeeded);
     
@@ -2272,12 +2329,33 @@ export default function App() {
     <div className="app-container">
       {/* Toast Overlay notifications */}
       <div className="toast-container">
-        {toasts.map(t => (
-          <div key={t.id} className={`toast ${t.type}`}>
-            <span className="toast-icon">{renderToastIcon(t.type)}</span>
-            <span className="toast-msg">{t.message}</span>
-          </div>
-        ))}
+        {toasts.map(t => {
+          if (t.variant === 'win-game') {
+            return (
+              <div key={t.id} className="toast toast-win">
+                <img className="toast-win-icon" src={`${import.meta.env.BASE_URL}coins.png`} alt="" />
+                <span className="toast-msg">{t.gameName}游戏中奖，获得 <b>{t.amount.toLocaleString()}</b> 元！</span>
+              </div>
+            );
+          }
+          if (t.variant === 'win-grand') {
+            return (
+              <div key={t.id} className="toast toast-win toast-win-grand">
+                <img className="toast-win-icon" src={`${import.meta.env.BASE_URL}Examples/party-popper.png`} alt="" />
+                <div className="toast-win-body">
+                  <div className="toast-win-title">恭喜中奖！</div>
+                  <span className="toast-msg">您在{t.gameCount}款游戏中奖，获得总奖金 <b>{t.total.toLocaleString()}</b> 元！</span>
+                </div>
+              </div>
+            );
+          }
+          return (
+            <div key={t.id} className={`toast ${t.type}`}>
+              <span className="toast-icon">{renderToastIcon(t.type)}</span>
+              <span className="toast-msg">{t.message}</span>
+            </div>
+          );
+        })}
       </div>
 
       {/* Dropdown Overlay for clicking outside */}
@@ -2783,6 +2861,8 @@ export default function App() {
         isOpen={isRightDrawerOpen}
         onClose={() => setIsRightDrawerOpen(false)}
         balance={balance}
+        soundEnabled={soundEnabled}
+        onToggleSound={() => setSoundEnabled(v => !v)}
         onRefreshBalance={handleRefreshBalance}
         onSelectPlanCenter={() => setIsFollowPlanOpen(true)}
         showPlanCenter={followPlanEnabled}
