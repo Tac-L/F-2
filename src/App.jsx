@@ -592,6 +592,8 @@ export default function App() {
   // 编辑快捷金额弹窗（投注页 footer 与 自动跟投 共用）
   const [isChipEditOpen, setIsChipEditOpen] = useState(false);
   const [betAmount, setBetAmount] = useState('10'); // Default bet amount is 10
+  // 投注页脚倍数：点击循环切换 1→2→5→10→20→1，实付 = 金额 × 倍数
+  const [betMultiplier, setBetMultiplier] = useState(1);
 
   // Derived selected bets in Shortcut tab dynamically
   const shortcutBets = React.useMemo(() => {
@@ -632,8 +634,9 @@ export default function App() {
   // uses the shared 投注金额 from the footer input.
   const selectedBetsTotal = React.useMemo(() => {
     const amt = parseInt(betAmount) || 0;
-    return selectedBets.reduce((sum, b) => sum + (b.amount != null ? b.amount : amt), 0);
-  }, [selectedBets, betAmount]);
+    const raw = selectedBets.reduce((sum, b) => sum + (b.amount != null ? b.amount : amt), 0);
+    return raw * betMultiplier;
+  }, [selectedBets, betAmount, betMultiplier]);
 
   // Confirmation modal states
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -643,6 +646,17 @@ export default function App() {
   // those bets still settle on that game's own draw via placedBets[].gameId.
   const [confirmGameId, setConfirmGameId] = useState(null);
   const [bulkAmount, setBulkAmount] = useState('10');
+  // 页脚显示的注数/总额：投注确认弹窗打开且针对当前游戏时，镜像弹窗内的实时数据
+  // （弹窗内改金额、改倍数、删注都同步到外层），否则用当前选择的合计。
+  const footerDisplay = React.useMemo(() => {
+    if (isConfirmModalOpen && confirmGameId === activeGameId) {
+      return {
+        count: confirmBets.length,
+        total: confirmBets.reduce((sum, b) => sum + (b.amount || 0), 0),
+      };
+    }
+    return { count: selectedBets.length, total: selectedBetsTotal };
+  }, [isConfirmModalOpen, confirmGameId, activeGameId, confirmBets, selectedBets, selectedBetsTotal]);
   // 设置项「投注确认金额」：投注确认弹窗批量修改行的默认模式（默认「修改倍数」）
   const [confirmBulkDefault, setConfirmBulkDefault] = useState(() => {
     const saved = typeof localStorage !== 'undefined' ? localStorage.getItem('confirmBulkDefault') : null;
@@ -654,8 +668,8 @@ export default function App() {
   // 批量修改行的模式：'amount' 修改金额（绝对值）/ 'multiplier' 修改倍数（基础额×倍数）
   const [bulkMode, setBulkMode] = useState('amount');
   // 快捷倍数（可编辑，样式复用编辑快捷金额弹窗）
+  // betMultiplier 为页脚与投注确认弹窗共享的倍数（单一数据源，两处同步）
   const [multiplierValues, setMultiplierValues] = useState([1, 2, 5, 10, 20]);
-  const [activeMultiplier, setActiveMultiplier] = useState(null);
   const [isMultiplierEditOpen, setIsMultiplierEditOpen] = useState(false);
 
   // Toast notifications
@@ -1273,18 +1287,16 @@ export default function App() {
   // Open confirmation modal helper
   const handleOpenConfirmModal = () => {
     if (selectedBets.length === 0) return;
-    const initialAmount = parseInt(betAmount) || 10;
+    const rawAmount = parseInt(betAmount) || 10;
     // 快捷投注 bets carry their own per-号码 amount; everything else uses the
-    // shared 投注金额 from the footer.
+    // shared 投注金额 from the footer. baseAmount 存单注原始额，实际金额 = 基础额 × 共享倍数。
     const initialConfirmBets = selectedBets.map(bet => {
-      const amt = bet.amount != null ? bet.amount : initialAmount;
-      return { ...bet, amount: amt, baseAmount: amt };
+      const base = bet.amount != null ? bet.amount : rawAmount;
+      return { ...bet, amount: base * betMultiplier, baseAmount: base };
     });
     setConfirmBets(initialConfirmBets);
-    setBulkAmount(initialAmount.toString());
+    setBulkAmount((rawAmount * betMultiplier).toString());
     setBulkMode(confirmBulkDefault);
-    // 倍数模式默认选中 1 倍（金额 = 基础额 × 1，保持不变）
-    setActiveMultiplier(1);
     setConfirmGameId(activeGameId);
     setIsConfirmModalOpen(true);
   };
@@ -1348,12 +1360,10 @@ export default function App() {
       addToast('本期暂无可投注号码', 'info');
       return;
     }
-    const amt = parseInt(betAmount) || 10;
-    setConfirmBets(bets.map(b => ({ ...b, amount: amt, baseAmount: amt })));
-    setBulkAmount(amt.toString());
+    const rawAmt = parseInt(betAmount) || 10;
+    setConfirmBets(bets.map(b => ({ ...b, amount: rawAmt * betMultiplier, baseAmount: rawAmt })));
+    setBulkAmount((rawAmt * betMultiplier).toString());
     setBulkMode(confirmBulkDefault);
-    // 倍数模式默认选中 1 倍（金额 = 基础额 × 1，保持不变）
-    setActiveMultiplier(1);
     setConfirmGameId(spec.gameId);
     setIsConfirmModalOpen(true);
     // Keep 计划中心 open behind the confirmation modal — the user stays in the
@@ -1535,7 +1545,6 @@ export default function App() {
   // Bulk modify all bet amounts in confirm modal
   const handleBulkAmountChange = (val) => {
     setBulkAmount(val);
-    setActiveMultiplier(null);
     const numVal = parseInt(val) || 0;
     setConfirmBets(prev => prev.map(bet => ({
       ...bet,
@@ -1543,9 +1552,10 @@ export default function App() {
     })));
   };
 
-  // 修改倍数：所有投注金额 = 基础额（进弹窗时的原始金额）× 倍数
+  // 修改倍数：所有投注金额 = 基础额（进弹窗时的原始单注额）× 倍数
+  // 同步更新页脚倍数（单一数据源）
   const handleBulkMultiplierChange = (mult) => {
-    setActiveMultiplier(mult);
+    setBetMultiplier(mult);
     setConfirmBets(prev => prev.map(bet => ({
       ...bet,
       amount: (bet.baseAmount != null ? bet.baseAmount : bet.amount) * mult
@@ -1555,15 +1565,28 @@ export default function App() {
   // 保存编辑后的快捷倍数
   const handleUpdateMultipliers = (newVals) => {
     setMultiplierValues(newVals);
-    if (activeMultiplier != null && !newVals.includes(activeMultiplier)) {
-      setActiveMultiplier(null);
+    if (!newVals.includes(betMultiplier)) {
+      setBetMultiplier(newVals[0] || 1);
     }
     addToast('快选倍数修改成功', 'success');
   };
 
+  // 页脚倍数按钮：点击循环切换到快捷倍数列表的下一个（到末尾回到开头）
+  // 与投注确认弹窗共享 betMultiplier；若弹窗正开在倍数模式则同步重算金额
+  const handleCycleMultiplier = () => {
+    const idx = multiplierValues.indexOf(betMultiplier);
+    const next = multiplierValues[(idx + 1) % multiplierValues.length] ?? (multiplierValues[0] || 1);
+    setBetMultiplier(next);
+    if (isConfirmModalOpen && bulkMode === 'multiplier') {
+      setConfirmBets(prev => prev.map(bet => ({
+        ...bet,
+        amount: (bet.baseAmount != null ? bet.baseAmount : bet.amount) * next
+      })));
+    }
+  };
+
   // Edit individual bet amount in confirm modal
   const handleIndividualAmountChange = (betId, val) => {
-    setActiveMultiplier(null);
     const numVal = parseInt(val) || 0;
     setConfirmBets(prev => prev.map(bet => {
       if (bet.id === betId) {
@@ -2507,6 +2530,7 @@ export default function App() {
           pankou={lhcPankou}
           onSetQuickBets={handleSetQuickBets}
           clearNonce={clearNonce}
+          addToast={addToast}
         />
       </div>
 
@@ -2514,8 +2538,8 @@ export default function App() {
       <Footer
         balance={balance}
         onRefreshBalance={handleRefreshBalance}
-        selectedBetsCount={selectedBets.length}
-        selectedBetsTotal={selectedBetsTotal}
+        selectedBetsCount={footerDisplay.count}
+        selectedBetsTotal={footerDisplay.total}
         betAmount={betAmount}
         setBetAmount={setBetAmount}
         onReset={handleReset}
@@ -2523,6 +2547,8 @@ export default function App() {
         isClosed={isClosed}
         chipValues={chipValues}
         onOpenChipEdit={() => setIsChipEditOpen(true)}
+        betMultiplier={betMultiplier}
+        onCycleMultiplier={handleCycleMultiplier}
       />
 
       {/* 跟单计划 (Follow-Plan) Modal */}
@@ -2653,7 +2679,7 @@ export default function App() {
                     <button
                       key={idx}
                       type="button"
-                      className={`chip-btn ${activeMultiplier === m ? 'active' : ''}`}
+                      className={`chip-btn ${betMultiplier === m ? 'active' : ''}`}
                       onClick={() => handleBulkMultiplierChange(m)}
                     >
                       {m}

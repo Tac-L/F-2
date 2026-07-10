@@ -89,6 +89,7 @@ export default function PlayArea({
   pankou = 'A',
   onSetQuickBets,
   clearNonce,
+  addToast,
 }) {
   // 六合彩 盘口 (A~D) scales every LHC odds. adj() rounds to 2 decimals.
   const pankouFactor = gameKind === 'lhc' ? lhcPankouFactor(pankou) : 1;
@@ -3309,6 +3310,8 @@ export default function PlayArea({
     const picks = pickRandomNumbers(LIANMA_REQUIRED_COUNTS[lianmaSubTab]);
     setLianmaNumbers(picks);
     syncLianma(picks, lianmaSubTab);
+    const formatted = picks.map((n) => n.toString().padStart(2, '0')).join(' ');
+    addToast?.(`已快选号码：${formatted}`, 'success');
   };
 
   const renderLhcLianma = () => {
@@ -3437,6 +3440,8 @@ export default function PlayArea({
     const picks = pickRandomNumbers(BUZHONG_REQUIRED_COUNTS[buzhongSubTab]);
     setBuzhongNumbers(picks);
     syncBuzhong(picks, buzhongSubTab);
+    const formatted = picks.map((n) => n.toString().padStart(2, '0')).join(' ');
+    addToast?.(`已快选号码：${formatted}`, 'success');
   };
 
   const renderLhcBuzhong = () => {

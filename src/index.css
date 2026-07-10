@@ -1369,6 +1369,40 @@ img.pk10-ball {
   background-color: #f1f5f9;
 }
 
+/* 页脚倍数按钮：点击循环切换 */
+.bet-multiplier-cycle {
+  flex: 0 0 auto;
+  min-width: 54px;
+  padding: 0 10px;
+  background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
+  border: 1px solid var(--primary-blue);
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary-blue);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+}
+
+.bet-multiplier-cycle:active {
+  filter: brightness(0.96);
+}
+
+.bet-multiplier-cycle .mult-x {
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+[data-theme^="midnight-"] .bet-multiplier-cycle {
+  background: var(--mn-surface-hover);
+  border-color: var(--primary-blue);
+  color: var(--mn-text-2);
+}
+
 .btn-submit {
   flex: 1.5;
   background: var(--tab-active-gradient);

@@ -9,7 +9,9 @@ export default function Footer({
   onSubmit,
   isClosed,
   chipValues,
-  onOpenChipEdit
+  onOpenChipEdit,
+  betMultiplier = 1,
+  onCycleMultiplier
 }) {
   // Total stake for the current selection. Prefer the parent-computed total
   // (which honours 快捷投注 per-号码 amounts); fall back to count × amount.
@@ -86,6 +88,16 @@ export default function Footer({
           placeholder="输入金额"
           disabled={isClosed}
         />
+        <button
+          type="button"
+          className="bet-multiplier-cycle"
+          onClick={onCycleMultiplier}
+          disabled={isClosed}
+          title="点击切换倍数"
+          aria-label={`倍数 ${betMultiplier}，点击切换`}
+        >
+          {betMultiplier}<span className="mult-x">×</span>
+        </button>
         <button
           type="button"
           className="btn-reset"
