@@ -321,7 +321,7 @@ export default function App() {
   });
 
   // roomid URL param picks the entry game (used when embedded in a parent site).
-  const [activeGameId, setActiveGameId] = useState(EMBED.gameId || 'pk10_1m');
+  const [activeGameId, setActiveGameId] = useState(EMBED.gameId || 'ap_lhc_1m');
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   // 六合彩 盘口 (A~D): scales all LHC odds. The play content is identical.
   const [lhcPankou, setLhcPankou] = useState('A');
@@ -569,7 +569,7 @@ export default function App() {
   // Match the entry game's default tab: 快捷 only exists for PK10, 动物运动会 opens
   // on 冠军(p1), everything else on 长龙. Keeps a roomid deep-link on a valid tab.
   const [activeTab, setActiveTab] = useState(() => {
-    const g = EMBED.gameId || 'pk10_1m';
+    const g = EMBED.gameId || 'ap_lhc_1m';
     if (g.startsWith('pk10')) return 'shortcut';
     if (g.startsWith('animal')) return 'p1';
     return 'long-dragon';
