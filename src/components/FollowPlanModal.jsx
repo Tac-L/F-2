@@ -258,7 +258,7 @@ export default function FollowPlanModal({
       expertName, gameId, gameName, kind, cond1: c1, cond2: c2,
       ballCount: bc,
       roundsTotal: seed?.roundsTotal ?? 8,
-      amountPerBall: seed?.amountPerBall ?? 50,
+      amountPerBall: seed?.amountPerBall ?? chipValues[0] ?? 50,
       globalMode: seed?.globalMode ?? 'follow',
       stop: seed?.stop ?? { profitAbove: { on: false, val: 0 }, profitBelow: { on: false, val: 0 }, stopOnWin: false, stopOnLose: false },
       perRoundOverrides: seed?.perRoundOverrides ?? [],
