@@ -517,6 +517,9 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState('betting'); // 'betting', 'unsettled', 'settled', 'history', 'settings'
   // 跟单计划 (follow-plan) modal, opened from the 长龙 rail.
   const [isFollowPlanOpen, setIsFollowPlanOpen] = useState(false);
+  // 从右侧菜单进入计划中心时预设选中第一个游戏（而非当前游戏）；从投注页
+  // 「跟单计划」按钮进入则沿用当前游戏。
+  const [planDefaultFirstGame, setPlanDefaultFirstGame] = useState(false);
   // Embedded mode enters straight into the betting page (no login screen).
   const [loggedIn, setLoggedIn] = useState(EMBED.embedded);
 
@@ -2617,7 +2620,7 @@ export default function App() {
             <button
               type="button"
               className="follow-plan-btn"
-              onClick={() => setIsFollowPlanOpen(true)}
+              onClick={() => { setPlanDefaultFirstGame(false); setIsFollowPlanOpen(true); }}
             >
               {/* 边框 + 铅笔来自 public/plan.png（用 CSS mask 按皮肤主色上色） */}
               <span className="follow-plan-btn-label">跟单计划</span>
@@ -2681,6 +2684,7 @@ export default function App() {
         onClose={() => setIsFollowPlanOpen(false)}
         gameKind={gameKind}
         activeGameId={activeGameId}
+        defaultFirstGame={planDefaultFirstGame}
         addToast={addToast}
         onFollowBet={handleFollowBet}
         onOpenMenu={() => setIsRightDrawerOpen(true)}
@@ -2886,7 +2890,7 @@ export default function App() {
         soundEnabled={soundEnabled}
         onToggleSound={() => setSoundEnabled(v => !v)}
         onRefreshBalance={handleRefreshBalance}
-        onSelectPlanCenter={() => setIsFollowPlanOpen(true)}
+        onSelectPlanCenter={() => { setPlanDefaultFirstGame(true); setIsFollowPlanOpen(true); }}
         showPlanCenter={followPlanEnabled}
         onSelectUnsettled={() => { setCurrentPage('unsettled'); setIsFollowPlanOpen(false); }}
         onSelectSettled={() => { setCurrentPage('settled'); setIsFollowPlanOpen(false); }}

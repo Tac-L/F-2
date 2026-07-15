@@ -131,7 +131,7 @@ function FpSwitch({ checked, onChange, disabled }) {
 }
 
 export default function FollowPlanModal({
-  open, onClose, gameKind = 'pk10', activeGameId, addToast, onFollowBet, onOpenMenu,
+  open, onClose, gameKind = 'pk10', activeGameId, defaultFirstGame = false, addToast, onFollowBet, onOpenMenu,
   followPlans = [], placedBets = [], settledBets = [], gamesState = {}, balance = 0,
   formatIssue, onCreatePlan, onEditPlan, onStopPlan,
   chipValues = [10, 20, 40, 60, 100], onOpenChipEdit,
@@ -155,8 +155,11 @@ export default function FollowPlanModal({
   // Reset to the entry state whenever the modal opens.
   useEffect(() => {
     if (!open) return;
-    const c = PLAN_CONFIG[gameKind] || PLAN_CONFIG.pk10;
-    setSelectedGameId(activeGameId);
+    // 从右侧菜单进入时预设第一个游戏；否则沿用当前投注游戏。
+    const entryGameId = defaultFirstGame ? ALL_GAMES[0].id : activeGameId;
+    const entryKind = kindOfGame(entryGameId) || gameKind;
+    const c = PLAN_CONFIG[entryKind] || PLAN_CONFIG.pk10;
+    setSelectedGameId(entryGameId);
     setCond1(c.cond1[0]);
     setCond2(c.cond2[0]);
     setTab('experts');
@@ -165,7 +168,7 @@ export default function FollowPlanModal({
     setCountdown(ROUND_SECONDS);
     setOpenMenu(null);
     setCfg(null);
-  }, [open, gameKind, activeGameId]);
+  }, [open, gameKind, activeGameId, defaultFirstGame]);
 
   // Cosmetic per-round countdown for the 专家计划 browsing tab.
   useEffect(() => {
