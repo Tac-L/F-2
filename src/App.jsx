@@ -322,6 +322,15 @@ export default function App() {
 
   // roomid URL param picks the entry game (used when embedded in a parent site).
   const [activeGameId, setActiveGameId] = useState(EMBED.gameId || 'ap_lhc_1m');
+  // 最近玩过的游戏 id 列表（去重，最多 6 个），用于抽屉里的「常用」分类。
+  const [recentGameIds, setRecentGameIds] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('recentGameIds') || '[]');
+      return Array.isArray(saved) ? saved.slice(0, 6) : [];
+    } catch {
+      return [];
+    }
+  });
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   // 六合彩 盘口 (A~D): scales all LHC odds. The play content is identical.
   const [lhcPankou, setLhcPankou] = useState('A');
@@ -647,7 +656,6 @@ export default function App() {
   // but 计划中心 跟投/反投 can target a *different* game (independent game center);
   // those bets still settle on that game's own draw via placedBets[].gameId.
   const [confirmGameId, setConfirmGameId] = useState(null);
-  const [bulkAmount, setBulkAmount] = useState('10');
   // 页脚显示的注数/总额：投注确认弹窗打开且针对当前游戏时，镜像弹窗内的实时数据
   // （弹窗内改金额、改倍数、删注都同步到外层），否则用当前选择的合计。
   const footerDisplay = React.useMemo(() => {
@@ -659,7 +667,8 @@ export default function App() {
     }
     return { count: selectedBets.length, total: selectedBetsTotal };
   }, [isConfirmModalOpen, confirmGameId, activeGameId, confirmBets, selectedBets, selectedBetsTotal]);
-  // 设置项「投注确认金额」：投注确认弹窗批量修改行的默认模式（默认「修改倍数」）
+  // 投注确认弹窗批量修改行的模式记忆：用户在弹窗内切换金额/倍数后保存到本地，
+  // 下次打开沿用（默认「修改倍数」）。
   const [confirmBulkDefault, setConfirmBulkDefault] = useState(() => {
     const saved = typeof localStorage !== 'undefined' ? localStorage.getItem('confirmBulkDefault') : null;
     return saved === 'amount' || saved === 'multiplier' ? saved : 'multiplier';
@@ -1351,7 +1360,6 @@ export default function App() {
       return { ...bet, amount: base * betMultiplier, baseAmount: base };
     });
     setConfirmBets(initialConfirmBets);
-    setBulkAmount((rawAmount * betMultiplier).toString());
     setBulkMode(confirmBulkDefault);
     setConfirmGameId(activeGameId);
     setIsConfirmModalOpen(true);
@@ -1418,7 +1426,6 @@ export default function App() {
     }
     const rawAmt = parseInt(betAmount) || 10;
     setConfirmBets(bets.map(b => ({ ...b, amount: rawAmt * betMultiplier, baseAmount: rawAmt })));
-    setBulkAmount((rawAmt * betMultiplier).toString());
     setBulkMode(confirmBulkDefault);
     setConfirmGameId(spec.gameId);
     setIsConfirmModalOpen(true);
@@ -1598,13 +1605,15 @@ export default function App() {
   // Keep the bridge ref pointing at the latest settleFollowPlans closure.
   useEffect(() => { settleFollowPlansRef.current = settleFollowPlans; });
 
-  // Bulk modify all bet amounts in confirm modal
+  // Bulk modify all bet amounts in confirm modal. 与页脚「投注金额」共用同一个
+  // betAmount（单一数据源，两处同步）；金额为基础额，实际下注 = 基础额 × 共享倍数。
   const handleBulkAmountChange = (val) => {
-    setBulkAmount(val);
-    const numVal = parseInt(val) || 0;
+    setBetAmount(val);
+    const base = parseInt(val) || 0;
     setConfirmBets(prev => prev.map(bet => ({
       ...bet,
-      amount: numVal
+      baseAmount: base,
+      amount: base * betMultiplier,
     })));
   };
 
@@ -1710,6 +1719,13 @@ export default function App() {
     // Save to placed bets list
     setPlacedBets(prev => [...prev, ...confirmedWithTimestamp]);
 
+    // 记录到「常用」：只有真正下注过的游戏才计入（置顶、去重，最多 6 个）。
+    setRecentGameIds(prev => {
+      const next = [targetGameId, ...prev.filter(id => id !== targetGameId)].slice(0, 6);
+      try { localStorage.setItem('recentGameIds', JSON.stringify(next)); } catch { /* ignore */ }
+      return next;
+    });
+
     // 记录本次注单快照，供「同上单」重复带入（保留每注原始额与倍数）
     setLastBetSlip({
       gameId: targetGameId,
@@ -1740,7 +1756,7 @@ export default function App() {
     }
     const bets = lastBetSlip.bets.map(b => ({ ...b }));
     setConfirmBets(bets);
-    setBulkAmount((bets[0]?.amount ?? 0).toString());
+    setBetAmount((bets[0]?.baseAmount ?? bets[0]?.amount ?? 0).toString());
     setBulkMode(confirmBulkDefault);
     setBetMultiplier(lastBetSlip.multiplier || 1);
     setConfirmGameId(lastBetSlip.gameId);
@@ -2761,7 +2777,12 @@ export default function App() {
               <button
                 type="button"
                 className="bulk-mode-toggle"
-                onClick={() => setBulkMode(m => (m === 'amount' ? 'multiplier' : 'amount'))}
+                onClick={() => setBulkMode(m => {
+                  const next = m === 'amount' ? 'multiplier' : 'amount';
+                  // 记住本次切换的方式，下次打开投注确认弹窗沿用。
+                  setConfirmBulkDefault(next);
+                  return next;
+                })}
                 title={bulkMode === 'amount' ? '切换为修改倍数' : '切换为修改金额'}
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -2777,7 +2798,7 @@ export default function App() {
                   type="number"
                   pattern="[0-9]*"
                   className="confirm-bulk-input"
-                  value={bulkAmount}
+                  value={betAmount}
                   onChange={(e) => handleBulkAmountChange(e.target.value)}
                   placeholder="修改所有投注金额"
                 />
@@ -2849,6 +2870,7 @@ export default function App() {
         onClose={() => setIsDrawerOpen(false)}
         onSelectGame={handleSelectGame}
         activeGameId={activeGameId}
+        recentGameIds={recentGameIds}
         gameTimers={{
           pk10_1m: gamesState.pk10_1m.timeLeft,
           pk10_5m: gamesState.pk10_5m.timeLeft,
@@ -2916,8 +2938,6 @@ export default function App() {
           onChangeLang={handleChangeLang}
           followPlanEnabled={followPlanEnabled}
           onToggleFollowPlan={setFollowPlanEnabled}
-          confirmBulkDefault={confirmBulkDefault}
-          onChangeConfirmBulkDefault={setConfirmBulkDefault}
           onLogout={handleLogout}
           hideLogout={EMBED.embedded}
         />

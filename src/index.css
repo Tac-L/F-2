@@ -2139,6 +2139,13 @@ img.pk10-ball {
   background-color: #f1f5f9;
 }
 
+.drawer-recent-empty {
+  padding: 32px 16px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
 .drawer-game-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

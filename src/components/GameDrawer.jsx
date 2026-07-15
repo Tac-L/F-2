@@ -1,8 +1,14 @@
 import { useState, useEffect } from 'react';
 import { DRAWER_CATEGORIES } from '../constants/gameData';
 
-export default function GameDrawer({ isOpen, onClose, onSelectGame, gameTimers = {}, activeGameId }) {
-  const [activeCategory, setActiveCategory] = useState('pk10'); // Default to PK10
+// Flat lookup of every game by id, so we can resolve the "常用" recent list.
+const GAME_BY_ID = {};
+DRAWER_CATEGORIES.forEach(cat => {
+  cat.games.forEach(game => { GAME_BY_ID[game.id] = game; });
+});
+
+export default function GameDrawer({ isOpen, onClose, onSelectGame, gameTimers = {}, activeGameId, recentGameIds = [] }) {
+  const [activeCategory, setActiveCategory] = useState('recent'); // Default to 常用
   const [timers, setTimers] = useState(() => {
     const initialTimers = {};
     DRAWER_CATEGORIES.forEach(cat => {
@@ -64,7 +70,15 @@ export default function GameDrawer({ isOpen, onClose, onSelectGame, gameTimers =
     xy28: '28',
   };
 
+  // 「常用」用内联星形图标（没有对应 PNG），active 时蓝色，未选中时灰色。
+  const starIconSrc = (isActive) => {
+    const color = isActive ? '#547cfd' : '#94a3b8';
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${color}"><path d="M12 2.5l2.7 6.5 7 .6-5.3 4.6 1.6 6.8L12 17.9 5.9 21l1.6-6.8L2.3 9.6l7-.6z"/></svg>`;
+    return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+  };
+
   const categoryIconSrc = (catId, isActive) => {
+    if (catId === 'recent') return starIconSrc(isActive);
     const base = CATEGORY_ICON_BASE[catId];
     if (!base) return null;
     return `${import.meta.env.BASE_URL}gametype/${encodeURIComponent(base)}-${isActive ? 2 : 1}.png`;
@@ -76,7 +90,14 @@ export default function GameDrawer({ isOpen, onClose, onSelectGame, gameTimers =
     return <img className="tab-icon" src={src} alt="" />;
   };
 
-  const activeCategoryData = DRAWER_CATEGORIES.find(cat => cat.id === activeCategory);
+  // 「常用」分类：把最近玩过的 id 还原成游戏对象，最多 6 个。始终作为第一个分类显示。
+  const recentGames = recentGameIds
+    .map(id => GAME_BY_ID[id])
+    .filter(Boolean)
+    .slice(0, 6);
+  const categories = [{ id: 'recent', name: '常用', games: recentGames }, ...DRAWER_CATEGORIES];
+
+  const activeCategoryData = categories.find(cat => cat.id === activeCategory);
 
   return (
     <div className={`drawer-overlay ${isOpen ? 'open' : ''}`} onClick={onClose}>
@@ -86,7 +107,7 @@ export default function GameDrawer({ isOpen, onClose, onSelectGame, gameTimers =
       >
         {/* Left Side Tab Menu */}
         <div className="drawer-sidebar">
-          {DRAWER_CATEGORIES.map(cat => {
+          {categories.map(cat => {
             const isActive = cat.id === activeCategory;
             const iconSrc = categoryIconSrc(cat.id, isActive);
             return (
@@ -106,6 +127,9 @@ export default function GameDrawer({ isOpen, onClose, onSelectGame, gameTimers =
 
         {/* Right Side Game List Grid */}
         <div className="drawer-content">
+          {activeCategory === 'recent' && recentGames.length === 0 && (
+            <div className="drawer-recent-empty">暂无常用游戏，选择游戏后自动记录</div>
+          )}
           <div className="drawer-game-grid">
             {activeCategoryData && activeCategoryData.games.map(game => {
               const isClosed = game.status === 'closed';
