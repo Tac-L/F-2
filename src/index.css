@@ -1155,8 +1155,8 @@ img.pk10-ball {
 
 /* Draw-banner / animation top-bar animal balls — larger than the default 20px. */
 .pk10-ball.animal-ball {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
 }
 
 /* Accordion Position Sections */

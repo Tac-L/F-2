@@ -805,10 +805,10 @@ export const ANIMAL_ODDS = {
   twoSided: 1.9, // 大 / 小 / 单 / 双 / 龙 / 虎
 };
 
-// Animal ball artwork lives in /public/T-ball/T1.png … T6.png (each image already
+// Animal ball artwork lives in /public/T-ball/T1.svg … T6.svg (each image already
 // includes the number, so no separate number badge is drawn).
 export const animalBallSrc = (n) =>
-  `${import.meta.env.BASE_URL}T-ball/T${n}.png`;
+  `${import.meta.env.BASE_URL}T-ball/T${n}.svg`;
 
 // Game categories and list for the left side drawer
 export const DRAWER_CATEGORIES = [
