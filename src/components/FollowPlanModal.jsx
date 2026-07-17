@@ -1150,7 +1150,7 @@ export default function FollowPlanModal({
                   {renderTrigger('cond2')}
                 </div>
                 <div className="history-tabs fp-status-tabs">
-                  {[['all', '所有状态'], ['running', '进行中计划'], ['stopped', '已停止计划']].map(([v, label]) => (
+                  {[['all', '所有状态'], ['running', '进行中'], ['stopped', '已停止']].map(([v, label]) => (
                     <button key={v} type="button" className={`history-tab ${followedFilter === v ? 'active' : ''}`} onClick={() => setFollowedFilter(v)}>{label}</button>
                   ))}
                 </div>
@@ -1168,7 +1168,7 @@ export default function FollowPlanModal({
                   {renderTrigger('game')}
                 </div>
                 <div className="history-tabs fp-status-tabs">
-                  {[['all', '所有状态'], ['running', '进行中计划'], ['stopped', '已停止计划']].map(([v, label]) => (
+                  {[['all', '所有状态'], ['running', '进行中'], ['stopped', '已停止']].map(([v, label]) => (
                     <button key={v} type="button" className={`history-tab ${followedFilter === v ? 'active' : ''}`} onClick={() => setFollowedFilter(v)}>{label}</button>
                   ))}
                 </div>
