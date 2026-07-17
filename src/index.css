@@ -6535,7 +6535,7 @@ img.lhc-ball {
 .fp-config-hint { color: #ef4444; font-size: 12px; text-align: right; padding: 6px 0 10px; }
 .fp-hint-blue { color: var(--primary-blue); text-align: center; }
 .fp-config-input-wide { width: 80px; }
-.fp-config-section-title { text-align: center; color: #64748b; font-size: 14px; font-weight: 600; margin: 4px 0 10px; }
+.fp-config-section-title { text-align: center; color: #4f7cff; font-size: 14px; font-weight: 600; margin: 4px 0 10px; }
 
 /* 自定计划 stepper（追号数 / 起始倍数 / 间隔期数 / 倍数X） */
 .fp-stepper {
@@ -6869,7 +6869,6 @@ img.lhc-ball {
 [data-theme^="midnight-"] .fp-detail-table-head {
   color: var(--mn-text);
 }
-[data-theme^="midnight-"] .fp-config-section-title,
 [data-theme^="midnight-"] .fp-config-stop-row,
 [data-theme^="midnight-"] .fp-config-check,
 [data-theme^="midnight-"] .fp-detail-table-row {

@@ -1026,7 +1026,8 @@ export default function FollowPlanModal({
                 <div className="fp-round-mid">
                   <div className="fp-round-line">
                     <span className="fp-round-issue">{r.issue}期</span>
-                    <span className="fp-tag-sm">已投</span>
+                    {/* 「已投」标记仅在「待」（未结算）状态显示，已出结果的期数不再标注 */}
+                    {!r.settled && <span className="fp-tag-sm">已投</span>}
                   </div>
                   <div className="fp-round-line sub">
                     {!plan.custom && (
