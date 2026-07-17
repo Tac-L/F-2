@@ -1453,7 +1453,10 @@ export default function App() {
     const override = (plan.perRoundOverrides || []).find((o) => o.idx === roundIdx);
     const mode = override?.mode ?? plan.globalMode;
     const amount = override?.amount ?? plan.amountPerBall;
-    const { predictKind, predicted } = genFollowPrediction(plan.kind, plan.cond1, plan.ballCount, plan.cond2);
+    // 自定计划使用用户挑选的固定号码；专家计划则随机生成预测。
+    const { predictKind, predicted } = (plan.custom && Array.isArray(plan.numbers) && plan.numbers.length)
+      ? { predictKind: (PLAN_KIND_META[plan.kind] || PLAN_KIND_META.pk10).predictKind, predicted: plan.numbers }
+      : genFollowPrediction(plan.kind, plan.cond1, plan.ballCount, plan.cond2);
     const targets = resolveFollowTargets(plan.kind, predicted, mode);
     const base = buildFollowBets({ kind: plan.kind, cond2: plan.cond2, predictKind, targets });
     const ts = fpNowStr();
@@ -1487,6 +1490,9 @@ export default function App() {
     const plan = {
       id: `plan-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       expertName: config.expertName,
+      custom: config.custom || false,
+      planName: config.planName,
+      numbers: config.numbers,
       gameId: config.gameId,
       gameName: config.gameName,
       kind: config.kind,
@@ -1516,7 +1522,7 @@ export default function App() {
       followPlansRef.current = next;
       return next;
     });
-    addToast(`已创建自动跟投 ${plan.expertName}（${plan.roundsTotal}期）`, 'success');
+    addToast(`${plan.custom ? '已创建自定计划' : '已创建自动跟投'} ${plan.expertName}（${plan.roundsTotal}期）`, 'success');
   };
 
   // Edit a running plan's *future* settings (already-placed rounds are immutable).
@@ -1529,11 +1535,19 @@ export default function App() {
         globalMode: config.globalMode,
         stop: config.stop,
         perRoundOverrides: config.perRoundOverrides || [],
+        // 自定计划：名称/位置/号码等亦可修改（影响后续期投注）
+        ...(p.custom ? {
+          planName: config.planName ?? p.planName,
+          expertName: config.expertName ?? p.expertName,
+          cond2: config.cond2 ?? p.cond2,
+          numbers: config.numbers ?? p.numbers,
+          ballCount: config.ballCount ?? p.ballCount,
+        } : {}),
       } : p));
       followPlansRef.current = next;
       return next;
     });
-    addToast('已更新跟投计划', 'success');
+    addToast(config.custom ? '已更新自定计划' : '已更新跟投计划', 'success');
   };
 
   // Manually stop a plan: withdraw + refund its in-flight (unsettled) round.

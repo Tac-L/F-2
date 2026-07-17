@@ -137,14 +137,15 @@ export default function FollowPlanModal({
   chipValues = [10, 20, 40, 60, 100], onOpenChipEdit,
 }) {
   const initialCfg = PLAN_CONFIG[gameKind] || PLAN_CONFIG.pk10;
-  const [tab, setTab] = useState('experts'); // 'experts' | 'followed'
+  const [tab, setTab] = useState('experts'); // 'experts' | 'followed' | 'custom'
   const [view, setView] = useState('main');   // 'main' | 'config' | 'detail' | 'records'
   const [selectedGameId, setSelectedGameId] = useState(activeGameId);
   const [cond1, setCond1] = useState(initialCfg.cond1[0]);
   const [cond2, setCond2] = useState(initialCfg.cond2[0]);
   const [round, setRound] = useState(1);
   const [countdown, setCountdown] = useState(ROUND_SECONDS);
-  const [openMenu, setOpenMenu] = useState(null); // 'game' | 'cond1' | 'cond2' | null
+  const [openMenu, setOpenMenu] = useState(null); // 'game' | 'cond1' | 'cond2' | 'cfgGame' | 'cfgPos' | null
+  const [numPicker, setNumPicker] = useState(null); // 自定计划号码选择：{ draft: [...] } | null
   const [followedFilter, setFollowedFilter] = useState('all'); // 'all' | 'running' | 'stopped'
   const [activePlanId, setActivePlanId] = useState(null);
   const [recordsRoundIdx, setRecordsRoundIdx] = useState(null);
@@ -275,6 +276,87 @@ export default function FollowPlanModal({
     kind: selectedKind, cond1, cond2,
   });
 
+  // ---- 自定计划：从「自定计划」标签创建（比照跟单计划，另加游戏/名称/位置/号码）----
+  const openCustomConfig = () => {
+    const bc = predictKindOf(selectedKind) === 'balls' ? (parseInt(cond1, 10) || 5) : 1;
+    setCfg({
+      custom: true,
+      editingPlanId: null,
+      planName: '',
+      numbers: [],
+      expertName: '',
+      gameId: selectedGameId, gameName: selectedGameName, kind: selectedKind, cond1, cond2,
+      ballCount: bc,
+      roundsTotal: 8,
+      amountPerBall: chipValues[0] ?? 50,
+      globalMode: 'follow',
+      stop: { profitAbove: { on: false, val: 0 }, profitBelow: { on: false, val: 0 }, stopOnWin: false, stopOnLose: false },
+      perRoundOverrides: [],
+      detailOpen: true,
+    });
+    setView('config');
+  };
+
+  // 从已有计划重新打开配置页：自定计划走自定表单（保留游戏/名称/位置/号码），
+  // 专家计划仍走原来的 openConfig。editing=true 为「编辑」，false 为「重启/重新跟投」。
+  const reopenPlanConfig = (plan, editing) => {
+    if (plan.custom) {
+      setCfg({
+        custom: true,
+        lockGame: true, // 从已有计划重开（编辑/重启）时，游戏不可更改
+        editingPlanId: editing ? plan.id : null,
+        planName: plan.planName || plan.expertName || '',
+        numbers: plan.numbers || [],
+        expertName: plan.expertName,
+        gameId: plan.gameId, gameName: plan.gameName, kind: plan.kind, cond1: plan.cond1, cond2: plan.cond2,
+        ballCount: plan.ballCount,
+        roundsTotal: plan.roundsTotal,
+        amountPerBall: plan.amountPerBall,
+        globalMode: plan.globalMode,
+        stop: plan.stop,
+        perRoundOverrides: plan.perRoundOverrides || [],
+        detailOpen: true,
+      });
+      setView('config');
+      return;
+    }
+    openConfig({ ...plan, editingPlanId: editing ? plan.id : null, seed: plan });
+  };
+
+  // 自定计划配置页里的「选择游戏」——同步 kind/位置/号码（与顶部筛选相互独立）。
+  const setCfgGame = (id) => setCfg((c) => {
+    const k = kindOfGame(id) || c.kind;
+    const nc = PLAN_CONFIG[k] || PLAN_CONFIG.pk10;
+    return {
+      ...c, gameId: id, gameName: (ALL_GAMES.find((g) => g.id === id) || {}).name || '',
+      kind: k, cond1: nc.cond1[0], cond2: nc.cond2[0], numbers: [],
+    };
+  });
+
+  // 自定计划「计划号码」候选：球号玩法给 min~max，大小/单双玩法给两面选项。
+  const cfgNumberOptions = () => {
+    const c = PLAN_CONFIG[cfg?.kind] || PLAN_CONFIG.pk10;
+    if (c.predict === 'balls') {
+      const arr = [];
+      for (let n = c.min; n <= c.max; n++) arr.push(n);
+      return { predict: 'balls', options: arr };
+    }
+    const isOddEven = cfg.cond1 === '单双计划' || (cfg.cond2 || '').includes('单双');
+    return { predict: 'twoside', options: isOddEven ? ['单', '双'] : ['大', '小'] };
+  };
+  const toggleNumDraft = (v) => setNumPicker((p) => {
+    if (!p) return p;
+    const has = p.draft.includes(v);
+    return { draft: has ? p.draft.filter((x) => x !== v) : [...p.draft, v] };
+  });
+  const confirmNumPicker = () => {
+    const picked = numPicker?.draft ?? [];
+    const { predict } = cfgNumberOptions();
+    const sorted = predict === 'balls' ? [...picked].sort((a, b) => a - b) : picked;
+    setCfg((c) => ({ ...c, numbers: sorted, ballCount: predict === 'balls' ? sorted.length : 1 }));
+    setNumPicker(null);
+  };
+
   // ---- bottom-sheet pickers (专家计划 filters) ----
   const pickerConfig = {
     game: { current: selectedGameId, title: '请选择游戏', options: ALL_GAMES.map((g) => ({ value: g.id, label: g.name })), apply: handleSelectGame },
@@ -319,6 +401,63 @@ export default function FollowPlanModal({
 
   // Transparent click-catcher to close the dropdown when tapping outside.
   const renderSheet = () => (openMenu ? <div className="history-picker-backdrop" onClick={() => setOpenMenu(null)} /> : null);
+
+  // Dropdown used inside the 自定计划 config card (游戏 / 位置). Reuses the 报表 picker look.
+  const renderCfgPicker = (key, current, options, onPick) => (
+    <div className={`history-picker-wrap fp-cfg-picker history-picker-wrap--${key}`}>
+      <button type="button" className={`history-picker ${openMenu === key ? 'open' : ''}`} onClick={() => setOpenMenu(openMenu === key ? null : key)}>
+        <span className="history-picker-value">{(options.find((o) => o.value === current) || {}).label}</span>
+        <svg className="history-picker-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+      {openMenu === key && (
+        <div className="history-dropdown-menu">
+          {options.map((opt) => (
+            <button key={opt.value} type="button" className={`history-dropdown-item ${opt.value === current ? 'active' : ''}`} onClick={() => { onPick(opt.value); setOpenMenu(null); }}>
+              <span>{opt.label}</span>
+              {opt.value === current && (
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+  // 自定计划号码选择底部弹层（选择号码）。
+  const renderNumPicker = () => {
+    if (!numPicker) return null;
+    const { predict, options } = cfgNumberOptions();
+    return (
+      <>
+        <div className="fp-numsheet-backdrop" onClick={() => setNumPicker(null)} />
+        <div className="fp-numsheet">
+          <div className="fp-numsheet-head">
+            <button type="button" className="fp-numsheet-cancel" onClick={() => setNumPicker(null)}>取消</button>
+            <span className="fp-numsheet-title">选择号码</span>
+            <button type="button" className="fp-numsheet-ok" onClick={confirmNumPicker}>确定</button>
+          </div>
+          <div className="fp-numsheet-grid">
+            {options.map((v) => {
+              const on = numPicker.draft.includes(v);
+              return (
+                <button key={v} type="button" className={`fp-numsheet-item ${on ? 'on' : ''}`} onClick={() => toggleNumDraft(v)}>
+                  <span className={`fp-numsheet-radio ${on ? 'on' : ''}`} />
+                  {predict === 'balls'
+                    ? <img className="fp-numsheet-ball" src={ballSrc(cfg.kind, v)} alt={String(v)} />
+                    : <span className="fp-numsheet-side">{v}</span>}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </>
+    );
+  };
 
   // ---- shared renderers ----
   const renderBalls = (nums, winValue, kind = selectedKind) => nums.map((num) => (
@@ -432,13 +571,13 @@ export default function FollowPlanModal({
           <div className="fp-card-actions">
             {stopped ? (
               <>
-                <button type="button" className="fp-btn" onClick={() => openConfig({ ...plan, seed: plan })}>重新跟投</button>
+                <button type="button" className="fp-btn" onClick={() => reopenPlanConfig(plan, false)}>{plan.custom ? '重启计划' : '重新跟投'}</button>
                 <button type="button" className="fp-btn" disabled>已取消</button>
               </>
             ) : (
               <>
-                <button type="button" className="fp-btn" onClick={() => openConfig({ ...plan, editingPlanId: plan.id, seed: plan })}>编辑跟投</button>
-                <button type="button" className="fp-btn fp-btn-cancel" onClick={() => setConfirmStopId(plan.id)}>停止跟投</button>
+                <button type="button" className="fp-btn" onClick={() => reopenPlanConfig(plan, true)}>{plan.custom ? '编辑计划' : '编辑跟投'}</button>
+                <button type="button" className="fp-btn fp-btn-cancel" onClick={() => setConfirmStopId(plan.id)}>{plan.custom ? '停止计划' : '停止跟投'}</button>
               </>
             )}
           </div>
@@ -448,10 +587,13 @@ export default function FollowPlanModal({
   };
 
   // 已跟专家 respects the game / 计划 / 球号 dropdowns as well as the status tabs.
-  const filteredPlans = followPlans.filter((p) => (
+  // （自定计划单独归入「自定计划」标签，不在此混排）
+  const matchesFilters = (p) => (
     p.gameId === selectedGameId && p.cond1 === cond1 && p.cond2 === cond2
     && (followedFilter === 'all' ? true : followedFilter === 'running' ? p.status === 'running' : p.status !== 'running')
-  ));
+  );
+  const filteredPlans = followPlans.filter((p) => !p.custom && matchesFilters(p));
+  const customPlans = followPlans.filter((p) => p.custom && matchesFilters(p));
 
   // =========================== config page (图一) ===========================
   const configRoundMode = (i) => cfg.perRoundOverrides.find((o) => o.idx === i)?.mode ?? cfg.globalMode;
@@ -480,6 +622,42 @@ export default function FollowPlanModal({
     return (
       <>
         <div className="fp-config-body">
+          {cfg.custom && (
+            <div className="fp-config-card fp-custom-card">
+              <div className="fp-config-row">
+                <span className="fp-config-label">选择游戏</span>
+                {cfg.lockGame
+                  ? <span className="fp-config-box readonly">{cfg.gameName}</span>
+                  : renderCfgPicker('cfgGame', cfg.gameId, ALL_GAMES.map((g) => ({ value: g.id, label: g.name })), setCfgGame)}
+              </div>
+              <div className="fp-config-row">
+                <span className="fp-config-label">计划名称</span>
+                <input
+                  type="text" className="fp-config-box fp-custom-input" placeholder="请输入计划名称" maxLength={20}
+                  value={cfg.planName} onChange={(e) => setCfg((c) => ({ ...c, planName: e.target.value }))}
+                />
+              </div>
+              <div className="fp-config-row">
+                <span className="fp-config-label">计划位置</span>
+                {renderCfgPicker('cfgPos', cfg.cond2, (PLAN_CONFIG[cfg.kind] || PLAN_CONFIG.pk10).cond2.map((p) => ({ value: p, label: p })), (v) => setCfg((c) => ({ ...c, cond2: v })))}
+              </div>
+              <div className="fp-config-row">
+                <span className="fp-config-label">计划号码</span>
+                <button type="button" className="fp-config-box fp-custom-numbtn" onClick={() => setNumPicker({ draft: [...(cfg.numbers || [])] })}>
+                  {cfg.numbers && cfg.numbers.length ? (
+                    <span className="fp-custom-nums">
+                      {predictKindOf(cfg.kind) === 'balls'
+                        ? cfg.numbers.map((n) => <img key={n} className="fp-custom-num-ball" src={ballSrc(cfg.kind, n)} alt={String(n)} />)
+                        : <span className="fp-custom-num-side">{cfg.numbers.join('、')}</span>}
+                    </span>
+                  ) : <span className="fp-custom-placeholder">请挑选号码</span>}
+                  <svg className="fp-custom-num-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
           <div className="fp-config-card">
             <div className="fp-config-row">
               <span className="fp-config-label">起始期号</span>
@@ -572,8 +750,25 @@ export default function FollowPlanModal({
   };
 
   const confirmConfig = () => {
-    const { detailOpen, editingPlanId, ...planConfig } = cfg;
+    const { detailOpen, editingPlanId, custom, lockGame, planName, numbers, ...planConfig } = cfg;
+    void lockGame;
     void detailOpen;
+    if (custom) {
+      if (!numbers || numbers.length === 0) { addToast?.('请挑选计划号码', 'info'); return; }
+      const name = (planName || '').trim() || '自定计划';
+      const customCfg = { ...planConfig, custom: true, planName: name, numbers, expertName: name };
+      if (editingPlanId) onEditPlan?.(editingPlanId, customCfg);
+      else onCreatePlan?.(customCfg);
+      // 跳到「自定计划」并对齐筛选条件，确保计划立即可见
+      setSelectedGameId(cfg.gameId);
+      setCond1(cfg.cond1);
+      setCond2(cfg.cond2);
+      setFollowedFilter('all');
+      setTab('custom');
+      setView('main');
+      setCfg(null);
+      return;
+    }
     if (editingPlanId) onEditPlan?.(editingPlanId, planConfig);
     else onCreatePlan?.(planConfig);
     setView('main');
@@ -825,6 +1020,7 @@ export default function FollowPlanModal({
             <div className="fp-tabs">
               <button type="button" className={`fp-tab ${tab === 'experts' ? 'active' : ''}`} onClick={() => setTab('experts')}>专家计划</button>
               <button type="button" className={`fp-tab ${tab === 'followed' ? 'active' : ''}`} onClick={() => setTab('followed')}>已跟专家</button>
+              <button type="button" className={`fp-tab ${tab === 'custom' ? 'active' : ''}`} onClick={() => setTab('custom')}>自定计划</button>
             </div>
 
             {tab === 'experts' && (
@@ -863,6 +1059,27 @@ export default function FollowPlanModal({
                 </div>
               </>
             )}
+
+            {tab === 'custom' && (
+              <>
+                <div className="fp-filters">
+                  {renderTrigger('game')}
+                  {renderTrigger('cond1')}
+                  {renderTrigger('cond2')}
+                </div>
+                <div className="history-tabs fp-status-tabs">
+                  {[['all', '所有状态'], ['running', '进行中计划'], ['stopped', '已停止计划']].map(([v, label]) => (
+                    <button key={v} type="button" className={`history-tab ${followedFilter === v ? 'active' : ''}`} onClick={() => setFollowedFilter(v)}>{label}</button>
+                  ))}
+                </div>
+                <button type="button" className="fp-create-btn" onClick={openCustomConfig}>创建计划</button>
+                <div className="fp-list">
+                  {customPlans.length === 0 ? (
+                    <div className="fp-empty">暂无自定计划</div>
+                  ) : customPlans.map((p) => renderPlanCard(p))}
+                </div>
+              </>
+            )}
           </>
         )}
 
@@ -872,13 +1089,14 @@ export default function FollowPlanModal({
         {view === 'records' && renderRecords()}
 
         {renderSheet()}
+        {renderNumPicker()}
 
         {confirmStopId && (
           <>
             <div className="fp-confirm-backdrop" onClick={() => setConfirmStopId(null)} />
             <div className="fp-confirm-dialog">
               <div className="fp-confirm-title">确认停止</div>
-              <div className="fp-confirm-msg">确定要停止这个跟单计划吗？</div>
+              <div className="fp-confirm-msg">{followPlans.find((p) => p.id === confirmStopId)?.custom ? '确定要停止这个自定计划吗？' : '确定要停止这个跟单计划吗？'}</div>
               <div className="fp-confirm-actions">
                 <button type="button" className="fp-confirm-btn cancel" onClick={() => setConfirmStopId(null)}>取消</button>
                 <button type="button" className="fp-confirm-btn ok" onClick={() => { onStopPlan?.(confirmStopId); setConfirmStopId(null); }}>确认停止</button>

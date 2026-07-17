@@ -6515,6 +6515,68 @@ img.lhc-ball {
 .fp-config-input { width: 46px; border: none; background: transparent; text-align: right; font-size: 14px; font-weight: 700; color: #1e293b; }
 .fp-config-hint { color: #ef4444; font-size: 12px; text-align: right; padding: 6px 0 10px; }
 .fp-config-section-title { text-align: center; color: #64748b; font-size: 14px; font-weight: 600; margin: 4px 0 10px; }
+
+/* 自定计划 config: extra top card (选择游戏 / 计划名称 / 计划位置 / 计划号码) */
+.fp-custom-card .fp-config-label { flex-shrink: 0; }
+.fp-cfg-picker { flex: 1; max-width: 220px; }
+.fp-cfg-picker .history-picker { height: 38px; background: #f8fafc; border-color: #e2e8f0; font-weight: 700; color: #1e293b; }
+.fp-custom-input {
+  flex: 1; max-width: 220px; min-width: 0; border: none; outline: none;
+  background: #f1f5f9; border-radius: 8px; padding: 9px 12px;
+  font-size: 14px; font-weight: 700; color: #1e293b; text-align: right;
+}
+.fp-custom-input::placeholder { color: #94a3b8; font-weight: 400; }
+.fp-custom-numbtn {
+  display: flex; align-items: center; justify-content: flex-end; gap: 6px;
+  flex: 1; max-width: 220px; border: none; cursor: pointer;
+}
+.fp-custom-placeholder { color: var(--primary-blue); font-weight: 600; }
+.fp-custom-nums { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+.fp-custom-num-ball { width: 22px; height: 22px; object-fit: contain; }
+.fp-custom-num-side { font-size: 14px; font-weight: 700; color: #1e293b; }
+.fp-custom-num-caret { color: #94a3b8; flex-shrink: 0; }
+
+/* 「创建计划」button：置于状态标签下方（列表之上） */
+.fp-create-btn {
+  display: block; margin: 4px 14px 10px;
+  padding: 13px; border: none; border-radius: 10px;
+  background: var(--tab-active-gradient); color: #fff;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+}
+.fp-create-btn:active { opacity: 0.9; }
+
+/* 号码选择底部弹层 */
+.fp-numsheet-backdrop {
+  position: absolute; inset: 0; background: rgba(15, 23, 42, 0.45); z-index: 40;
+}
+.fp-numsheet {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 41;
+  background: #fff; border-radius: 16px 16px 0 0; padding-bottom: 20px;
+  box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.16);
+}
+.fp-numsheet-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px; border-bottom: 1px solid #f1f5f9;
+}
+.fp-numsheet-title { font-size: 16px; font-weight: 700; color: #1e293b; }
+.fp-numsheet-cancel, .fp-numsheet-ok { border: none; background: none; font-size: 15px; cursor: pointer; }
+.fp-numsheet-cancel { color: #64748b; }
+.fp-numsheet-ok { color: var(--primary-blue); font-weight: 700; }
+.fp-numsheet-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 16px 18px;
+}
+.fp-numsheet-item {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px; border: 1px solid #e2e8f0; border-radius: 10px;
+  background: #fff; cursor: pointer;
+}
+.fp-numsheet-item.on { border-color: var(--primary-blue); background: rgba(var(--primary-blue-rgb), 0.06); }
+.fp-numsheet-radio {
+  width: 15px; height: 15px; border-radius: 50%; border: 2px solid #cbd5e1; flex-shrink: 0;
+}
+.fp-numsheet-radio.on { border-color: var(--primary-blue); background: radial-gradient(var(--primary-blue) 0 42%, #fff 46%); }
+.fp-numsheet-ball { width: 28px; height: 28px; object-fit: contain; }
+.fp-numsheet-side { font-size: 15px; font-weight: 700; color: #1e293b; }
 .fp-config-stop-row { display: flex; align-items: center; gap: 8px; padding: 12px 0; border-bottom: 1px solid #f1f5f9; font-size: 14px; color: #475569; }
 .fp-config-stop-input { flex: 1; min-width: 0; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 10px; font-size: 14px; text-align: center; background: #f8fafc; }
 .fp-config-stop-checks { display: flex; gap: 16px; padding: 12px 0; }
