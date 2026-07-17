@@ -6570,14 +6570,16 @@ img.lhc-ball {
 .fp-custom-num-side { font-size: 14px; font-weight: 700; color: #1e293b; }
 .fp-custom-num-caret { color: #94a3b8; flex-shrink: 0; }
 
-/* 「创建计划」button：置于状态标签下方（列表之上） */
+/* 「创建计划」button：置于状态标签下方（列表之上），设计为框线按钮 */
 .fp-create-btn {
   display: block; margin: 4px 14px 10px;
-  padding: 13px; border: none; border-radius: 10px;
-  background: var(--tab-active-gradient); color: #fff;
+  padding: 12px; border: 1.5px solid var(--primary-blue); border-radius: 10px;
+  background: transparent; color: var(--primary-blue);
   font-size: 15px; font-weight: 700; cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+  text-align: center;
 }
-.fp-create-btn:active { opacity: 0.9; }
+.fp-create-btn:active { background: rgba(var(--primary-blue-rgb), 0.08); }
 
 /* 号码选择底部弹层 */
 .fp-numsheet-backdrop {
