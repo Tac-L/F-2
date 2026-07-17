@@ -588,14 +588,16 @@ export default function FollowPlanModal({
     );
   };
 
-  // 已跟专家 respects the game / 计划 / 球号 dropdowns as well as the status tabs.
-  // （自定计划单独归入「自定计划」标签，不在此混排）
   const matchesFilters = (p) => (
     p.gameId === selectedGameId && p.cond1 === cond1 && p.cond2 === cond2
     && (followedFilter === 'all' ? true : followedFilter === 'running' ? p.status === 'running' : p.status !== 'running')
   );
+  const matchesCustomFilters = (p) => (
+    p.gameId === selectedGameId
+    && (followedFilter === 'all' ? true : followedFilter === 'running' ? p.status === 'running' : p.status !== 'running')
+  );
   const filteredPlans = followPlans.filter((p) => !p.custom && matchesFilters(p));
-  const customPlans = followPlans.filter((p) => p.custom && matchesFilters(p));
+  const customPlans = followPlans.filter((p) => p.custom && matchesCustomFilters(p));
 
   // =========================== config page (图一) ===========================
   const configRoundMode = (i) => cfg.perRoundOverrides.find((o) => o.idx === i)?.mode ?? cfg.globalMode;
@@ -1164,8 +1166,6 @@ export default function FollowPlanModal({
               <>
                 <div className="fp-filters">
                   {renderTrigger('game')}
-                  {renderTrigger('cond1')}
-                  {renderTrigger('cond2')}
                 </div>
                 <div className="history-tabs fp-status-tabs">
                   {[['all', '所有状态'], ['running', '进行中计划'], ['stopped', '已停止计划']].map(([v, label]) => (
