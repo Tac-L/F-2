@@ -1172,7 +1172,7 @@ export default function FollowPlanModal({
                     <button key={v} type="button" className={`history-tab ${followedFilter === v ? 'active' : ''}`} onClick={() => setFollowedFilter(v)}>{label}</button>
                   ))}
                 </div>
-                <button type="button" className="fp-create-btn" onClick={openCustomConfig}>创建计划</button>
+                <button type="button" className="fp-create-btn" onClick={openCustomConfig}>+ 创建计划</button>
                 <div className="fp-list">
                   {customPlans.length === 0 ? (
                     <div className="fp-empty">暂无自定计划</div>
