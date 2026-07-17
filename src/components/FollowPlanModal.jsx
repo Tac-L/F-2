@@ -849,11 +849,11 @@ export default function FollowPlanModal({
     void detailOpen;
     if (custom) {
       if (!numbers || numbers.length === 0) { addToast?.('请挑选计划号码', 'info'); return; }
-      const name = (planName || '').trim() || '自定计划';
+      const name = (planName || '').trim() || '自订计划';
       const customCfg = { ...planConfig, custom: true, planName: name, numbers, expertName: name };
       if (editingPlanId) onEditPlan?.(editingPlanId, customCfg);
       else onCreatePlan?.(customCfg);
-      // 跳到「自定计划」并对齐筛选条件，确保计划立即可见
+      // 跳到「自订计划」并对齐筛选条件，确保计划立即可见
       setSelectedGameId(cfg.gameId);
       setCond1(cfg.cond1);
       setCond2(cfg.cond2);
@@ -1095,8 +1095,8 @@ export default function FollowPlanModal({
     onClose();
   };
   const activePlan = followPlans.find((p) => p.id === activePlanId);
-  const headerTitle = view === 'config' ? (cfg?.custom ? '自訂計畫' : '跟单计划')
-    : view === 'detail' ? (activePlan?.custom ? '自訂計畫詳情' : '跟单计划详情')
+  const headerTitle = view === 'config' ? (cfg?.custom ? '自订计划' : '跟单计划')
+    : view === 'detail' ? (activePlan?.custom ? '自订计划详情' : '跟单计划详情')
       : view === 'expertDetail' ? '专家计划详情'
         : view === 'records' ? '注单详情' : '计划中心';
 
@@ -1122,7 +1122,7 @@ export default function FollowPlanModal({
             <div className="fp-tabs">
               <button type="button" className={`fp-tab ${tab === 'experts' ? 'active' : ''}`} onClick={() => setTab('experts')}>专家计划</button>
               <button type="button" className={`fp-tab ${tab === 'followed' ? 'active' : ''}`} onClick={() => setTab('followed')}>已跟专家</button>
-              <button type="button" className={`fp-tab ${tab === 'custom' ? 'active' : ''}`} onClick={() => setTab('custom')}>自定计划</button>
+              <button type="button" className={`fp-tab ${tab === 'custom' ? 'active' : ''}`} onClick={() => setTab('custom')}>自订计划</button>
             </div>
 
             {tab === 'experts' && (
@@ -1175,7 +1175,7 @@ export default function FollowPlanModal({
                 <button type="button" className="fp-create-btn" onClick={openCustomConfig}>+ 创建计划</button>
                 <div className="fp-list">
                   {customPlans.length === 0 ? (
-                    <div className="fp-empty">暂无自定计划</div>
+                    <div className="fp-empty">暂无自订计划</div>
                   ) : customPlans.map((p) => renderPlanCard(p))}
                 </div>
               </>
@@ -1196,7 +1196,7 @@ export default function FollowPlanModal({
             <div className="fp-confirm-backdrop" onClick={() => setConfirmStopId(null)} />
             <div className="fp-confirm-dialog">
               <div className="fp-confirm-title">确认停止</div>
-              <div className="fp-confirm-msg">{followPlans.find((p) => p.id === confirmStopId)?.custom ? '确定要停止这个自定计划吗？' : '确定要停止这个跟单计划吗？'}</div>
+              <div className="fp-confirm-msg">{followPlans.find((p) => p.id === confirmStopId)?.custom ? '确定要停止这个自订计划吗？' : '确定要停止这个跟单计划吗？'}</div>
               <div className="fp-confirm-actions">
                 <button type="button" className="fp-confirm-btn cancel" onClick={() => setConfirmStopId(null)}>取消</button>
                 <button type="button" className="fp-confirm-btn ok" onClick={() => { onStopPlan?.(confirmStopId); setConfirmStopId(null); }}>确认停止</button>

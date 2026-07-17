@@ -1522,7 +1522,7 @@ export default function App() {
       followPlansRef.current = next;
       return next;
     });
-    addToast(`${plan.custom ? '已创建自定计划' : '已创建自动跟投'} ${plan.expertName}（${plan.roundsTotal}期）`, 'success');
+    addToast(`${plan.custom ? '已创建自订计划' : '已创建自动跟投'} ${plan.expertName}（${plan.roundsTotal}期）`, 'success');
   };
 
   // Edit a running plan's *future* settings (already-placed rounds are immutable).
@@ -1535,7 +1535,7 @@ export default function App() {
         globalMode: config.globalMode,
         stop: config.stop,
         perRoundOverrides: config.perRoundOverrides || [],
-        // 自定计划：名称/位置/号码等亦可修改（影响后续期投注）
+        // 自订计划：名称/位置/号码等亦可修改（影响后续期投注）
         ...(p.custom ? {
           planName: config.planName ?? p.planName,
           expertName: config.expertName ?? p.expertName,
@@ -1547,7 +1547,7 @@ export default function App() {
       followPlansRef.current = next;
       return next;
     });
-    addToast(config.custom ? '已更新自定计划' : '已更新跟投计划', 'success');
+    addToast(config.custom ? '已更新自订计划' : '已更新跟投计划', 'success');
   };
 
   // Manually stop a plan: withdraw + refund its in-flight (unsettled) round.
