@@ -559,8 +559,9 @@ export default function FollowPlanModal({
     const openDetail = () => { setActivePlanId(plan.id); setView('detail'); };
     return (
       <div key={plan.id} className="fp-card">
-        {/* 标题行占满整卡宽度（条件标记延伸到右侧按钮上方），与「专家计划」卡片一致 */}
-        <button type="button" className="fp-card-top" onClick={openDetail}>
+        {/* 标题行占满整卡宽度（条件标记延伸到右侧按钮上方），与「专家计划」卡片一致。
+            自订计划标题可能较长，改为标题独占一行，三个条件标记换行显示。 */}
+        <button type="button" className={`fp-card-top${plan.custom ? ' fp-card-top-stacked' : ''}`} onClick={openDetail}>
           <span className="fp-expert-name">{plan.expertName}</span>
           <span className="fp-tag">{plan.gameName}</span>
           <span className="fp-tag">{plan.cond1}</span>

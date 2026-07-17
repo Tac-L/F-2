@@ -6384,6 +6384,14 @@ img.lhc-ball {
   cursor: pointer;
   text-align: left;
 }
+/* 自订计划：标题独占一行，三个条件标记换到下一行 */
+.fp-card-top-stacked {
+  flex-wrap: wrap;
+}
+.fp-card-top-stacked .fp-expert-name {
+  flex: 0 0 100%;
+  width: 100%;
+}
 .fp-expert-name {
   font-size: 15px;
   font-weight: 700;
