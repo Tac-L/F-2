@@ -567,7 +567,7 @@ export default function FollowPlanModal({
               <div className="fp-stat"><span className="fp-stat-label">总胜率</span><span className="fp-stat-val fp-rate">{winRateOf(plan)}%</span></div>
               <div className="fp-stat"><span className="fp-stat-label">总输赢</span><span className={`fp-stat-val ${plan.totalWinLoss > 0 ? 'win-text' : plan.totalWinLoss < 0 ? 'loss-text' : ''}`}>￥{plan.totalWinLoss.toFixed(2)}</span></div>
             </div>
-            <div className="fp-predict-label">本期预测</div>
+            <div className="fp-predict-label">{plan.custom ? '计划号码' : '本期预测'}</div>
             <div className="fp-predict">{renderRoundPredict(plan, cur)}</div>
           </button>
           <div className="fp-card-actions">
@@ -972,6 +972,11 @@ export default function FollowPlanModal({
                 : <span>提前结束：<b>{plan.stopReason}</b></span>}
               {running && <span className="fp-timer">倒计时 <span className="fp-timer-val">{fmtCountdown(game.timeLeft)}</span></span>}
             </div>
+            {running && plan.custom && (
+              <div className="fp-detail-predict-row" style={{ marginTop: '10px', display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                {renderRoundPredict(plan, cur)}
+              </div>
+            )}
             <div className="fp-detail-actions">
               {running ? (
                 <>
