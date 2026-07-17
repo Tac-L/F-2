@@ -1487,6 +1487,23 @@ export default function App() {
   const onCreatePlan = (config) => {
     const game = gamesState[config.gameId];
     if (!game) { addToast('该游戏暂未开放投注', 'error'); return; }
+
+    if (config.custom) {
+      // 自订计划：同一个游戏，只能创建三个计划
+      const activeCustoms = followPlans.filter((p) => p.custom && p.status === 'running' && p.gameId === config.gameId);
+      if (activeCustoms.length >= 3) {
+        addToast('同一个游戏最多只能创建3个自订计划', 'error');
+        return;
+      }
+    } else {
+      // 跟单计划：同一个 游戏 and 位置 and 点位，最多能跟单三个专家
+      const activeFollows = followPlans.filter((p) => !p.custom && p.status === 'running' && p.gameId === config.gameId && p.cond1 === config.cond1 && p.cond2 === config.cond2);
+      if (activeFollows.length >= 3) {
+        addToast('同一个游戏、计划和位置最多只能跟单3个专家', 'error');
+        return;
+      }
+    }
+
     const plan = {
       id: `plan-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       expertName: config.expertName,
