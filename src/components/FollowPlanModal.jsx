@@ -268,6 +268,7 @@ export default function FollowPlanModal({
       perRoundOverrides: seed?.perRoundOverrides ?? [],
       detailOpen: true,
       stopOpen: true,
+      batchOpen: true,
     });
     setView('config');
   };
@@ -296,6 +297,7 @@ export default function FollowPlanModal({
       perRoundOverrides: [],
       detailOpen: true,
       stopOpen: true,
+      batchOpen: true,
     });
     setView('config');
   };
@@ -321,6 +323,7 @@ export default function FollowPlanModal({
         perRoundOverrides: plan.perRoundOverrides || [],
         detailOpen: true,
         stopOpen: true,
+        batchOpen: true,
       });
       setView('config');
       return;
@@ -701,56 +704,67 @@ export default function FollowPlanModal({
             </div>
           )}
           {cfg.custom ? (
-          <div className="fp-config-card">
-            <div className="fp-config-row">
-              <span className="fp-config-label">起始期号</span>
-              <span className="fp-config-box readonly">当前期 {formatIssue(cfg.kind, startIssueNum)}</span>
-            </div>
-            <div className="fp-config-row">
-              <span className="fp-config-label">起始金额</span>
-              <span className="fp-config-box">
-                <input type="number" pattern="[0-9]*" className="fp-config-input fp-config-input-wide" value={cfg.amountPerBall}
-                  onChange={(e) => setCfg((c) => ({ ...c, amountPerBall: Math.max(1, parseInt(e.target.value, 10) || 1) }))} />
-              </span>
-            </div>
-            <div className="fp-config-row">
-              <span className="fp-config-label">追号数</span>
-              <div className="fp-stepper">
-                <button type="button" className="fp-stepper-btn" onClick={() => setCfg((c) => ({ ...c, roundsTotal: Math.max(1, c.roundsTotal - 1) }))}>−</button>
-                <span className="fp-stepper-val">{cfg.roundsTotal}</span>
-                <span className="fp-stepper-unit">期</span>
-                <button type="button" className="fp-stepper-btn" onClick={() => setCfg((c) => ({ ...c, roundsTotal: Math.min(50, c.roundsTotal + 1) }))}>+</button>
+            <>
+              <div className="fp-config-card">
+                <div className="fp-config-row">
+                  <span className="fp-config-label">起始期号</span>
+                  <span className="fp-config-box readonly">当前期 {formatIssue(cfg.kind, startIssueNum)}</span>
+                </div>
+                <div className="fp-config-row">
+                  <span className="fp-config-label">起始金额</span>
+                  <span className="fp-config-box">
+                    <input type="number" pattern="[0-9]*" className="fp-config-input fp-config-input-wide" value={cfg.amountPerBall}
+                      onChange={(e) => setCfg((c) => ({ ...c, amountPerBall: Math.max(1, parseInt(e.target.value, 10) || 1) }))} />
+                  </span>
+                </div>
+                <div className="fp-config-row">
+                  <span className="fp-config-label">追号数</span>
+                  <div className="fp-stepper">
+                    <button type="button" className="fp-stepper-btn" onClick={() => setCfg((c) => ({ ...c, roundsTotal: Math.max(1, c.roundsTotal - 1) }))}>−</button>
+                    <span className="fp-stepper-val">{cfg.roundsTotal}</span>
+                    <span className="fp-stepper-unit">期</span>
+                    <button type="button" className="fp-stepper-btn" onClick={() => setCfg((c) => ({ ...c, roundsTotal: Math.min(50, c.roundsTotal + 1) }))}>+</button>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="fp-config-row">
-              <span className="fp-config-label">起始倍数</span>
-              <div className="fp-stepper">
-                <button type="button" className="fp-stepper-btn" onClick={() => setCfg((c) => ({ ...c, startMultiplier: Math.max(1, c.startMultiplier - 1) }))}>−</button>
-                <span className="fp-stepper-val">{cfg.startMultiplier}</span>
-                <span className="fp-stepper-unit">倍</span>
-                <button type="button" className="fp-stepper-btn" onClick={() => setCfg((c) => ({ ...c, startMultiplier: Math.min(999, c.startMultiplier + 1) }))}>+</button>
-              </div>
-            </div>
-            <div className="fp-config-row">
-              <span className="fp-config-label">间隔期数</span>
-              <div className="fp-stepper">
-                <button type="button" className="fp-stepper-btn" onClick={() => setCfg((c) => ({ ...c, intervalPeriods: Math.max(1, c.intervalPeriods - 1) }))}>−</button>
-                <span className="fp-stepper-val">{cfg.intervalPeriods}</span>
-                <span className="fp-stepper-unit">期</span>
-                <button type="button" className="fp-stepper-btn" onClick={() => setCfg((c) => ({ ...c, intervalPeriods: Math.min(50, c.intervalPeriods + 1) }))}>+</button>
-              </div>
-            </div>
-            <div className="fp-config-row">
-              <span className="fp-config-label">倍数X</span>
-              <div className="fp-stepper">
-                <button type="button" className="fp-stepper-btn" onClick={() => setCfg((c) => ({ ...c, multiplierX: Math.max(1, c.multiplierX - 1) }))}>−</button>
-                <span className="fp-stepper-val">{cfg.multiplierX}</span>
-                <span className="fp-stepper-unit">倍</span>
-                <button type="button" className="fp-stepper-btn" onClick={() => setCfg((c) => ({ ...c, multiplierX: Math.min(999, c.multiplierX + 1) }))}>+</button>
-              </div>
-            </div>
-            <div className="fp-config-hint fp-hint-blue">提示：每隔{cfg.intervalPeriods}期倍数×{cfg.multiplierX}{cfg.multiplierX === 1 ? '，为同倍跟投' : ''}</div>
-          </div>
+
+              <button type="button" className="fp-config-section-title" style={{ display: 'block', width: '100%', border: 'none', background: 'none', cursor: 'pointer', outline: 'none' }} onClick={() => setCfg((c) => ({ ...c, batchOpen: c.batchOpen === false ? true : false }))}>
+                批量调整 {cfg.batchOpen !== false ? '˄' : '˅'}
+              </button>
+
+              {cfg.batchOpen !== false && (
+                <div className="fp-config-card">
+                  <div className="fp-config-row">
+                    <span className="fp-config-label">起始倍数</span>
+                    <div className="fp-stepper">
+                      <button type="button" className="fp-stepper-btn" onClick={() => setCfg((c) => ({ ...c, startMultiplier: Math.max(1, c.startMultiplier - 1) }))}>−</button>
+                      <span className="fp-stepper-val">{cfg.startMultiplier}</span>
+                      <span className="fp-stepper-unit">倍</span>
+                      <button type="button" className="fp-stepper-btn" onClick={() => setCfg((c) => ({ ...c, startMultiplier: Math.min(999, c.startMultiplier + 1) }))}>+</button>
+                    </div>
+                  </div>
+                  <div className="fp-config-row">
+                    <span className="fp-config-label">间隔期数</span>
+                    <div className="fp-stepper">
+                      <button type="button" className="fp-stepper-btn" onClick={() => setCfg((c) => ({ ...c, intervalPeriods: Math.max(1, c.intervalPeriods - 1) }))}>−</button>
+                      <span className="fp-stepper-val">{cfg.intervalPeriods}</span>
+                      <span className="fp-stepper-unit">期</span>
+                      <button type="button" className="fp-stepper-btn" onClick={() => setCfg((c) => ({ ...c, intervalPeriods: Math.min(50, c.intervalPeriods + 1) }))}>+</button>
+                    </div>
+                  </div>
+                  <div className="fp-config-row">
+                    <span className="fp-config-label">倍数X</span>
+                    <div className="fp-stepper">
+                      <button type="button" className="fp-stepper-btn" onClick={() => setCfg((c) => ({ ...c, multiplierX: Math.max(1, c.multiplierX - 1) }))}>−</button>
+                      <span className="fp-stepper-val">{cfg.multiplierX}</span>
+                      <span className="fp-stepper-unit">倍</span>
+                      <button type="button" className="fp-stepper-btn" onClick={() => setCfg((c) => ({ ...c, multiplierX: Math.min(999, c.multiplierX + 1) }))}>+</button>
+                    </div>
+                  </div>
+                  <div className="fp-config-hint fp-hint-blue">提示：每隔{cfg.intervalPeriods}期倍数×{cfg.multiplierX}{cfg.multiplierX === 1 ? '，为同倍跟投' : ''}</div>
+                </div>
+              )}
+            </>
           ) : (
           <div className="fp-config-card">
             <div className="fp-config-row">
