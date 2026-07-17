@@ -267,6 +267,7 @@ export default function FollowPlanModal({
       stop: seed?.stop ?? { profitAbove: { on: false, val: 0 }, profitBelow: { on: false, val: 0 }, stopOnWin: false, stopOnLose: false },
       perRoundOverrides: seed?.perRoundOverrides ?? [],
       detailOpen: true,
+      stopOpen: true,
     });
     setView('config');
   };
@@ -294,6 +295,7 @@ export default function FollowPlanModal({
       stop: { profitAbove: { on: false, val: 0 }, profitBelow: { on: false, val: 0 }, stopOnWin: false, stopOnLose: false },
       perRoundOverrides: [],
       detailOpen: true,
+      stopOpen: true,
     });
     setView('config');
   };
@@ -318,6 +320,7 @@ export default function FollowPlanModal({
         stop: plan.stop,
         perRoundOverrides: plan.perRoundOverrides || [],
         detailOpen: true,
+        stopOpen: true,
       });
       setView('config');
       return;
@@ -775,25 +778,29 @@ export default function FollowPlanModal({
           </div>
           )}
 
-          <div className="fp-config-section-title">{cfg.custom ? '计划停止条件设置' : '跟投停止条件设置'}</div>
-          <div className="fp-config-card">
-            <label className="fp-config-stop-row">
-              <input type="checkbox" checked={cfg.stop.profitAbove.on} onChange={(e) => setCfg((c) => ({ ...c, stop: { ...c.stop, profitAbove: { ...c.stop.profitAbove, on: e.target.checked } } }))} />
-              <span>当盈利超过</span>
-              <input type="number" className="fp-config-stop-input" value={cfg.stop.profitAbove.val} onChange={(e) => setCfg((c) => ({ ...c, stop: { ...c.stop, profitAbove: { ...c.stop.profitAbove, val: parseInt(e.target.value, 10) || 0 } } }))} />
-              <span>{cfg.custom ? '停止计划' : '停止跟投'}</span>
-            </label>
-            <label className="fp-config-stop-row">
-              <input type="checkbox" checked={cfg.stop.profitBelow.on} onChange={(e) => setCfg((c) => ({ ...c, stop: { ...c.stop, profitBelow: { ...c.stop.profitBelow, on: e.target.checked } } }))} />
-              <span>当盈利低于</span>
-              <input type="number" className="fp-config-stop-input" value={cfg.stop.profitBelow.val} onChange={(e) => setCfg((c) => ({ ...c, stop: { ...c.stop, profitBelow: { ...c.stop.profitBelow, val: parseInt(e.target.value, 10) || 0 } } }))} />
-              <span>{cfg.custom ? '停止计划' : '停止跟投'}</span>
-            </label>
-            <div className="fp-config-stop-checks">
-              <label className="fp-config-check"><input type="checkbox" checked={cfg.stop.stopOnWin} onChange={(e) => setCfg((c) => ({ ...c, stop: { ...c.stop, stopOnWin: e.target.checked } }))} /><span>{cfg.custom ? '中奖即停止计划' : '中奖即停止跟投'}</span></label>
-              <label className="fp-config-check"><input type="checkbox" checked={cfg.stop.stopOnLose} onChange={(e) => setCfg((c) => ({ ...c, stop: { ...c.stop, stopOnLose: e.target.checked } }))} /><span>{cfg.custom ? '不中奖即停止计划' : '不中奖即停止跟投'}</span></label>
+          <button type="button" className="fp-config-section-title" style={{ display: 'block', width: '100%', border: 'none', background: 'none', cursor: 'pointer', outline: 'none' }} onClick={() => setCfg((c) => ({ ...c, stopOpen: c.stopOpen === false ? true : false }))}>
+            {cfg.custom ? '计划停止条件设置' : '跟投停止条件设置'} {cfg.stopOpen !== false ? '˄' : '˅'}
+          </button>
+          {cfg.stopOpen !== false && (
+            <div className="fp-config-card">
+              <label className="fp-config-stop-row">
+                <input type="checkbox" checked={cfg.stop.profitAbove.on} onChange={(e) => setCfg((c) => ({ ...c, stop: { ...c.stop, profitAbove: { ...c.stop.profitAbove, on: e.target.checked } } }))} />
+                <span>当盈利超过</span>
+                <input type="number" className="fp-config-stop-input" value={cfg.stop.profitAbove.val} onChange={(e) => setCfg((c) => ({ ...c, stop: { ...c.stop, profitAbove: { ...c.stop.profitAbove, val: parseInt(e.target.value, 10) || 0 } } }))} />
+                <span>{cfg.custom ? '停止计划' : '停止跟投'}</span>
+              </label>
+              <label className="fp-config-stop-row">
+                <input type="checkbox" checked={cfg.stop.profitBelow.on} onChange={(e) => setCfg((c) => ({ ...c, stop: { ...c.stop, profitBelow: { ...c.stop.profitBelow, on: e.target.checked } } }))} />
+                <span>当盈利低于</span>
+                <input type="number" className="fp-config-stop-input" value={cfg.stop.profitBelow.val} onChange={(e) => setCfg((c) => ({ ...c, stop: { ...c.stop, profitBelow: { ...c.stop.profitBelow, val: parseInt(e.target.value, 10) || 0 } } }))} />
+                <span>{cfg.custom ? '停止计划' : '停止跟投'}</span>
+              </label>
+              <div className="fp-config-stop-checks">
+                <label className="fp-config-check"><input type="checkbox" checked={cfg.stop.stopOnWin} onChange={(e) => setCfg((c) => ({ ...c, stop: { ...c.stop, stopOnWin: e.target.checked } }))} /><span>{cfg.custom ? '中奖即停止计划' : '中奖即停止跟投'}</span></label>
+                <label className="fp-config-check"><input type="checkbox" checked={cfg.stop.stopOnLose} onChange={(e) => setCfg((c) => ({ ...c, stop: { ...c.stop, stopOnLose: e.target.checked } }))} /><span>{cfg.custom ? '不中奖即停止计划' : '不中奖即停止跟投'}</span></label>
+              </div>
             </div>
-          </div>
+          )}
 
           <button type="button" className="fp-config-toggle" onClick={() => setCfg((c) => ({ ...c, detailOpen: !c.detailOpen }))}>
             {cfg.detailOpen ? (cfg.custom ? '收起计划详情 ˄' : '收起跟投详情 ˄') : (cfg.custom ? '展开计划详情 ˅' : '展开跟投详情 ˅')}
