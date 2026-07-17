@@ -287,9 +287,10 @@ export default function FollowPlanModal({
       expertName: '',
       gameId: selectedGameId, gameName: selectedGameName, kind: selectedKind, cond1, cond2,
       ballCount: bc,
-      roundsTotal: 8,
+      roundsTotal: 10,
       amountPerBall: chipValues[0] ?? 50,
       globalMode: 'follow',
+      startMultiplier: 1, intervalPeriods: 1, multiplierX: 1,
       stop: { profitAbove: { on: false, val: 0 }, profitBelow: { on: false, val: 0 }, stopOnWin: false, stopOnLose: false },
       perRoundOverrides: [],
       detailOpen: true,
@@ -313,6 +314,7 @@ export default function FollowPlanModal({
         roundsTotal: plan.roundsTotal,
         amountPerBall: plan.amountPerBall,
         globalMode: plan.globalMode,
+        startMultiplier: plan.startMultiplier || 1, intervalPeriods: plan.intervalPeriods || 1, multiplierX: plan.multiplierX || 1,
         stop: plan.stop,
         perRoundOverrides: plan.perRoundOverrides || [],
         detailOpen: true,
@@ -561,7 +563,7 @@ export default function FollowPlanModal({
         <div className="fp-card-row">
           <button type="button" className="fp-card-main" onClick={openDetail}>
             <div className="fp-stats">
-              <div className="fp-stat"><span className="fp-stat-label">跟投期</span><span className="fp-stat-val">{plan.settledRounds}/{plan.roundsTotal}</span></div>
+              <div className="fp-stat"><span className="fp-stat-label">{plan.custom ? '追号期' : '跟投期'}</span><span className="fp-stat-val">{plan.settledRounds}/{plan.roundsTotal}</span></div>
               <div className="fp-stat"><span className="fp-stat-label">总胜率</span><span className="fp-stat-val fp-rate">{winRateOf(plan)}%</span></div>
               <div className="fp-stat"><span className="fp-stat-label">总输赢</span><span className={`fp-stat-val ${plan.totalWinLoss > 0 ? 'win-text' : plan.totalWinLoss < 0 ? 'loss-text' : ''}`}>￥{plan.totalWinLoss.toFixed(2)}</span></div>
             </div>
@@ -597,7 +599,18 @@ export default function FollowPlanModal({
 
   // =========================== config page (图一) ===========================
   const configRoundMode = (i) => cfg.perRoundOverrides.find((o) => o.idx === i)?.mode ?? cfg.globalMode;
-  const configRoundAmount = (i) => cfg.perRoundOverrides.find((o) => o.idx === i)?.amount ?? cfg.amountPerBall;
+  const configRoundMultiplier = (i) => {
+    const sm = cfg.startMultiplier || 1;
+    const ip = cfg.intervalPeriods || 1;
+    const mx = cfg.multiplierX || 1;
+    return sm * Math.pow(mx, Math.floor(i / ip));
+  };
+  const configRoundAmount = (i) => {
+    const override = cfg.perRoundOverrides.find((o) => o.idx === i)?.amount;
+    if (override !== undefined) return override;
+    if (cfg.custom) return cfg.amountPerBall * configRoundMultiplier(i);
+    return cfg.amountPerBall;
+  };
   const configRoundCount = (mode) => (predictKindOf(cfg?.kind) === 'twoside' ? 1 : (mode === 'follow' ? cfg.ballCount : 10 - cfg.ballCount));
 
   const setRoundOverride = (i, patch) => setCfg((c) => {
@@ -632,10 +645,18 @@ export default function FollowPlanModal({
               </div>
               <div className="fp-config-row">
                 <span className="fp-config-label">计划名称</span>
-                <input
-                  type="text" className="fp-config-box fp-custom-input" placeholder="请输入计划名称" maxLength={20}
-                  value={cfg.planName} onChange={(e) => setCfg((c) => ({ ...c, planName: e.target.value }))}
-                />
+                <div className="fp-config-box-wrap">
+                  <input
+                    type="text" className="fp-config-box fp-custom-input" placeholder="请输入计划名称" maxLength={20}
+                    value={cfg.planName} onChange={(e) => setCfg((c) => ({ ...c, planName: e.target.value }))}
+                  />
+                  <button type="button" className="fp-dice-btn" title="随机生成计划名称" onClick={() => {
+                    const seq = Math.floor(Math.random() * 10);
+                    setCfg((c) => ({ ...c, planName: `${c.gameName}${seq}` }));
+                  }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="3" /><circle cx="8" cy="8" r="1.2" fill="currentColor" /><circle cx="16" cy="8" r="1.2" fill="currentColor" /><circle cx="8" cy="16" r="1.2" fill="currentColor" /><circle cx="16" cy="16" r="1.2" fill="currentColor" /><circle cx="12" cy="12" r="1.2" fill="currentColor" /></svg>
+                  </button>
+                </div>
               </div>
               <div className="fp-config-row">
                 <span className="fp-config-label">计划位置</span>
@@ -643,21 +664,89 @@ export default function FollowPlanModal({
               </div>
               <div className="fp-config-row">
                 <span className="fp-config-label">计划号码</span>
-                <button type="button" className="fp-config-box fp-custom-numbtn" onClick={() => setNumPicker({ draft: [...(cfg.numbers || [])] })}>
-                  {cfg.numbers && cfg.numbers.length ? (
-                    <span className="fp-custom-nums">
-                      {predictKindOf(cfg.kind) === 'balls'
-                        ? cfg.numbers.map((n) => <img key={n} className="fp-custom-num-ball" src={ballSrc(cfg.kind, n)} alt={String(n)} />)
-                        : <span className="fp-custom-num-side">{cfg.numbers.join('、')}</span>}
-                    </span>
-                  ) : <span className="fp-custom-placeholder">请挑选号码</span>}
-                  <svg className="fp-custom-num-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
-                </button>
+                <div className="fp-config-box-wrap">
+                  <button type="button" className="fp-config-box fp-custom-numbtn" onClick={() => setNumPicker({ draft: [...(cfg.numbers || [])] })}>
+                    {cfg.numbers && cfg.numbers.length ? (
+                      <span className="fp-custom-nums">
+                        {predictKindOf(cfg.kind) === 'balls'
+                          ? cfg.numbers.map((n) => <img key={n} className="fp-custom-num-ball" src={ballSrc(cfg.kind, n)} alt={String(n)} />)
+                          : <span className="fp-custom-num-side">{cfg.numbers.join('、')}</span>}
+                      </span>
+                    ) : <span className="fp-custom-placeholder">请挑选号码</span>}
+                    <svg className="fp-custom-num-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </button>
+                  <button type="button" className="fp-dice-btn" title="随机挑选号码" onClick={() => {
+                    const opts = cfgNumberOptions();
+                    if (opts.predict === 'balls') {
+                      const half = Math.ceil(opts.options.length / 2);
+                      const shuffled = [...opts.options].sort(() => Math.random() - 0.5);
+                      const picked = shuffled.slice(0, half).sort((a, b) => a - b);
+                      setCfg((c) => ({ ...c, numbers: picked, ballCount: picked.length }));
+                    } else {
+                      const picked = [opts.options[Math.floor(Math.random() * opts.options.length)]];
+                      setCfg((c) => ({ ...c, numbers: picked, ballCount: 1 }));
+                    }
+                  }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="3" /><circle cx="8" cy="8" r="1.2" fill="currentColor" /><circle cx="16" cy="8" r="1.2" fill="currentColor" /><circle cx="8" cy="16" r="1.2" fill="currentColor" /><circle cx="16" cy="16" r="1.2" fill="currentColor" /><circle cx="12" cy="12" r="1.2" fill="currentColor" /></svg>
+                  </button>
+                </div>
               </div>
             </div>
           )}
+          {cfg.custom ? (
+          <div className="fp-config-card">
+            <div className="fp-config-row">
+              <span className="fp-config-label">起始期号</span>
+              <span className="fp-config-box readonly">当前期 {formatIssue(cfg.kind, startIssueNum)}</span>
+            </div>
+            <div className="fp-config-row">
+              <span className="fp-config-label">起始金额</span>
+              <span className="fp-config-box">
+                <input type="number" pattern="[0-9]*" className="fp-config-input fp-config-input-wide" value={cfg.amountPerBall}
+                  onChange={(e) => setCfg((c) => ({ ...c, amountPerBall: Math.max(1, parseInt(e.target.value, 10) || 1) }))} />
+              </span>
+            </div>
+            <div className="fp-config-row">
+              <span className="fp-config-label">追号数</span>
+              <div className="fp-stepper">
+                <button type="button" className="fp-stepper-btn" onClick={() => setCfg((c) => ({ ...c, roundsTotal: Math.max(1, c.roundsTotal - 1) }))}>−</button>
+                <span className="fp-stepper-val">{cfg.roundsTotal}</span>
+                <span className="fp-stepper-unit">期</span>
+                <button type="button" className="fp-stepper-btn" onClick={() => setCfg((c) => ({ ...c, roundsTotal: Math.min(50, c.roundsTotal + 1) }))}>+</button>
+              </div>
+            </div>
+            <div className="fp-config-row">
+              <span className="fp-config-label">起始倍数</span>
+              <div className="fp-stepper">
+                <button type="button" className="fp-stepper-btn" onClick={() => setCfg((c) => ({ ...c, startMultiplier: Math.max(1, c.startMultiplier - 1) }))}>−</button>
+                <span className="fp-stepper-val">{cfg.startMultiplier}</span>
+                <span className="fp-stepper-unit">倍</span>
+                <button type="button" className="fp-stepper-btn" onClick={() => setCfg((c) => ({ ...c, startMultiplier: Math.min(999, c.startMultiplier + 1) }))}>+</button>
+              </div>
+            </div>
+            <div className="fp-config-row">
+              <span className="fp-config-label">间隔期数</span>
+              <div className="fp-stepper">
+                <button type="button" className="fp-stepper-btn" onClick={() => setCfg((c) => ({ ...c, intervalPeriods: Math.max(1, c.intervalPeriods - 1) }))}>−</button>
+                <span className="fp-stepper-val">{cfg.intervalPeriods}</span>
+                <span className="fp-stepper-unit">期</span>
+                <button type="button" className="fp-stepper-btn" onClick={() => setCfg((c) => ({ ...c, intervalPeriods: Math.min(50, c.intervalPeriods + 1) }))}>+</button>
+              </div>
+            </div>
+            <div className="fp-config-row">
+              <span className="fp-config-label">倍数X</span>
+              <div className="fp-stepper">
+                <button type="button" className="fp-stepper-btn" onClick={() => setCfg((c) => ({ ...c, multiplierX: Math.max(1, c.multiplierX - 1) }))}>−</button>
+                <span className="fp-stepper-val">{cfg.multiplierX}</span>
+                <span className="fp-stepper-unit">倍</span>
+                <button type="button" className="fp-stepper-btn" onClick={() => setCfg((c) => ({ ...c, multiplierX: Math.min(999, c.multiplierX + 1) }))}>+</button>
+              </div>
+            </div>
+            <div className="fp-config-hint fp-hint-blue">提示：每隔{cfg.intervalPeriods}期倍数×{cfg.multiplierX}{cfg.multiplierX === 1 ? '，为同倍跟投' : ''}</div>
+          </div>
+          ) : (
           <div className="fp-config-card">
             <div className="fp-config-row">
               <span className="fp-config-label">起始期号</span>
@@ -682,41 +771,44 @@ export default function FollowPlanModal({
             </div>
             <div className="fp-config-hint">* 已开盘期数不被保存</div>
           </div>
+          )}
 
-          <div className="fp-config-section-title">跟投停止条件设置</div>
+          <div className="fp-config-section-title">{cfg.custom ? '计划停止条件设置' : '跟投停止条件设置'}</div>
           <div className="fp-config-card">
             <label className="fp-config-stop-row">
               <input type="checkbox" checked={cfg.stop.profitAbove.on} onChange={(e) => setCfg((c) => ({ ...c, stop: { ...c.stop, profitAbove: { ...c.stop.profitAbove, on: e.target.checked } } }))} />
               <span>当盈利超过</span>
               <input type="number" className="fp-config-stop-input" value={cfg.stop.profitAbove.val} onChange={(e) => setCfg((c) => ({ ...c, stop: { ...c.stop, profitAbove: { ...c.stop.profitAbove, val: parseInt(e.target.value, 10) || 0 } } }))} />
-              <span>停止跟投</span>
+              <span>{cfg.custom ? '停止计划' : '停止跟投'}</span>
             </label>
             <label className="fp-config-stop-row">
               <input type="checkbox" checked={cfg.stop.profitBelow.on} onChange={(e) => setCfg((c) => ({ ...c, stop: { ...c.stop, profitBelow: { ...c.stop.profitBelow, on: e.target.checked } } }))} />
               <span>当盈利低于</span>
               <input type="number" className="fp-config-stop-input" value={cfg.stop.profitBelow.val} onChange={(e) => setCfg((c) => ({ ...c, stop: { ...c.stop, profitBelow: { ...c.stop.profitBelow, val: parseInt(e.target.value, 10) || 0 } } }))} />
-              <span>停止跟投</span>
+              <span>{cfg.custom ? '停止计划' : '停止跟投'}</span>
             </label>
             <div className="fp-config-stop-checks">
-              <label className="fp-config-check"><input type="checkbox" checked={cfg.stop.stopOnWin} onChange={(e) => setCfg((c) => ({ ...c, stop: { ...c.stop, stopOnWin: e.target.checked } }))} /><span>中奖即停止跟投</span></label>
-              <label className="fp-config-check"><input type="checkbox" checked={cfg.stop.stopOnLose} onChange={(e) => setCfg((c) => ({ ...c, stop: { ...c.stop, stopOnLose: e.target.checked } }))} /><span>不中奖即停止跟投</span></label>
+              <label className="fp-config-check"><input type="checkbox" checked={cfg.stop.stopOnWin} onChange={(e) => setCfg((c) => ({ ...c, stop: { ...c.stop, stopOnWin: e.target.checked } }))} /><span>{cfg.custom ? '中奖即停止计划' : '中奖即停止跟投'}</span></label>
+              <label className="fp-config-check"><input type="checkbox" checked={cfg.stop.stopOnLose} onChange={(e) => setCfg((c) => ({ ...c, stop: { ...c.stop, stopOnLose: e.target.checked } }))} /><span>{cfg.custom ? '不中奖即停止计划' : '不中奖即停止跟投'}</span></label>
             </div>
           </div>
 
           <button type="button" className="fp-config-toggle" onClick={() => setCfg((c) => ({ ...c, detailOpen: !c.detailOpen }))}>
-            {cfg.detailOpen ? '收起跟投详情 ˄' : '展开跟投详情 ˅'}
+            {cfg.detailOpen ? (cfg.custom ? '收起计划详情 ˄' : '收起跟投详情 ˄') : (cfg.custom ? '展开计划详情 ˅' : '展开跟投详情 ˅')}
           </button>
 
           {cfg.detailOpen && (
             <div className="fp-config-card">
               <div className="fp-detail-table-head">
-                <span>期数</span><span>期号</span><span>正反投</span><span>金额(每球)</span>
+                <span>期数</span><span>期号</span><span>{cfg.custom ? '倍数' : '正反投'}</span><span>{cfg.custom ? '金额(每号)' : '金额(每球)'}</span>
               </div>
               {rows.map((i) => (
                 <div key={i} className="fp-detail-table-row">
                   <span>{i + 1}期</span>
                   <span className="fp-mono">{formatIssue(cfg.kind, startIssueNum + i)}</span>
-                  <span><FpSwitch checked={configRoundMode(i) === 'follow'} onChange={(v) => setRoundOverride(i, { mode: v ? 'follow' : 'reverse' })} /></span>
+                  {cfg.custom
+                    ? <span className="fp-detail-mult">{configRoundMultiplier(i)}</span>
+                    : <span><FpSwitch checked={configRoundMode(i) === 'follow'} onChange={(v) => setRoundOverride(i, { mode: v ? 'follow' : 'reverse' })} /></span>}
                   <span><input type="number" className="fp-detail-amt" value={configRoundAmount(i)} onChange={(e) => setRoundOverride(i, { amount: parseInt(e.target.value, 10) || 0 })} /></span>
                 </div>
               ))}
@@ -870,7 +962,7 @@ export default function FollowPlanModal({
           </div>
           <div className="fp-detail-band-content">
             <div className="fp-stats fp-stats-inline">
-              <div className="fp-stat"><span className="fp-stat-label">跟投期</span><span className="fp-stat-val">{plan.settledRounds}/{plan.roundsTotal}</span></div>
+              <div className="fp-stat"><span className="fp-stat-label">{plan.custom ? '追号期' : '跟投期'}</span><span className="fp-stat-val">{plan.settledRounds}/{plan.roundsTotal}</span></div>
               <div className="fp-stat"><span className="fp-stat-label">总胜率</span><span className="fp-stat-val fp-rate">{winRateOf(plan)}%</span></div>
               <div className="fp-stat"><span className="fp-stat-label">总输赢</span><span className={`fp-stat-val ${plan.totalWinLoss > 0 ? 'win-text' : plan.totalWinLoss < 0 ? 'loss-text' : ''}`}>￥{plan.totalWinLoss.toFixed(2)}</span></div>
             </div>
@@ -883,12 +975,12 @@ export default function FollowPlanModal({
             <div className="fp-detail-actions">
               {running ? (
                 <>
-                  <button type="button" className="fp-btn" onClick={() => openConfig({ ...plan, editingPlanId: plan.id, seed: plan })}>编辑计划</button>
-                  <button type="button" className="fp-btn fp-btn-cancel" onClick={() => setConfirmStopId(plan.id)}>停止跟投</button>
+                  <button type="button" className="fp-btn" onClick={() => reopenPlanConfig(plan, true)}>编辑计划</button>
+                  <button type="button" className="fp-btn fp-btn-cancel" onClick={() => setConfirmStopId(plan.id)}>{plan.custom ? '停止計畫' : '停止跟投'}</button>
                 </>
               ) : (
                 <>
-                  <button type="button" className="fp-btn" onClick={() => openConfig({ ...plan, seed: plan })}>重新跟投</button>
+                  <button type="button" className="fp-btn" onClick={() => reopenPlanConfig(plan, false)}>{plan.custom ? '重启计划' : '重新跟投'}</button>
                   <button type="button" className="fp-btn" disabled>已取消</button>
                 </>
               )}
@@ -908,10 +1000,12 @@ export default function FollowPlanModal({
                     <span className="fp-tag-sm">已投</span>
                   </div>
                   <div className="fp-round-line sub">
+                    {!plan.custom && (
                     <span className="fp-round-field">
                       <span className="fp-round-field-lbl">正反投</span>
                       <b className="fp-round-mode">{r.mode === 'follow' ? '正投' : '反投'}</b>
                     </span>
+                    )}
                     <span className="fp-round-field">
                       <span className="fp-round-field-lbl">输赢</span>
                       {r.settled ? <b className={r.winLoss > 0 ? 'win-text' : r.winLoss < 0 ? 'loss-text' : ''}>￥{r.winLoss.toFixed(2)}</b> : <span>--</span>}
@@ -988,15 +1082,16 @@ export default function FollowPlanModal({
   // =========================== header ===========================
   const backHandler = () => {
     if (view === 'records') { setView('detail'); return; }
-    if (view === 'detail') { setView('main'); setTab('followed'); return; }
+    if (view === 'detail') { const p = followPlans.find((x) => x.id === activePlanId); setView('main'); setTab(p?.custom ? 'custom' : 'followed'); return; }
     if (view === 'expertDetail') { setView('main'); setTab('experts'); return; }
     if (view === 'config') { setView('main'); setCfg(null); return; }
     onClose();
   };
-  const headerTitle = view === 'config' ? '跟单计划'
-    : view === 'detail' ? '跟单计划详情'
+  const activePlan = followPlans.find((p) => p.id === activePlanId);
+  const headerTitle = view === 'config' ? (cfg?.custom ? '自訂計畫' : '跟单计划')
+    : view === 'detail' ? (activePlan?.custom ? '自訂計畫詳情' : '跟单计划详情')
       : view === 'expertDetail' ? '专家计划详情'
-        : view === 'records' ? '跟单记录' : '计划中心';
+        : view === 'records' ? '注单详情' : '计划中心';
 
   return (
     <div className="fp-page">
