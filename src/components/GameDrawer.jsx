@@ -84,9 +84,17 @@ export default function GameDrawer({ isOpen, onClose, onSelectGame, gameTimers =
     return `data:image/svg+xml,${encodeURIComponent(svg)}`;
   };
 
+  // 百家乐 无对应 PNG，用内联扑克牌图标，配色规则同 starIcon。
+  const cardIconSrc = (isActive) => {
+    const color = isActive ? '#547cfd' : '#94a3b8';
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${color}"><path d="M9 3.5h6a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2zm3 3.2l-2.1 2.9c-.6.8-.1 1.9.9 1.9h.2v1.6h2v-1.6h.2c1 0 1.5-1.1.9-1.9L12 6.7z"/></svg>`;
+    return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+  };
+
   const categoryIconSrc = (catId, isActive) => {
     if (catId === 'recent') return starIconSrc(isActive);
     if (catId === 'fhc') return fishIconSrc(isActive);
+    if (catId === 'bac') return cardIconSrc(isActive);
     const base = CATEGORY_ICON_BASE[catId];
     if (!base) return null;
     return `${import.meta.env.BASE_URL}gametype/${encodeURIComponent(base)}-${isActive ? 2 : 1}.png`;

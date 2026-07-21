@@ -11,6 +11,7 @@ import {
   lhcQiseboResult, LHC_PANKOU, lhcPankouFactor,
   ANIMAL_SIDEBAR_TABS, ANIMAL_POSITIONS, ANIMAL_ODDS, animalBallSrc,
   FHC_SIDEBAR_TABS, FHC_ODDS, fhcSymbolSrc, fhcSymbolNameOf,
+  BAC_SIDEBAR_TABS, BAC_ODDS, bacDeal, bacTotal, bacCardSrc, bacIsRed,
 } from './constants/gameData';
 import Dice from './components/Dice';
 import PlayArea from './components/PlayArea';
@@ -32,6 +33,7 @@ import Xy28Animation from './components/Xy28Animation';
 import LhcAnimation from './components/LhcAnimation';
 import AnimalAnimation from './components/AnimalAnimation';
 import FhcAnimation from './components/FhcAnimation';
+import BacAnimation from './components/BacAnimation';
 
 // ===== 嵌入参数 (供父项目通过 URL query 传入) =====
 // 用法示例: /?embed=1&skin=3
@@ -254,6 +256,22 @@ const generateFhcMockHistory = (startIssue) => {
   return history;
 };
 
+// Helper to generate a 百家乐 draw ({ p: [...cards], b: [...cards] }).
+const generateBacDraw = () => bacDeal();
+
+// Generates mock 百家乐 draw history.
+const generateBacMockHistory = (startIssue) => {
+  const history = [];
+  for (let i = 1; i <= 20; i++) {
+    history.push({
+      issue: (startIssue - i).toString(),
+      numbers: generateBacDraw(),
+      winLoss: 0
+    });
+  }
+  return history;
+};
+
 // Helper to generate a random XY28 draw (3 balls, each 0-9)
 const generateXy28Draw = () => Array.from({ length: 3 }, () => Math.floor(Math.random() * 10));
 
@@ -408,6 +426,13 @@ export default function App() {
       currentIssue: 60421,
       history: generateFhcMockHistory(60421)
     },
+    bac_1m: {
+      kind: 'bac',
+      timeLeft: 48,
+      maxTime: 60,
+      currentIssue: 202606041334,
+      history: generateBacMockHistory(202606041334)
+    },
     ffc_1m: {
       kind: 'ffc',
       timeLeft: 29,
@@ -518,7 +543,9 @@ export default function App() {
             ? ANIMAL_SIDEBAR_TABS
             : gameKind === 'fhc'
               ? FHC_SIDEBAR_TABS
-              : SIDEBAR_TABS;
+              : gameKind === 'bac'
+                ? BAC_SIDEBAR_TABS
+                : SIDEBAR_TABS;
   const gameName = (id) => {
     switch (id) {
       case 'pk10_1m': return '一分极速赛车';
@@ -540,6 +567,7 @@ export default function App() {
       case 'ap_lhc_5m': return '五分澳门六合彩';
       case 'ap_lhc_10m': return '十分澳门六合彩';
       case 'fhc_1m': return '一分鱼虾蟹';
+      case 'bac_1m': return '百家乐';
       default: return '极速赛车';
     }
   };
@@ -618,6 +646,7 @@ export default function App() {
     if (g.startsWith('pk10')) return 'shortcut';
     if (g.startsWith('animal')) return 'p1';
     if (g.startsWith('fhc')) return 'single';
+    if (g.startsWith('bac')) return 'zhuangxian';
     return 'long-dragon';
   });
   const [selectedShortcutPositions, setSelectedShortcutPositions] = useState([]);
@@ -836,13 +865,14 @@ export default function App() {
 
   // Check if betting is closed. PK10 locks 15s before draw; FFC locks 10s
   // before the draw — that 封盘 window is when the draw animation spins.
-  const lockSeconds = gameKind === 'ffc' ? 10 : gameKind === 'k3' ? 10 : gameKind === 'xy28' ? 10 : gameKind === 'lhc' ? 10 : gameKind === 'fhc' ? 10 : 15;
+  const lockSeconds = gameKind === 'ffc' ? 10 : gameKind === 'k3' ? 10 : gameKind === 'xy28' ? 10 : gameKind === 'lhc' ? 10 : gameKind === 'fhc' ? 10 : gameKind === 'bac' ? 10 : 15;
   // 动物运动会 opens on 冠军 (长龙 / 游戏玩法 are placeholders for now); everything
   // else opens on 长龙.
   const defaultTabFor = (id) => {
     const k = gamesState[id]?.kind;
     if (k === 'animal') return 'p1';
     if (k === 'fhc') return 'single';
+    if (k === 'bac') return 'zhuangxian';
     return 'long-dragon';
   };
   const isClosed = timeLeft <= lockSeconds;
@@ -1079,6 +1109,58 @@ export default function App() {
             // 全围: wins only when all three dice show the symbol.
             isWin = count === 3;
           }
+        } else if (bet.type && bet.type.startsWith('bac-')) {
+          // ===== 百家乐 settlement (drawNumbers = { p: [cards], b: [cards] }) =====
+          const pCards = drawNumbers.p || [];
+          const bCards = drawNumbers.b || [];
+          const pt = bacTotal(pCards);
+          const bt = bacTotal(bCards);
+          const bankerWin = bt > pt;
+          const playerWin = pt > bt;
+          const isTie = pt === bt;
+          const isPair = (cards) => cards.length >= 2 && cards[0].r === cards[1].r;
+          const isPerfectPair = (cards) => cards.length >= 2 && cards[0].r === cards[1].r && cards[0].s === cards[1].s;
+
+          switch (bet.type) {
+            case 'bac-banker':
+              if (isTie) isPush = true; else isWin = bankerWin;
+              break;
+            case 'bac-player':
+              if (isTie) isPush = true; else isWin = playerWin;
+              break;
+            case 'bac-tie':
+              isWin = isTie;
+              break;
+            case 'bac-lucky6':
+              isWin = bankerWin && bt === 6;
+              break;
+            case 'bac-banker-pair':
+              isWin = isPair(bCards);
+              break;
+            case 'bac-player-pair':
+              isWin = isPair(pCards);
+              break;
+            case 'bac-any-pair':
+              isWin = isPair(pCards) || isPair(bCards);
+              break;
+            case 'bac-perfect-pair':
+              isWin = isPerfectPair(pCards) || isPerfectPair(bCards);
+              break;
+            case 'bac-player-odd':
+              isWin = pt % 2 === 1;
+              break;
+            case 'bac-player-even':
+              isWin = pt % 2 === 0;
+              break;
+            case 'bac-banker-odd':
+              isWin = bt % 2 === 1;
+              break;
+            case 'bac-banker-even':
+              isWin = bt % 2 === 0;
+              break;
+            default:
+              break;
+          }
         } else if (bet.type && bet.type.startsWith('lhc-')) {
           // ===== 澳门六合彩 settlement (drawNumbers = 6 正码 + 特码@index 6) =====
           const special = drawNumbers[6]; // 特码
@@ -1286,6 +1368,7 @@ export default function App() {
           const isLhc = game.kind === 'lhc';
           const isAnimal = game.kind === 'animal';
           const isFhc = game.kind === 'fhc';
+          const isBac = game.kind === 'bac';
           const drawNumbers = isFfc
             ? generateFfcDraw()
             : isK3
@@ -1298,8 +1381,10 @@ export default function App() {
                     ? generateAnimalDraw()
                     : isFhc
                       ? generateFhcDraw()
-                      : generateRandomDraw();
-          const drawIssueStr = (isFfc || isK3 || isXy28 || isLhc || isAnimal || isFhc)
+                      : isBac
+                        ? generateBacDraw()
+                        : generateRandomDraw();
+          const drawIssueStr = (isFfc || isK3 || isXy28 || isLhc || isAnimal || isFhc || isBac)
             ? game.currentIssue.toString()
             : game.currentIssue.toString().padStart(5, '0');
           const newDraw = { issue: drawIssueStr, numbers: drawNumbers };
@@ -2408,6 +2493,35 @@ export default function App() {
         <img key={idx} className="fhc-result-ball" src={fhcSymbolSrc(fhcSymbolNameOf(num))} alt={fhcSymbolNameOf(num)} />
       ));
     }
+    if (gameKind === 'bac') {
+      const pCards = (numbers && numbers.p) || [];
+      const bCards = (numbers && numbers.b) || [];
+      const pt = bacTotal(pCards);
+      const bt = bacTotal(bCards);
+      // 补牌 (3rd card) is laid horizontally (rotated) on the outer side:
+      // 闲 -> left of its two cards, 庄 -> right of its two cards.
+      const upCard = (c, key) => <img key={key} className="bac-result-card" src={bacCardSrc(c)} alt="" />;
+      const drawnCard = (c, key) => (
+        <span key={key} className="bac-drawn">
+          <img className="bac-result-card" src={bacCardSrc(c)} alt="" />
+        </span>
+      );
+      const playerEls = [];
+      if (pCards[2]) playerEls.push(drawnCard(pCards[2], 'p2'));
+      pCards.slice(0, 2).forEach((c, i) => playerEls.push(upCard(c, `p${i}`)));
+      const bankerEls = [];
+      bCards.slice(0, 2).forEach((c, i) => bankerEls.push(upCard(c, `b${i}`)));
+      if (bCards[2]) bankerEls.push(drawnCard(bCards[2], 'b2'));
+      return (
+        <span className="bac-result-row">
+          <span className="bac-side-label player">闲{pt}</span>
+          {playerEls}
+          <span className="bac-result-sep" />
+          {bankerEls}
+          <span className="bac-side-label banker">庄{bt}</span>
+        </span>
+      );
+    }
     if (gameKind === 'ffc') {
       return numbers.map((num, idx) => (
         <img key={idx} className="pk10-ball" src={ffcBallSrc(num)} alt={num} />
@@ -2659,7 +2773,7 @@ export default function App() {
           />
         ) : (
           isVideoOpen && (
-            <div className={`video-player-container open ${gameKind === 'k3' ? 'k3' : gameKind === 'xy28' ? 'xy28' : gameKind === 'lhc' ? 'lhc' : gameKind === 'animal' ? 'animal' : gameKind === 'fhc' ? 'fhc' : ''}`}>
+            <div className={`video-player-container open ${gameKind === 'k3' ? 'k3' : gameKind === 'xy28' ? 'xy28' : gameKind === 'lhc' ? 'lhc' : gameKind === 'animal' ? 'animal' : gameKind === 'fhc' ? 'fhc' : gameKind === 'bac' ? 'bac' : ''}`}>
               {/* 动物运动会 embeds the full Cocos scene (which has its own header),
                   so skip the app's result top-bar for it. */}
               {gameKind !== 'animal' && (
@@ -2700,6 +2814,12 @@ export default function App() {
                   gameName={gameName(activeGameId)}
                   lockSeconds={lockSeconds}
                 />
+              ) : gameKind === 'bac' ? (
+                <BacAnimation
+                  activeGame={activeGame}
+                  gameName={gameName(activeGameId)}
+                  lockSeconds={lockSeconds}
+                />
               ) : (
                 <FfcAnimation
                   activeGame={activeGame}
@@ -2717,7 +2837,7 @@ export default function App() {
         {/* Left Sidebar Menu */}
         <nav className="sidebar-menu">
           {/* 动物运动会 has no 跟单计划 entry；且需在设置中开启此功能。 */}
-          {followPlanEnabled && gameKind !== 'animal' && (
+          {followPlanEnabled && gameKind !== 'animal' && gameKind !== 'bac' && gameKind !== 'fhc' && (
             <button
               type="button"
               className="follow-plan-btn"

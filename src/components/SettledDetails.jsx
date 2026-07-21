@@ -1,5 +1,5 @@
 import React from 'react';
-import { PK10_COLORS, DRAWER_CATEGORIES, animalBallSrc, fhcSymbolSrc, fhcSymbolNameOf } from '../constants/gameData';
+import { PK10_COLORS, DRAWER_CATEGORIES, animalBallSrc, fhcSymbolSrc, fhcSymbolNameOf, bacCardSrc, bacTotal } from '../constants/gameData';
 
 export default function SettledDetails({
   onBack,
@@ -394,7 +394,26 @@ export default function SettledDetails({
             </div>
             <div className="result-modal-body">
               <div className="result-modal-balls">
-                {resultModalData.drawNumbers && resultModalData.drawNumbers.map((num, idx) => {
+                {/* 百家乐: drawNumbers is { p:[cards], b:[cards] } — render 闲/庄 cards. */}
+                {resultModalData.gameId && resultModalData.gameId.startsWith('bac') && resultModalData.drawNumbers ? (
+                  <div className="bac-result-row">
+                    <span className="bac-side-label player">闲{bacTotal(resultModalData.drawNumbers.p || [])}</span>
+                    {(resultModalData.drawNumbers.p || [])[2] && (
+                      <span className="bac-drawn"><img className="bac-result-card" src={bacCardSrc((resultModalData.drawNumbers.p || [])[2])} alt="" /></span>
+                    )}
+                    {(resultModalData.drawNumbers.p || []).slice(0, 2).map((c, i) => (
+                      <img key={`p${i}`} className="bac-result-card" src={bacCardSrc(c)} alt="" />
+                    ))}
+                    <span className="bac-result-sep" />
+                    {(resultModalData.drawNumbers.b || []).slice(0, 2).map((c, i) => (
+                      <img key={`b${i}`} className="bac-result-card" src={bacCardSrc(c)} alt="" />
+                    ))}
+                    {(resultModalData.drawNumbers.b || [])[2] && (
+                      <span className="bac-drawn"><img className="bac-result-card" src={bacCardSrc((resultModalData.drawNumbers.b || [])[2])} alt="" /></span>
+                    )}
+                    <span className="bac-side-label banker">庄{bacTotal(resultModalData.drawNumbers.b || [])}</span>
+                  </div>
+                ) : Array.isArray(resultModalData.drawNumbers) && resultModalData.drawNumbers.map((num, idx) => {
                   // 动物运动会 shows the animal artwork instead of a numbered chip.
                   if (resultModalData.gameId && resultModalData.gameId.startsWith('animal')) {
                     return (

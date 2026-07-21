@@ -17,6 +17,7 @@ import {
   lhcNumbersForCategory, lhcBallSrc, lhcPankouFactor,
   ANIMAL_POSITIONS, ANIMAL_ODDS, animalBallSrc,
   FHC_SYMBOLS, FHC_ODDS, fhcSymbolSrc,
+  BAC_ODDS,
 } from '../constants/gameData';
 import Dice from './Dice';
 
@@ -1121,6 +1122,35 @@ export default function PlayArea({
                 <strong>三不同：</strong>于任选号码（三不同）组合中选择 1 组或 1 组以上投注，若开奖号码与所选择的三不同组合相符时（不分顺序），即视为中奖，其余情形即视为不中奖。
                 {'\n'}举例：
                 {'\n'}投注三不同 123 组合，开奖结果为：123，与投注结果相符，视为中奖，其余结果视为不中奖。
+              </div>
+            </div>
+          )}
+
+          {/* ===================== 百家乐 (BAC) ===================== */}
+          {gameKind === 'bac' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal', display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '13px' }}>
+                <div>
+                  <strong>游戏简介：</strong>
+                  {'\n'}百家乐分为【闲家】和【庄家】，玩家可以下注闲家或庄家，点数总和最接近 9 点者获胜。双方各收到至少两至三张牌，第三张为补牌。如果需要补牌，将按照以下补牌规则多发一张牌。任何一家拿到「例牌」（两张牌合计共为 8 或 9 点）时，牌局即结束，不再补牌。
+                </div>
+                <div>
+                  <strong>玩法规则和赔率：</strong>
+                  {'\n'}庄 1.95、闲 2.0、和 9.0、庄幸运6 12.0；庄对 12.0、闲对 12.0、任意对子 6.0、完美对子 26.0；两面（闲单/闲双/庄单/庄双）1.96。
+                </div>
+                <div>
+                  <strong>点数计算方法：</strong>
+                  {'\n'}10、J、Q 及 K 的扑克牌算作零点，其他按牌面点数计算。当所有牌的点数总和超过 9 点时，仅算总数中的个位。例，最小点数为：0 点（4+6=10）；最大点数为：9 点（4+5=9）取个位数。
+                </div>
+                <div>
+                  <strong>例牌：</strong>
+                  {'\n'}庄闲任何一方两牌合计为 8 或 9 点（称为例牌），双方都不需补牌，即定胜负（双方同持 8 点或 9 点为和局）。
+                </div>
+                <div>
+                  <strong>补牌规则：</strong>
+                  {'\n'}若闲家不需补牌（即闲家首两张牌合计为「6 至 9 点」），庄家以「闲家补牌规则」补牌，即庄家首两张牌合计「0 至 5」点要补一张牌，6 点以上不许补牌。
+                  {'\n'}若闲家补牌，庄家依其首两张点数与闲家补牌点数决定是否补牌。
+                </div>
               </div>
             </div>
           )}
@@ -2339,6 +2369,76 @@ export default function PlayArea({
       </div>
     );
   };
+
+  // ============================================================
+  // ===================== 百家乐 (BAC) Tabs ====================
+  // ============================================================
+
+  // A single centered bet card (label on top, odds below), tinted by `color`.
+  const renderBacCard = (betObj, { label, color, className = '' }) => {
+    const isSelected = isBetSelected(betObj.id);
+    return (
+      <button
+        type="button"
+        className={`bet-button bac-card-btn ${className} ${isSelected ? 'selected' : ''}`}
+        onClick={() => onToggleBet(betObj)}
+        disabled={isClosed}
+      >
+        <span className="bac-card-label" style={{ color }}>{label}</span>
+        <span className="bac-card-odds" style={{ color }}>{betObj.odds.toFixed(betObj.odds >= 10 ? 1 : 2)}</span>
+        {renderCheckmark(isSelected)}
+      </button>
+    );
+  };
+
+  const bacBet = (id, betName, type, odds) => ({
+    id, tabId: activeTab, positionId: type, positionName: betName,
+    betName, odds, displayTitle: betName, type,
+  });
+
+  // 庄闲: 庄 (tall left) | 和 + 庄幸运6 (stacked middle) | 闲 (tall right).
+  const renderBacZhuangXian = () => (
+    <div className="play-area">
+      {renderPlayHelpBar()}
+      {renderPlayHelpModal()}
+      <div className="bac-zx-board">
+        {renderBacCard(bacBet('bac-banker', '庄', 'bac-banker', BAC_ODDS.banker), { label: '庄', color: '#e3342f', className: 'bac-tall' })}
+        <div className="bac-zx-mid">
+          {renderBacCard(bacBet('bac-tie', '和', 'bac-tie', BAC_ODDS.tie), { label: '和', color: '#16a34a' })}
+          {renderBacCard(bacBet('bac-lucky6', '庄幸运6', 'bac-lucky6', BAC_ODDS.lucky6), { label: '庄幸运6', color: '#f59e0b' })}
+        </div>
+        {renderBacCard(bacBet('bac-player', '闲', 'bac-player', BAC_ODDS.player), { label: '闲', color: '#2563eb', className: 'bac-tall' })}
+      </div>
+    </div>
+  );
+
+  // 对子: 2×2 grid.
+  const renderBacDuizi = () => (
+    <div className="play-area">
+      {renderPlayHelpBar()}
+      {renderPlayHelpModal()}
+      <div className="betting-grid">
+        {renderBacCard(bacBet('bac-banker-pair', '庄对', 'bac-banker-pair', BAC_ODDS.bankerPair), { label: '庄对', color: '#e3342f' })}
+        {renderBacCard(bacBet('bac-player-pair', '闲对', 'bac-player-pair', BAC_ODDS.playerPair), { label: '闲对', color: '#2563eb' })}
+        {renderBacCard(bacBet('bac-any-pair', '任意对子', 'bac-any-pair', BAC_ODDS.anyPair), { label: '任意对子', color: '#16a34a' })}
+        {renderBacCard(bacBet('bac-perfect-pair', '完美对子', 'bac-perfect-pair', BAC_ODDS.perfectPair), { label: '完美对子', color: '#db2777' })}
+      </div>
+    </div>
+  );
+
+  // 两面: 闲单/闲双 · 庄单/庄双 (2×2 grid).
+  const renderBacLiangMian = () => (
+    <div className="play-area">
+      {renderPlayHelpBar()}
+      {renderPlayHelpModal()}
+      <div className="betting-grid">
+        {renderBacCard(bacBet('bac-player-odd', '闲单', 'bac-player-odd', BAC_ODDS.twoSided), { label: '闲单', color: '#2563eb' })}
+        {renderBacCard(bacBet('bac-player-even', '闲双', 'bac-player-even', BAC_ODDS.twoSided), { label: '闲双', color: '#2563eb' })}
+        {renderBacCard(bacBet('bac-banker-odd', '庄单', 'bac-banker-odd', BAC_ODDS.twoSided), { label: '庄单', color: '#e3342f' })}
+        {renderBacCard(bacBet('bac-banker-even', '庄双', 'bac-banker-even', BAC_ODDS.twoSided), { label: '庄双', color: '#e3342f' })}
+      </div>
+    </div>
+  );
 
   // ============================================================
   // ===================== 鱼虾蟹 (FHC) Tabs ====================
@@ -3870,6 +3970,19 @@ export default function PlayArea({
         return renderXy28Extreme();
       case 'three-ball':
         return renderXy28ThreeBall();
+      default:
+        return <div className="play-area">Tab Content Not Found</div>;
+    }
+  }
+
+  if (gameKind === 'bac') {
+    switch (activeTab) {
+      case 'zhuangxian':
+        return renderBacZhuangXian();
+      case 'duizi':
+        return renderBacDuizi();
+      case 'liangmian':
+        return renderBacLiangMian();
       default:
         return <div className="play-area">Tab Content Not Found</div>;
     }

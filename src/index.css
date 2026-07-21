@@ -6927,3 +6927,130 @@ img.lhc-ball {
   object-fit: contain;
   display: block;
 }
+
+/* ===================== 百家乐 (BAC) ===================== */
+/* Centered bet card: big label on top, odds below (both tinted). */
+.bac-card-btn {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  min-height: 72px;
+  text-align: center;
+}
+.bac-card-label {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.bac-card-odds {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* 庄闲 board: 庄 (tall) | 和 + 庄幸运6 (stacked) | 闲 (tall). */
+.bac-zx-board {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  align-items: stretch;
+}
+.bac-zx-mid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.bac-zx-board .bac-tall {
+  height: 100%;
+}
+.bac-zx-mid .bac-card-btn {
+  min-height: 0;
+  flex: 1;
+}
+
+/* Draw-result row (top banner + video top bar + result modal). */
+.bac-result-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.bac-side-label {
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.bac-side-label.player { color: #2563eb; }
+.bac-side-label.banker { color: #e3342f; }
+.bac-result-card {
+  height: 26px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+.bac-result-sep {
+  width: 6px;
+}
+/* 补牌 (3rd card) laid horizontally — rotate 90°; wrapper reserves the rotated
+   footprint (card height wide × card width tall) so the row stays aligned. */
+.bac-drawn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 20px;
+}
+.bac-drawn .bac-result-card {
+  transform: rotate(90deg);
+}
+
+/* Animation card table. */
+.baca-table {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  margin-top: 4px;
+}
+.baca-hand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.baca-hand-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+}
+.baca-hand.player .baca-hand-title { color: #6ee7a8; }
+.baca-hand.banker .baca-hand-title { color: #ff8f8f; }
+.baca-cards {
+  display: flex;
+  gap: 4px;
+}
+.baca-card {
+  height: 54px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 3px 5px rgba(0,0,0,0.5));
+}
+/* 补牌 (3rd card) laid horizontally in the animation. */
+.baca-drawn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 42px;
+}
+.baca-drawn .baca-card {
+  transform: rotate(90deg);
+}
+.baca-outcome {
+  font-size: 20px;
+  font-weight: 800;
+}
+.baca-outcome.player { color: #6ee7a8; }
+.baca-outcome.banker { color: #ff8f8f; }
+.baca-outcome.tie { color: #7fd0ff; }

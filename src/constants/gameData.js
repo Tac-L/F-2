@@ -846,6 +846,85 @@ export const FHC_ODDS = {
   allAround: 180,
 };
 
+// ======================= 百家乐 (BAC / Baccarat) Game Configurations =======================
+// A draw deals 2-3 cards to 闲 (player) and 庄 (banker) per standard baccarat rules.
+// A draw is stored as { p: [card,...], b: [card,...] } where card = { r, s }:
+//   r = rank 1-13 (1=A, 11=J, 12=Q, 13=K); s = suit index into BAC_SUITS.
+
+export const BAC_SUITS = ['spade', 'heart', 'diamond', 'club'];
+export const BAC_RANK_LABEL = { 1: 'A', 2: '2', 3: '3', 4: '4', 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10', 11: 'J', 12: 'Q', 13: 'K' };
+
+// 红桃/方块 render red, 黑桃/梅花 render black (used for the point labels only).
+export const bacIsRed = (s) => s === 1 || s === 2;
+
+// Baccarat card value: 10/J/Q/K = 0, A = 1, else face value.
+export const bacCardValue = (r) => (r >= 10 ? 0 : r);
+// Hand total = units digit of the summed card values.
+export const bacTotal = (cards) => cards.reduce((a, c) => a + bacCardValue(c.r), 0) % 10;
+
+// Card artwork lives in /public/poker/<suit>/<label>.svg.
+export const bacCardSrc = (card) =>
+  `${import.meta.env.BASE_URL}poker/${BAC_SUITS[card.s]}/${BAC_RANK_LABEL[card.r]}.svg`;
+
+// Left sidebar tabs for 百家乐.
+export const BAC_SIDEBAR_TABS = [
+  { id: 'zhuangxian', name: '庄闲' },
+  { id: 'duizi', name: '对子' },
+  { id: 'liangmian', name: '两面' },
+];
+
+// Odds (posted by the reference screenshots).
+export const BAC_ODDS = {
+  banker: 1.95,      // 庄 (5% 抽水, 和局退回)
+  player: 2.0,       // 闲 (和局退回)
+  tie: 9.0,          // 和
+  lucky6: 12.0,      // 庄幸运6 (庄以 6 点获胜)
+  bankerPair: 12.0,  // 庄对
+  playerPair: 12.0,  // 闲对
+  anyPair: 6.0,      // 任意对子
+  perfectPair: 26.0, // 完美对子 (同点同花)
+  twoSided: 1.96,    // 两面 闲单/闲双/庄单/庄双
+};
+
+// Deal a full baccarat hand, applying the standard third-card (补牌) rules.
+// Cards are drawn from an infinite shoe (rank/suit uniform, repeats allowed).
+export function bacDeal() {
+  const card = () => ({ r: Math.floor(Math.random() * 13) + 1, s: Math.floor(Math.random() * 4) });
+  const p = [card(), card()];
+  const b = [card(), card()];
+
+  const pt2 = bacTotal(p);
+  const bt2 = bacTotal(b);
+
+  // 例牌 (natural): either side 8 or 9 on the first two cards -> no draws.
+  if (pt2 >= 8 || bt2 >= 8) return { p, b };
+
+  // Player rule: draw on 0-5, stand on 6-7.
+  let playerThird = null;
+  if (pt2 <= 5) {
+    playerThird = card();
+    p.push(playerThird);
+  }
+
+  // Banker rule.
+  if (playerThird === null) {
+    // Player stood -> banker draws on 0-5.
+    if (bt2 <= 5) b.push(card());
+  } else {
+    const t = bacCardValue(playerThird.r); // player's third-card value (0-9)
+    let bankerDraws = false;
+    if (bt2 <= 2) bankerDraws = true;
+    else if (bt2 === 3) bankerDraws = t !== 8;
+    else if (bt2 === 4) bankerDraws = t >= 2 && t <= 7;
+    else if (bt2 === 5) bankerDraws = t >= 4 && t <= 7;
+    else if (bt2 === 6) bankerDraws = t === 6 || t === 7;
+    // bt2 === 7 -> stand
+    if (bankerDraws) b.push(card());
+  }
+
+  return { p, b };
+}
+
 // Game categories and list for the left side drawer
 export const DRAWER_CATEGORIES = [
   {
@@ -907,6 +986,13 @@ export const DRAWER_CATEGORIES = [
     name: '鱼虾蟹',
     games: [
       { id: 'fhc_1m', name: '一分鱼虾蟹', status: 'active', initialTime: 48, maxTime: 60 }
+    ]
+  },
+  {
+    id: 'bac',
+    name: '百家乐',
+    games: [
+      { id: 'bac_1m', name: '百家乐', status: 'active', initialTime: 48, maxTime: 60 }
     ]
   }
 ];
