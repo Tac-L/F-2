@@ -47,15 +47,16 @@ export default function Footer({
           </button>
         </div>
         <div className="bet-summary">
-          <button
-            type="button"
-            className="repeat-slip-btn"
-            onClick={onRepeatLastSlip}
-            disabled={!canRepeat}
-            title="重复上一次注单"
-          >
-            同上单
-          </button>
+          {canRepeat && (
+            <button
+              type="button"
+              className="repeat-slip-btn"
+              onClick={onRepeatLastSlip}
+              title="重复上一次注单"
+            >
+              再来一单
+            </button>
+          )}
           共 <span>{selectedBetsCount}</span> 注 下注金额: <span>{totalBetAmount}</span>
         </div>
       </div>
