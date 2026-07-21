@@ -77,8 +77,16 @@ export default function GameDrawer({ isOpen, onClose, onSelectGame, gameTimers =
     return `data:image/svg+xml,${encodeURIComponent(svg)}`;
   };
 
+  // 鱼虾蟹 无对应 PNG，用内联鱼形图标，配色规则同 starIcon。
+  const fishIconSrc = (isActive) => {
+    const color = isActive ? '#547cfd' : '#94a3b8';
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${color}"><path d="M2 12c3-5 8-6 12-6 3.6 0 6.4 1.9 8 6-1.6 4.1-4.4 6-8 6-4 0-9-1-12-6zm20-4l-3.5 4L22 16V8zM8.5 10.5a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6z"/></svg>`;
+    return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+  };
+
   const categoryIconSrc = (catId, isActive) => {
     if (catId === 'recent') return starIconSrc(isActive);
+    if (catId === 'fhc') return fishIconSrc(isActive);
     const base = CATEGORY_ICON_BASE[catId];
     if (!base) return null;
     return `${import.meta.env.BASE_URL}gametype/${encodeURIComponent(base)}-${isActive ? 2 : 1}.png`;

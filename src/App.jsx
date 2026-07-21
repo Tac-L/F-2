@@ -10,6 +10,7 @@ import {
   lhcZhengmaTwoSidedWin, lhcBanboWin, LHC_WUXING_NUMBERS, lhcZongxiaoWin,
   lhcQiseboResult, LHC_PANKOU, lhcPankouFactor,
   ANIMAL_SIDEBAR_TABS, ANIMAL_POSITIONS, ANIMAL_ODDS, animalBallSrc,
+  FHC_SIDEBAR_TABS, FHC_ODDS, fhcSymbolSrc, fhcSymbolNameOf,
 } from './constants/gameData';
 import Dice from './components/Dice';
 import PlayArea from './components/PlayArea';
@@ -30,6 +31,7 @@ import K3Animation from './components/K3Animation';
 import Xy28Animation from './components/Xy28Animation';
 import LhcAnimation from './components/LhcAnimation';
 import AnimalAnimation from './components/AnimalAnimation';
+import FhcAnimation from './components/FhcAnimation';
 
 // ===== 嵌入参数 (供父项目通过 URL query 传入) =====
 // 用法示例: /?embed=1&skin=3
@@ -231,6 +233,27 @@ const generateK3MockHistory = (startIssue) => {
   return history;
 };
 
+// Helper to generate a random 鱼虾蟹 draw (3 dice, each a symbol id 1-6)
+const generateFhcDraw = () => Array.from({ length: 3 }, () => Math.floor(Math.random() * 6) + 1);
+
+// Generates mock 鱼虾蟹 draw history.
+const generateFhcMockHistory = (startIssue) => {
+  const history = [];
+  history.push({
+    issue: (startIssue - 1).toString(),
+    numbers: [1, 3, 5],
+    winLoss: 0
+  });
+  for (let i = 2; i <= 20; i++) {
+    history.push({
+      issue: (startIssue - i).toString(),
+      numbers: generateFhcDraw(),
+      winLoss: 0
+    });
+  }
+  return history;
+};
+
 // Helper to generate a random XY28 draw (3 balls, each 0-9)
 const generateXy28Draw = () => Array.from({ length: 3 }, () => Math.floor(Math.random() * 10));
 
@@ -378,6 +401,13 @@ export default function App() {
       currentIssue: 6044,
       history: generateAnimalMockHistory(6044)
     },
+    fhc_1m: {
+      kind: 'fhc',
+      timeLeft: 48,
+      maxTime: 60,
+      currentIssue: 60421,
+      history: generateFhcMockHistory(60421)
+    },
     ffc_1m: {
       kind: 'ffc',
       timeLeft: 29,
@@ -486,7 +516,9 @@ export default function App() {
           ? LHC_SIDEBAR_TABS
           : gameKind === 'animal'
             ? ANIMAL_SIDEBAR_TABS
-            : SIDEBAR_TABS;
+            : gameKind === 'fhc'
+              ? FHC_SIDEBAR_TABS
+              : SIDEBAR_TABS;
   const gameName = (id) => {
     switch (id) {
       case 'pk10_1m': return '一分极速赛车';
@@ -507,6 +539,7 @@ export default function App() {
       case 'ap_lhc_1m': return '一分澳门六合彩';
       case 'ap_lhc_5m': return '五分澳门六合彩';
       case 'ap_lhc_10m': return '十分澳门六合彩';
+      case 'fhc_1m': return '一分鱼虾蟹';
       default: return '极速赛车';
     }
   };
@@ -584,6 +617,7 @@ export default function App() {
     const g = EMBED.gameId || 'ap_lhc_1m';
     if (g.startsWith('pk10')) return 'shortcut';
     if (g.startsWith('animal')) return 'p1';
+    if (g.startsWith('fhc')) return 'single';
     return 'long-dragon';
   });
   const [selectedShortcutPositions, setSelectedShortcutPositions] = useState([]);
@@ -802,10 +836,15 @@ export default function App() {
 
   // Check if betting is closed. PK10 locks 15s before draw; FFC locks 10s
   // before the draw — that 封盘 window is when the draw animation spins.
-  const lockSeconds = gameKind === 'ffc' ? 10 : gameKind === 'k3' ? 10 : gameKind === 'xy28' ? 10 : gameKind === 'lhc' ? 10 : 15;
+  const lockSeconds = gameKind === 'ffc' ? 10 : gameKind === 'k3' ? 10 : gameKind === 'xy28' ? 10 : gameKind === 'lhc' ? 10 : gameKind === 'fhc' ? 10 : 15;
   // 动物运动会 opens on 冠军 (长龙 / 游戏玩法 are placeholders for now); everything
   // else opens on 长龙.
-  const defaultTabFor = (id) => (gamesState[id]?.kind === 'animal' ? 'p1' : 'long-dragon');
+  const defaultTabFor = (id) => {
+    const k = gamesState[id]?.kind;
+    if (k === 'animal') return 'p1';
+    if (k === 'fhc') return 'single';
+    return 'long-dragon';
+  };
   const isClosed = timeLeft <= lockSeconds;
 
   const clearSelections = () => {
@@ -860,6 +899,8 @@ export default function App() {
         let isWin = false;
         // 正肖 pays per matching 正码 — captured here, applied to winAmt below.
         let zhengxiaoHits = 0;
+        // 鱼虾蟹 单殿 pays per number of dice showing the symbol — captured here.
+        let fhcSingleHits = 0;
         // 和局 (七色波 平手 / 合肖 49): the stake is refunded (push, net 0).
         let isPush = false;
 
@@ -1025,6 +1066,19 @@ export default function App() {
               else if (bet.betName === '虎') isWin = num < numOpp;
             }
           }
+        } else if (bet.type && bet.type.startsWith('fhc-')) {
+          // ===== 鱼虾蟹 settlement (drawNumbers = 3 dice, each symbol id 1-6) =====
+          // bet.betName is the symbol name; bet.positionName holds the symbol id.
+          const symId = parseInt(bet.positionId, 10);
+          const count = drawNumbers.filter(d => d === symId).length;
+          if (bet.type === 'fhc-single') {
+            // 单殿: wins if the symbol appears at least once; pays per appearance.
+            isWin = count >= 1;
+            fhcSingleHits = count;
+          } else if (bet.type === 'fhc-all-around') {
+            // 全围: wins only when all three dice show the symbol.
+            isWin = count === 3;
+          }
         } else if (bet.type && bet.type.startsWith('lhc-')) {
           // ===== 澳门六合彩 settlement (drawNumbers = 6 正码 + 特码@index 6) =====
           const special = drawNumbers[6]; // 特码
@@ -1146,7 +1200,9 @@ export default function App() {
             ? 0
             : bet.type === 'lhc-zhengxiao'
               ? Math.round(bet.amount * (1 + (bet.odds - 1) * zhengxiaoHits))
-              : Math.round(bet.amount * bet.odds);
+              : bet.type === 'fhc-single'
+                ? Math.round(bet.amount * (1 + (bet.odds - 1) * fhcSingleHits))
+                : Math.round(bet.amount * bet.odds);
         if (isWin) {
           totalWinnings += winAmt;
           winningDetails.push(`${bet.displayTitle} (中 ${winAmt}元)`);
@@ -1229,6 +1285,7 @@ export default function App() {
           const isXy28 = game.kind === 'xy28';
           const isLhc = game.kind === 'lhc';
           const isAnimal = game.kind === 'animal';
+          const isFhc = game.kind === 'fhc';
           const drawNumbers = isFfc
             ? generateFfcDraw()
             : isK3
@@ -1239,8 +1296,10 @@ export default function App() {
                   ? generateLhcDraw()
                   : isAnimal
                     ? generateAnimalDraw()
-                    : generateRandomDraw();
-          const drawIssueStr = (isFfc || isK3 || isXy28 || isLhc || isAnimal)
+                    : isFhc
+                      ? generateFhcDraw()
+                      : generateRandomDraw();
+          const drawIssueStr = (isFfc || isK3 || isXy28 || isLhc || isAnimal || isFhc)
             ? game.currentIssue.toString()
             : game.currentIssue.toString().padStart(5, '0');
           const newDraw = { issue: drawIssueStr, numbers: drawNumbers };
@@ -2344,6 +2403,11 @@ export default function App() {
         <img key={idx} className="pk10-ball animal-ball" src={animalBallSrc(num)} alt={num} />
       ));
     }
+    if (gameKind === 'fhc') {
+      return numbers.map((num, idx) => (
+        <img key={idx} className="fhc-result-ball" src={fhcSymbolSrc(fhcSymbolNameOf(num))} alt={fhcSymbolNameOf(num)} />
+      ));
+    }
     if (gameKind === 'ffc') {
       return numbers.map((num, idx) => (
         <img key={idx} className="pk10-ball" src={ffcBallSrc(num)} alt={num} />
@@ -2595,7 +2659,7 @@ export default function App() {
           />
         ) : (
           isVideoOpen && (
-            <div className={`video-player-container open ${gameKind === 'k3' ? 'k3' : gameKind === 'xy28' ? 'xy28' : gameKind === 'lhc' ? 'lhc' : gameKind === 'animal' ? 'animal' : ''}`}>
+            <div className={`video-player-container open ${gameKind === 'k3' ? 'k3' : gameKind === 'xy28' ? 'xy28' : gameKind === 'lhc' ? 'lhc' : gameKind === 'animal' ? 'animal' : gameKind === 'fhc' ? 'fhc' : ''}`}>
               {/* 动物运动会 embeds the full Cocos scene (which has its own header),
                   so skip the app's result top-bar for it. */}
               {gameKind !== 'animal' && (
@@ -2626,6 +2690,12 @@ export default function App() {
                 />
               ) : gameKind === 'xy28' ? (
                 <Xy28Animation
+                  activeGame={activeGame}
+                  gameName={gameName(activeGameId)}
+                  lockSeconds={lockSeconds}
+                />
+              ) : gameKind === 'fhc' ? (
+                <FhcAnimation
                   activeGame={activeGame}
                   gameName={gameName(activeGameId)}
                   lockSeconds={lockSeconds}

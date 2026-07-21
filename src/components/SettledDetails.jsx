@@ -1,5 +1,5 @@
 import React from 'react';
-import { PK10_COLORS, DRAWER_CATEGORIES, animalBallSrc } from '../constants/gameData';
+import { PK10_COLORS, DRAWER_CATEGORIES, animalBallSrc, fhcSymbolSrc, fhcSymbolNameOf } from '../constants/gameData';
 
 export default function SettledDetails({
   onBack,
@@ -403,6 +403,17 @@ export default function SettledDetails({
                         className="modal-animal-ball"
                         src={animalBallSrc(num)}
                         alt={num}
+                      />
+                    );
+                  }
+                  // 鱼虾蟹 shows the 3 symbol tiles.
+                  if (resultModalData.gameId && resultModalData.gameId.startsWith('fhc')) {
+                    return (
+                      <img
+                        key={idx}
+                        className="modal-animal-ball"
+                        src={fhcSymbolSrc(fhcSymbolNameOf(num))}
+                        alt={fhcSymbolNameOf(num)}
                       />
                     );
                   }

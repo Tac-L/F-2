@@ -16,6 +16,7 @@ import {
   LHC_QISEBO, LHC_HEXIAO_CATEGORIES, LHC_HEXIAO_CN, lhcHexiaoOdds, combinations,
   lhcNumbersForCategory, lhcBallSrc, lhcPankouFactor,
   ANIMAL_POSITIONS, ANIMAL_ODDS, animalBallSrc,
+  FHC_SYMBOLS, FHC_ODDS, fhcSymbolSrc,
 } from '../constants/gameData';
 import Dice from './Dice';
 
@@ -1120,6 +1121,29 @@ export default function PlayArea({
                 <strong>三不同：</strong>于任选号码（三不同）组合中选择 1 组或 1 组以上投注，若开奖号码与所选择的三不同组合相符时（不分顺序），即视为中奖，其余情形即视为不中奖。
                 {'\n'}举例：
                 {'\n'}投注三不同 123 组合，开奖结果为：123，与投注结果相符，视为中奖，其余结果视为不中奖。
+              </div>
+            </div>
+          )}
+
+          {/* ===================== 鱼虾蟹 (FHC) ===================== */}
+          {gameKind === 'fhc' && activeTab === 'single' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <strong>单殿：</strong>于 6 种图案（鱼、虾、蟹、葫芦、金钱、鸡）中选择 1 个或 1 个以上投注，所投图案出现在开奖的三颗骰子中即视为中奖，中奖赔率依图案出现次数累计。
+                {'\n'}　图案出现一次，赔率 1.97；出现二次，赔率 2.94；出现三次，赔率 3.92。
+                {'\n\n'}举例：
+                {'\n'}投注单殿「鱼」100 元，开奖结果为「鱼·虾·蟹」，鱼出现一次，视为中奖，派彩 197 元。
+                {'\n'}投注单殿「鱼」100 元，开奖结果为「鱼·鱼·蟹」，鱼出现二次，视为中奖，派彩 294 元。
+              </div>
+            </div>
+          )}
+
+          {gameKind === 'fhc' && activeTab === 'all-around' && (
+            <div className="play-help-body">
+              <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
+                <strong>全围：</strong>于 6 种图案中选择 1 个或 1 个以上投注，若开奖的三颗骰子图案全部相同，且与所投图案一致，即视为中奖，其余情形视为不中奖，赔率 180.0。
+                {'\n\n'}举例：
+                {'\n'}投注全围「鱼」，开奖结果为「鱼·鱼·鱼」，视为中奖，其余结果视为不中奖。
               </div>
             </div>
           )}
@@ -2315,6 +2339,67 @@ export default function PlayArea({
       </div>
     );
   };
+
+  // ============================================================
+  // ===================== 鱼虾蟹 (FHC) Tabs ====================
+  // ============================================================
+
+  // Shared 6-symbol board for 单殿 / 全围 (2 per row via .betting-grid).
+  const renderFhcBoard = ({ tabId, type, positionName, odds, oddsLabel }) => (
+    <div className="play-area">
+      {renderPlayHelpBar()}
+      {renderPlayHelpModal()}
+      <div className="betting-grid">
+        {FHC_SYMBOLS.map((sym) => {
+          const betId = `${type}-${sym.name}`;
+          const isSelected = isBetSelected(betId);
+          const betObj = {
+            id: betId,
+            tabId,
+            positionId: sym.id.toString(),
+            positionName,
+            betName: sym.name,
+            odds,
+            displayTitle: `${positionName}-${sym.name}`,
+            type,
+          };
+          return (
+            <button
+              key={betId}
+              type="button"
+              className={`bet-button fhc-bet-button ${isSelected ? 'selected' : ''}`}
+              onClick={() => onToggleBet(betObj)}
+              disabled={isClosed}
+            >
+              <span className="fhc-symbol-wrap">
+                <img className="fhc-symbol-img" src={fhcSymbolSrc(sym.name)} alt={sym.name} />
+              </span>
+              <span className="bet-button-odds" style={{ color: sym.color }}>{oddsLabel}</span>
+              {renderCheckmark(isSelected)}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  const renderFhcSingle = () =>
+    renderFhcBoard({
+      tabId: 'single',
+      type: 'fhc-single',
+      positionName: '单殿',
+      odds: FHC_ODDS.single,
+      oddsLabel: FHC_ODDS.single.toFixed(2),
+    });
+
+  const renderFhcAllAround = () =>
+    renderFhcBoard({
+      tabId: 'all-around',
+      type: 'fhc-all-around',
+      positionName: '全围',
+      odds: FHC_ODDS.allAround,
+      oddsLabel: FHC_ODDS.allAround.toFixed(1),
+    });
 
   // ============================================================
   // ===================== 幸运28 (XY28) Tabs ===================
@@ -3785,6 +3870,17 @@ export default function PlayArea({
         return renderXy28Extreme();
       case 'three-ball':
         return renderXy28ThreeBall();
+      default:
+        return <div className="play-area">Tab Content Not Found</div>;
+    }
+  }
+
+  if (gameKind === 'fhc') {
+    switch (activeTab) {
+      case 'single':
+        return renderFhcSingle();
+      case 'all-around':
+        return renderFhcAllAround();
       default:
         return <div className="play-area">Tab Content Not Found</div>;
     }

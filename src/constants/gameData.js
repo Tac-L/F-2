@@ -810,6 +810,42 @@ export const ANIMAL_ODDS = {
 export const animalBallSrc = (n) =>
   `${import.meta.env.BASE_URL}T-ball/T${n}.svg`;
 
+// ======================= 鱼虾蟹 (FHC / Hoo Hey How) Game Configurations =======================
+// 鱼虾蟹 draws 3 dice; each die shows one of 6 图案 (symbols) instead of pips.
+// 单殿: bet a symbol — pays per number of dice showing it (1/2/3 次).
+// 全围: bet a symbol — wins only when all three dice show that symbol.
+
+// The 6 symbols (order matches the reference screenshots). `color` tints the odds text.
+export const FHC_SYMBOLS = [
+  { id: 1, name: '鱼', color: '#e3342f' },   // 红
+  { id: 2, name: '虾', color: '#16a34a' },   // 绿
+  { id: 3, name: '蟹', color: '#16a34a' },   // 绿
+  { id: 4, name: '葫芦', color: '#2563eb' }, // 蓝
+  { id: 5, name: '金钱', color: '#2563eb' }, // 蓝
+  { id: 6, name: '鸡', color: '#e3342f' },   // 红
+];
+
+// Symbol artwork lives in /public/鱼虾蟹/<name>.svg (each a 24×24 rounded tile).
+export const fhcSymbolSrc = (name) =>
+  `${import.meta.env.BASE_URL}${encodeURIComponent('鱼虾蟹')}/${encodeURIComponent(name)}.svg`;
+
+// symbol id (1-6) -> name, used to render draw results.
+export const FHC_SYMBOL_NAME = Object.fromEntries(FHC_SYMBOLS.map((s) => [s.id, s.name]));
+export const fhcSymbolNameOf = (id) => FHC_SYMBOL_NAME[id] || '';
+
+// Left sidebar tabs for 鱼虾蟹.
+export const FHC_SIDEBAR_TABS = [
+  { id: 'single', name: '单殿' },
+  { id: 'all-around', name: '全围' },
+];
+
+// Odds. 单殿 base 1.97 (每命中一次派彩累加, 出现 1/2/3 次 -> 1.97 / 2.94 / 3.92);
+// 全围 180 (三颗骰子同一图案).
+export const FHC_ODDS = {
+  single: 1.97,
+  allAround: 180,
+};
+
 // Game categories and list for the left side drawer
 export const DRAWER_CATEGORIES = [
   {
@@ -864,6 +900,13 @@ export const DRAWER_CATEGORIES = [
       { id: 'animal_1m', name: '一分动物运动会', status: 'active', initialTime: 48, maxTime: 60 },
       { id: 'animal_5m', name: '五分动物运动会', status: 'active', initialTime: 248, maxTime: 300 },
       { id: 'animal_10m', name: '十分动物运动会', status: 'active', initialTime: 548, maxTime: 600 }
+    ]
+  },
+  {
+    id: 'fhc',
+    name: '鱼虾蟹',
+    games: [
+      { id: 'fhc_1m', name: '一分鱼虾蟹', status: 'active', initialTime: 48, maxTime: 60 }
     ]
   }
 ];

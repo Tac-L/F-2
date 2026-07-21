@@ -6883,3 +6883,47 @@ img.lhc-ball {
   border-color: var(--mn-border);
   color: var(--mn-text);
 }
+
+/* ===================== 鱼虾蟹 (FHC) ===================== */
+/* Betting board: reuse .betting-grid (2 columns). Each cell shows the symbol tile
+   on the left and the odds on the right, like the 动物/两面 cells. */
+.fhc-bet-button {
+  min-height: 56px;
+}
+.fhc-symbol-wrap {
+  display: flex;
+  align-items: center;
+}
+.fhc-symbol-img {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  display: block;
+}
+
+/* Draw-result symbol tiles (top banner + video top bar). */
+.fhc-result-ball {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  display: block;
+}
+
+/* Animation: result plate row + dome tiles. */
+.fhca-result-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.fhca-result-tile {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  display: block;
+}
+.fhca-dome-tile {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  display: block;
+}
