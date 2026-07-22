@@ -106,6 +106,7 @@ export default function PlayArea({
   const [k3SumHelpTab, setK3SumHelpTab] = useState('points'); // K3 和值: 'points' (点数) | 'twoside' (双面)
   const [xy28SumHelpTab, setXy28SumHelpTab] = useState('sum'); // XY28 总和: 'sum' (总和) | 'twoside' (两面) | 'combo' (两面组合)
   const [xy28TailHelpTab, setXy28TailHelpTab] = useState('num'); // XY28 尾球: 'num' (数字) | 'twoside' (两面) | 'combo' (两面组合)
+  const [animalHelpTab, setAnimalHelpTab] = useState('guess'); // 动物: 'guess' (猜号码) | 'twoside' (两面盘) | 'dragon' (龙虎)
   const [selectedLhcCats, setSelectedLhcCats] = useState({});
 
   // Reset category selection when bets are cleared or page switches
@@ -181,6 +182,11 @@ export default function PlayArea({
   // The 玩法说明 modal. Content depends on the active PK10 tab.
   const renderPlayHelpModal = () => {
     if (!helpOpen) return null;
+
+    // 动物运动会: 前三名 (冠/亚/季) 才有龙虎；第四~六名只有「猜号码」「两面盘」。
+    const animalPos = ANIMAL_POSITIONS.find((p) => p.id === activeTab);
+    const animalHasDragon = animalPos ? animalPos.index < 3 : false;
+    const animalTab = (animalHelpTab === 'dragon' && !animalHasDragon) ? 'guess' : animalHelpTab;
 
     // FFC 前中后 (三球) — 前三/中三/后三 differ only in which three digit
     // positions of the winning number are compared. `digits` names them.
@@ -274,6 +280,51 @@ export default function PlayArea({
                   {'\n'}“第四名”号码大于“第七名”号码视为【龙】中奖、反之小于视为【虎】中奖。
                   {'\n\n'}·第五名龙/虎
                   {'\n'}“第五名”号码大于“第六名”号码视为【龙】中奖、反之小于视为【虎】中奖。
+                </div>
+              )}
+            </div>
+          )}
+
+          {gameKind === 'animal' && animalPos && (
+            <div className="play-help-body">
+              <div className="play-help-tabs">
+                <button
+                  type="button"
+                  className={`play-help-tab ${animalTab === 'guess' ? 'active' : ''}`}
+                  onClick={() => setAnimalHelpTab('guess')}
+                >猜号码</button>
+                <button
+                  type="button"
+                  className={`play-help-tab ${animalTab === 'twoside' ? 'active' : ''}`}
+                  onClick={() => setAnimalHelpTab('twoside')}
+                >两面盘</button>
+                {animalHasDragon && (
+                  <button
+                    type="button"
+                    className={`play-help-tab ${animalTab === 'dragon' ? 'active' : ''}`}
+                    onClick={() => setAnimalHelpTab('dragon')}
+                  >龙虎</button>
+                )}
+              </div>
+              {animalTab === 'guess' && (
+                <div className="play-help-box">
+                  竞猜第一名～第六名的号码，猜中具体排名的号码视为中奖，其余情形视为不中奖。
+                  {'\n\n'}例：竞猜冠军为1号，开奖结果冠军也是1号，即为中奖。
+                </div>
+              )}
+              {animalTab === 'twoside' && (
+                <div className="play-help-box">
+                  <strong>大、小：</strong>竞猜具体排名上的号码数字大小，大于等于4为大，小于等于3为小。投注号码对应所投大小视为中奖，反之视为不中奖。
+                  {'\n\n'}例：投注冠军位为大，开奖结果冠军位为4即为中奖。
+                  {'\n\n'}<strong>单、双：</strong>竞猜具体排名上的号码数字单双，1、3、5为单，2、4、6为双。投注号码对应所投单双视为中奖，反之视为不中奖。
+                  {'\n\n'}例：投注冠军位为双，开奖结果冠军位为2即为中奖。
+                </div>
+              )}
+              {animalTab === 'dragon' && (
+                <div className="play-help-box">
+                  <strong>冠军龙/虎：</strong>“第一名”的号码大于“第六名”的号码视为【龙】中奖、反之小于视为【虎】中奖。
+                  {'\n\n'}<strong>亚军龙/虎：</strong>“第二名”的号码大于“第五名”的号码视为【龙】中奖、反之小于视为【虎】中奖。
+                  {'\n\n'}<strong>第三名龙/虎：</strong>“第三名”的号码大于“第四名”的号码视为【龙】中奖、反之小于视为【虎】中奖。
                 </div>
               )}
             </div>
@@ -3829,6 +3880,8 @@ export default function PlayArea({
 
     return (
       <div className="play-area animal-play">
+        {renderPlayHelpBar()}
+        {renderPlayHelpModal()}
         <div className="animal-board">
           {/* 猜名次: the 6 animals */}
           <div className="animal-row animal-num-row">
