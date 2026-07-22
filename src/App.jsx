@@ -2532,11 +2532,15 @@ export default function App() {
       if (bCards[2]) bankerEls.push(drawnCard(bCards[2], 'b2'));
       return (
         <span className="bac-result-row">
-          <span className="bac-side-label player">闲{pt}</span>
-          {playerEls}
+          <span className="bac-hand bac-hand-left">
+            <span className="bac-side-label player">闲{pt}</span>
+            {playerEls}
+          </span>
           <span className="bac-result-sep" />
-          {bankerEls}
-          <span className="bac-side-label banker">庄{bt}</span>
+          <span className="bac-hand bac-hand-right">
+            {bankerEls}
+            <span className="bac-side-label banker">庄{bt}</span>
+          </span>
         </span>
       );
     }

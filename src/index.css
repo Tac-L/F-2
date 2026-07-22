@@ -3648,7 +3648,9 @@ img.pk10-ball {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  min-width: 80px;
+  /* 固定宽度并靠右：结果列不随内容伸缩，长一点也不会把中间/结果推出去。 */
+  flex: none;
+  width: 60px;
 }
 
 .result-label {
@@ -3660,6 +3662,7 @@ img.pk10-ball {
 .result-val {
   font-size: 13px;
   font-weight: bold;
+  white-space: nowrap;
 }
 
 .result-val.win {
@@ -6979,6 +6982,24 @@ img.lhc-ball {
   align-items: center;
   gap: 3px;
 }
+.bac-hand {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+/* 最近5期开奖：把 闲 / 庄 两侧做成等宽，VS 固定在正中，各行对齐。 */
+.history-balls .bac-result-row {
+  display: flex;
+  width: 100%;
+}
+.history-balls .bac-hand-left {
+  flex: 1;
+  justify-content: flex-end;
+}
+.history-balls .bac-hand-right {
+  flex: 1;
+  justify-content: flex-start;
+}
 .bac-side-label {
   font-size: 14px;
   font-weight: 700;
@@ -6992,8 +7013,14 @@ img.lhc-ball {
   object-fit: contain;
   display: block;
 }
+/* 闲 / 庄 之间的竖线分隔 */
 .bac-result-sep {
-  width: 6px;
+  flex: none;
+  width: 2px;
+  height: 20px;
+  border-radius: 1px;
+  background: #cbd5e1;
+  margin: 0 7px;
 }
 /* 补牌 (3rd card) laid horizontally — rotate 90°; wrapper reserves the rotated
    footprint (card height wide × card width tall) so the row stays aligned. */
