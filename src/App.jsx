@@ -41,6 +41,18 @@ import BacAnimation from './components/BacAnimation';
 //   skin  = 1 / 2 / 3 / 4    -> 进入时的皮肤 (也接受主题 id 本身)
 //     1 = light-blue(浅蓝)  2 = deep-blue(深蓝)
 //     3 = midnight-blue(午夜蓝)  4 = midnight-purple(午夜紫)
+// 百家乐互斥投注：选中某注时，需自动取消同组的对立注。
+//  - 庄闲：庄 / 闲 不可同时
+//  - 两面：闲单 / 闲双 不可同时；庄单 / 庄双 不可同时
+const BAC_EXCLUSIVE_TYPES = {
+  'bac-banker': ['bac-player'],
+  'bac-player': ['bac-banker'],
+  'bac-player-odd': ['bac-player-even'],
+  'bac-player-even': ['bac-player-odd'],
+  'bac-banker-odd': ['bac-banker-even'],
+  'bac-banker-even': ['bac-banker-odd'],
+};
+
 const SKIN_CODE_MAP = {
   '1': 'light-blue',
   '2': 'deep-blue',
@@ -423,15 +435,15 @@ export default function App() {
       kind: 'fhc',
       timeLeft: 48,
       maxTime: 60,
-      currentIssue: 60421,
-      history: generateFhcMockHistory(60421)
+      currentIssue: 3401,
+      history: generateFhcMockHistory(3401)
     },
     bac_1m: {
       kind: 'bac',
       timeLeft: 48,
       maxTime: 60,
-      currentIssue: 202606041334,
-      history: generateBacMockHistory(202606041334)
+      currentIssue: 1334,
+      history: generateBacMockHistory(1334)
     },
     ffc_1m: {
       kind: 'ffc',
@@ -1451,7 +1463,13 @@ export default function App() {
         if (exists) {
           return prev.filter(b => b.id !== betObj.id);
         } else {
-          return [...prev, betObj];
+          // 百家乐互斥：庄/闲 不可同时；两面 闲单/闲双、庄单/庄双 各自不可同时。
+          // 选中一方时自动取消同组的另一方。
+          const conflicts = BAC_EXCLUSIVE_TYPES[betObj.type] || [];
+          const base = conflicts.length
+            ? prev.filter(b => !conflicts.includes(b.type))
+            : prev;
+          return [...base, betObj];
         }
       });
     }

@@ -6942,6 +6942,11 @@ img.lhc-ball {
   font-size: 17px;
   font-weight: 700;
   line-height: 1.1;
+  white-space: nowrap;
+}
+/* 中央列（和 / 庄幸运6）较窄：缩小字号让「庄幸运6」不换行。 */
+.bac-zx-mid .bac-card-label {
+  font-size: 14px;
 }
 .bac-card-odds {
   font-size: 15px;
