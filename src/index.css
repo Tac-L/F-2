@@ -4323,6 +4323,13 @@ img.pk10-ball {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
 }
 
+/* 快三点位：使用 K3-ball 图片（自带骰子样式，无需边框/底色）。 */
+.k3-dice-img {
+  display: block;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
 .k3-pip {
   position: absolute;
   border-radius: 50%;
