@@ -51,7 +51,7 @@ export default function FhcAnimation({ activeGame, gameName, lockSeconds = 10 })
     <div className="k3a-stage">
       {/* Top banner: logo + result symbols + issue numbers */}
       <div className="k3a-topbar">
-        <div className="k3a-logo">鱼<span>虾蟹</span></div>
+        <div className="k3a-logo fhca-logo">鱼<span>虾蟹</span></div>
 
         <div className="k3a-result-plate">
           {isSpinning ? (

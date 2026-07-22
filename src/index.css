@@ -2756,6 +2756,13 @@ img.pk10-ball {
   .video-player-container.open.k3 { height: 310px; }
 }
 
+/* 鱼虾蟹 stage 沿用快三布局（顶部 → 倒计时圈 → 骰子），需相同高度，
+   否则倒计时圈会溢出并与顶部/底部图案互相遮挡。 */
+.video-player-container.open.fhc { height: 320px; }
+@media (min-width: 480px) {
+  .video-player-container.open.fhc { height: 310px; }
+}
+
 /* 幸运28 PC蛋蛋 stage — more compact (≈4/5 of the 快三 height) */
 .video-player-container.open.xy28 { height: 256px; }
 @media (min-width: 480px) {
@@ -4386,6 +4393,8 @@ img.pk10-ball {
   flex-shrink: 0;
 }
 .k3a-logo span { color: #38bdf8; font-size: 24px; }
+/* 鱼虾蟹 logo：三个字统一为蓝色 */
+.fhca-logo, .fhca-logo span { color: #38bdf8; }
 
 .k3a-result-plate {
   flex: 1;
