@@ -77,17 +77,17 @@ export default function GameDrawer({ isOpen, onClose, onSelectGame, gameTimers =
     return `data:image/svg+xml,${encodeURIComponent(svg)}`;
   };
 
-  // 鱼虾蟹 无对应 PNG，用内联鱼形图标，配色规则同 starIcon。
+  // 鱼虾蟹 无对应 PNG，用内联「骰子 + 鱼图案」图标，配色规则同 starIcon。
   const fishIconSrc = (isActive) => {
     const color = isActive ? '#547cfd' : '#94a3b8';
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${color}"><path d="M2 12c3-5 8-6 12-6 3.6 0 6.4 1.9 8 6-1.6 4.1-4.4 6-8 6-4 0-9-1-12-6zm20-4l-3.5 4L22 16V8zM8.5 10.5a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6z"/></svg>`;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="4.6" fill="none" stroke="${color}" stroke-width="1.8"/><path d="M6.6 12c1.7-2.5 4.4-2.5 6.1 0-1.7 2.5-4.4 2.5-6.1 0z" fill="${color}"/><path d="M12.7 12l2.9-1.8v3.6z" fill="${color}"/><circle cx="8.1" cy="11.3" r="0.8" fill="#fff"/></svg>`;
     return `data:image/svg+xml,${encodeURIComponent(svg)}`;
   };
 
-  // 百家乐 无对应 PNG，用内联扑克牌图标，配色规则同 starIcon。
+  // 百家乐 无对应 PNG，用内联「三张扑克牌展开」图标，配色规则同 starIcon。
   const cardIconSrc = (isActive) => {
     const color = isActive ? '#547cfd' : '#94a3b8';
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${color}"><path d="M9 3.5h6a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2zm3 3.2l-2.1 2.9c-.6.8-.1 1.9.9 1.9h.2v1.6h2v-1.6h.2c1 0 1.5-1.1.9-1.9L12 6.7z"/></svg>`;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="#fff" stroke="${color}" stroke-width="1.5" stroke-linejoin="round"><rect x="3.5" y="8.5" width="7.5" height="11" rx="1.5" transform="rotate(-20 7.25 14)"/><rect x="13" y="8.5" width="7.5" height="11" rx="1.5" transform="rotate(20 16.75 14)"/><rect x="8.25" y="5.5" width="7.5" height="12" rx="1.5"/></g><path d="M12 9l1.5 1.7-1.5 1.7-1.5-1.7z" fill="${color}"/></svg>`;
     return `data:image/svg+xml,${encodeURIComponent(svg)}`;
   };
 
