@@ -27,6 +27,13 @@ export default function Footer({
     setBetAmount(val.toString());
   };
 
+  // 输入了非快捷金额（自订值）时，金额输入框显示为「选中」样式，
+  // 表示当前生效的是这个自订金额（此时没有任何快捷筹码处于选中态）。
+  const isCustomAmount =
+    betAmount !== '' &&
+    parseInt(betAmount) > 0 &&
+    !chipValues.some((v) => v.toString() === betAmount.toString());
+
   return (
     <footer className="app-footer">
       {/* Row 1: Balance and Current Selections Summary */}
@@ -94,7 +101,7 @@ export default function Footer({
         <input
           type="number"
           pattern="[0-9]*"
-          className="bet-amount-input"
+          className={`bet-amount-input ${isCustomAmount ? 'selected' : ''}`}
           value={betAmount}
           onChange={(e) => setBetAmount(e.target.value)}
           placeholder="输入金额"
