@@ -826,6 +826,20 @@ img.pk10-ball {
   font-weight: 500;
   font-size: 14px;
 }
+/* 百家乐 洗牌中：与「已封盘」区分，用琥珀色 + 轻微呼吸动画。 */
+.status-closed.shuffling {
+  color: #f59e0b;
+  animation: bac-shuffle-pulse 1s ease-in-out infinite;
+}
+@keyframes bac-shuffle-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+/* 靴内局数（第 N 局），紧跟期号显示。淺紫色。 */
+.bac-shoe-round {
+  color: #a78bfa;
+  font-weight: 500;
+}
 
 .countdown-container {
   display: flex;
@@ -887,6 +901,16 @@ img.pk10-ball {
 
 .sidebar-tab:hover {
   background-color: #f8fafc;
+}
+
+/* 第 30 局之后「对子」整页关闭：置灰、禁点。 */
+.sidebar-tab.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  color: var(--text-muted);
+}
+.sidebar-tab.disabled:hover {
+  background: none;
 }
 
 .sidebar-tab.active {
@@ -6982,41 +7006,79 @@ img.lhc-ball {
 }
 
 /* ===================== 百家乐 (BAC) ===================== */
-/* Centered bet card: big label on top, odds below (both tinted). */
+/* Centered bet card: big label on top, odds below (both tinted).
+   注单白底（放在淺藍 panel 上）；整体收得更紧凑。 */
 .bac-card-btn {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 6px;
-  min-height: 72px;
+  gap: 3px;
+  min-height: 58px;
+  padding: 6px 10px;
   text-align: center;
 }
 .bac-card-label {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 700;
   line-height: 1.1;
   white-space: nowrap;
 }
 /* 中央列（和 / 庄幸运6）较窄：缩小字号让「庄幸运6」不换行。 */
 .bac-zx-mid .bac-card-label {
-  font-size: 14px;
+  font-size: 13px;
 }
 .bac-card-odds {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
+}
+
+/* 单页布局：整体收紧间距。 */
+.play-area.bac-all {
+  gap: 10px;
+  padding: 10px 12px;
+}
+.bac-all .betting-grid {
+  gap: 8px;
+}
+
+/* 每个玩法组的淺藍 panel：标题 + 注单包在一起，注单本身仍是白底。 */
+.bac-panel {
+  background: #eef3fc;
+  border: 1px solid #e2eafb;
+  border-radius: 12px;
+  padding: 10px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 单页布局：庄闲 / 对子 / 两面 分区标题。 */
+.bac-all .bac-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.bac-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+/* 玩法说明 放在「庄闲」标题右侧，去掉独立 help-bar 的外边距。 */
+.bac-section-help {
+  margin: 0;
 }
 
 /* 庄闲 board: 庄 (tall) | 和 + 庄幸运6 (stacked) | 闲 (tall). */
 .bac-zx-board {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 10px;
+  gap: 8px;
   align-items: stretch;
 }
 .bac-zx-mid {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 .bac-zx-board .bac-tall {
   height: 100%;
@@ -7024,6 +7086,30 @@ img.lhc-ball {
 .bac-zx-mid .bac-card-btn {
   min-height: 0;
   flex: 1;
+}
+
+/* 第 30 局之后关闭的副注（对子 / 庄幸运6 / 和）：置灰、禁点，右上角「已封」标签。 */
+.bac-card-btn.bac-closed {
+  position: relative;
+  opacity: 0.45;
+  filter: grayscale(0.8);
+  cursor: not-allowed;
+}
+.bac-card-btn.bac-closed .bac-card-label,
+.bac-card-btn.bac-closed .bac-card-odds {
+  color: #94a3b8 !important;
+}
+.bac-closed-tag {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 4px;
+  color: #fff;
+  background: #ef4444;
 }
 
 /* Draw-result row (top banner + video top bar + result modal). */

@@ -12,6 +12,7 @@ import {
   ANIMAL_SIDEBAR_TABS, ANIMAL_POSITIONS, ANIMAL_ODDS, animalBallSrc,
   FHC_SIDEBAR_TABS, FHC_ODDS, fhcSymbolSrc, fhcSymbolNameOf,
   BAC_SIDEBAR_TABS, BAC_ODDS, bacDeal, bacTotal, bacCardSrc, bacIsRed,
+  createBacShoe, bacSideBetsClosed, BAC_SIDE_BET_TYPES, BAC_SHUFFLE_SECONDS,
 } from './constants/gameData';
 import Dice from './components/Dice';
 import PlayArea from './components/PlayArea';
@@ -443,7 +444,10 @@ export default function App() {
       timeLeft: 48,
       maxTime: 60,
       currentIssue: 1334,
-      history: generateBacMockHistory(1334)
+      history: generateBacMockHistory(1334),
+      roundInShoe: 1,     // 本靴当前开放投注的局数 (1-based)
+      shuffling: false,   // 洗牌中 (封盘)
+      shuffleLeft: 0      // 洗牌剩余秒数
     },
     ffc_1m: {
       kind: 'ffc',
@@ -789,6 +793,11 @@ export default function App() {
   // Ref for timer interval
   const timerRef = useRef(null);
 
+  // Live 8-deck baccarat shoe (lazily created once; the 416-card array is kept
+  // out of React state so it isn't rebuilt on every render).
+  const bacShoeRef = useRef(null);
+  if (!bacShoeRef.current) bacShoeRef.current = createBacShoe();
+
   // Ref to keep placedBets fresh for the background timer
   const placedBetsRef = useRef(placedBets);
   useEffect(() => {
@@ -887,7 +896,11 @@ export default function App() {
     if (k === 'bac') return 'zhuangxian';
     return 'long-dragon';
   };
-  const isClosed = timeLeft <= lockSeconds;
+  // 百家乐 洗牌期间全程封盘；其余游戏在封盘倒计时内封盘。
+  const bacShuffling = gameKind === 'bac' && !!activeGame.shuffling;
+  const isClosed = bacShuffling || timeLeft <= lockSeconds;
+  // 第 30 局之后关闭部分玩法（对子 / 庄幸运6 / 和），庄/闲/两面 仍开放。
+  const bacSideClosed = gameKind === 'bac' && !bacShuffling && bacSideBetsClosed(activeGame.roundInShoe);
 
   const clearSelections = () => {
     setNonShortcutSelectedBets([]);
@@ -924,6 +937,16 @@ export default function App() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isClosed, selectedBets, isConfirmModalOpen]);
+
+  // 百家乐 第 30 局之后关闭 对子 / 庄幸运6 / 和：清掉已选的这些注。
+  useEffect(() => {
+    if (!bacSideClosed) return;
+    setNonShortcutSelectedBets(prev => {
+      const kept = prev.filter(b => !BAC_SIDE_BET_TYPES.includes(b.type));
+      return kept.length === prev.length ? prev : kept;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bacSideClosed]);
 
   const processGameDraw = (gameId, gameName, drawNumbers, drawIssueStr) => {
     // Check placed bets for this game
@@ -1370,6 +1393,67 @@ export default function App() {
 
       Object.keys(prev).forEach(gameId => {
         const game = prev[gameId];
+
+        // ---- 百家乐: real 8-deck shoe with a 洗牌 (shuffle) phase --------------
+        if (game.kind === 'bac') {
+          // Shuffle phase: count down, betting stays sealed, then open a fresh shoe.
+          if (game.shuffling) {
+            const sl = game.shuffleLeft - 1;
+            if (sl > 0) {
+              nextState[gameId] = { ...game, shuffleLeft: sl };
+            } else {
+              nextState[gameId] = {
+                ...game,
+                shuffling: false,
+                shuffleLeft: 0,
+                roundInShoe: 1,
+                timeLeft: game.maxTime,
+              };
+            }
+            return;
+          }
+
+          const bacTimeLeft = game.timeLeft - 1;
+          if (bacTimeLeft > 0) {
+            nextState[gameId] = { ...game, timeLeft: bacTimeLeft };
+            return;
+          }
+
+          // Time's up → deal the current round's hand from the shoe.
+          const { numbers, shoeEnded } = bacShoeRef.current.deal();
+          const drawIssueStr = game.currentIssue.toString();
+          const newDraw = { issue: drawIssueStr, numbers };
+          const updatedHistory = [newDraw, ...game.history].slice(0, 30);
+
+          if (shoeEnded) {
+            // Cut card reached: prepare a new shoe and enter the 洗牌 window.
+            bacShoeRef.current.shuffle();
+            nextState[gameId] = {
+              ...game,
+              currentIssue: game.currentIssue + 1,
+              history: updatedHistory,
+              shuffling: true,
+              shuffleLeft: BAC_SHUFFLE_SECONDS,
+            };
+          } else {
+            nextState[gameId] = {
+              ...game,
+              timeLeft: game.maxTime,
+              currentIssue: game.currentIssue + 1,
+              history: updatedHistory,
+              roundInShoe: game.roundInShoe + 1,
+            };
+          }
+
+          drawsToProcess.push({
+            gameId,
+            gameName: gameName(gameId),
+            drawNumbers: numbers,
+            drawIssueStr,
+          });
+          return;
+        }
+
         const newTimeLeft = game.timeLeft - 1;
 
         if (newTimeLeft <= 0) {
@@ -1380,7 +1464,7 @@ export default function App() {
           const isLhc = game.kind === 'lhc';
           const isAnimal = game.kind === 'animal';
           const isFhc = game.kind === 'fhc';
-          const isBac = game.kind === 'bac';
+          // 百家乐 (bac) is handled by its own shoe-driven branch above.
           const drawNumbers = isFfc
             ? generateFfcDraw()
             : isK3
@@ -1393,10 +1477,8 @@ export default function App() {
                     ? generateAnimalDraw()
                     : isFhc
                       ? generateFhcDraw()
-                      : isBac
-                        ? generateBacDraw()
-                        : generateRandomDraw();
-          const drawIssueStr = (isFfc || isK3 || isXy28 || isLhc || isAnimal || isFhc || isBac)
+                      : generateRandomDraw();
+          const drawIssueStr = (isFfc || isK3 || isXy28 || isLhc || isAnimal || isFhc)
             ? game.currentIssue.toString()
             : game.currentIssue.toString().padStart(5, '0');
           const newDraw = { issue: drawIssueStr, numbers: drawNumbers };
@@ -1440,7 +1522,9 @@ export default function App() {
   // Toggle selection of a bet
   const handleToggleBet = (betObj) => {
     if (isClosed) return;
-    
+    // 第 30 局之后：对子 / 庄幸运6 / 和 已封盘，禁止选注。
+    if (bacSideClosed && BAC_SIDE_BET_TYPES.includes(betObj.type)) return;
+
     if (betObj.tabId === 'shortcut') {
       const optId = `${betObj.type}-${betObj.betName}`;
       setSelectedShortcutOptions(prev => {
@@ -2726,9 +2810,14 @@ export default function App() {
 
           {/* Row 2: Next Issue & Countdown */}
           <div className="draw-row">
-            <span className="issue-number">{(gameKind === 'pk10' ? currentIssue.toString().padStart(5, '0') : currentIssue.toString())}期</span>
+            <span className="issue-number">
+              {(gameKind === 'pk10' ? currentIssue.toString().padStart(5, '0') : currentIssue.toString())}期
+              {gameKind === 'bac' && !bacShuffling && <span className="bac-shoe-round"> · 第{activeGame.roundInShoe}局</span>}
+            </span>
             <div className="countdown-container">
-              {isClosed ? (
+              {bacShuffling ? (
+                <span className="status-closed shuffling">洗牌中 <span style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>{formatTime(activeGame.shuffleLeft)}</span></span>
+              ) : isClosed ? (
                 <span className="status-closed">已封盘</span>
               ) : (
                 <>
@@ -2859,33 +2948,35 @@ export default function App() {
 
       {/* Main Split Layout */}
       <div className="main-layout">
-        {/* Left Sidebar Menu */}
-        <nav className="sidebar-menu">
-          {/* 动物运动会 has no 跟单计划 entry；且需在设置中开启此功能。 */}
-          {followPlanEnabled && gameKind !== 'animal' && gameKind !== 'bac' && gameKind !== 'fhc' && (
-            <button
-              type="button"
-              className="follow-plan-btn"
-              onClick={() => { setPlanDefaultFirstGame(false); setIsFollowPlanOpen(true); }}
-            >
-              {/* 边框 + 铅笔来自 public/plan.png（用 CSS mask 按皮肤主色上色） */}
-              <span className="follow-plan-btn-label">跟单计划</span>
-            </button>
-          )}
-          {sidebarTabs.map((tab) => {
-            const isActive = activeTab === tab.id;
-            return (
+        {/* Left Sidebar Menu — 百家乐 玩法少，全部玩法单页展示，无左侧标签栏。 */}
+        {gameKind !== 'bac' && (
+          <nav className="sidebar-menu">
+            {/* 动物运动会 has no 跟单计划 entry；且需在设置中开启此功能。 */}
+            {followPlanEnabled && gameKind !== 'animal' && gameKind !== 'fhc' && (
               <button
-                key={tab.id}
                 type="button"
-                className={`sidebar-tab ${isActive ? 'active' : ''}`}
-                onClick={() => setActiveTab(tab.id)}
+                className="follow-plan-btn"
+                onClick={() => { setPlanDefaultFirstGame(false); setIsFollowPlanOpen(true); }}
               >
-                {tab.name}
+                {/* 边框 + 铅笔来自 public/plan.png（用 CSS mask 按皮肤主色上色） */}
+                <span className="follow-plan-btn-label">跟单计划</span>
               </button>
-            );
-          })}
-        </nav>
+            )}
+            {sidebarTabs.map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  className={`sidebar-tab ${isActive ? 'active' : ''}`}
+                  onClick={() => setActiveTab(tab.id)}
+                >
+                  {tab.name}
+                </button>
+              );
+            })}
+          </nav>
+        )}
 
         {/* Right Active Betting Area */}
         <PlayArea
@@ -2902,6 +2993,7 @@ export default function App() {
           onSetQuickBets={handleSetQuickBets}
           clearNonce={clearNonce}
           addToast={addToast}
+          bacSideBetsClosed={bacSideClosed}
         />
       </div>
 

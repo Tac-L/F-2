@@ -887,11 +887,12 @@ export const BAC_ODDS = {
 };
 
 // Deal a full baccarat hand, applying the standard third-card (补牌) rules.
-// Cards are drawn from an infinite shoe (rank/suit uniform, repeats allowed).
-export function bacDeal() {
-  const card = () => ({ r: Math.floor(Math.random() * 13) + 1, s: Math.floor(Math.random() * 4) });
-  const p = [card(), card()];
-  const b = [card(), card()];
+// `take()` returns the next card off the shoe — this keeps the dealing logic
+// independent of whether cards come from a real 8-deck shoe (createBacShoe) or
+// an infinite shoe (bacDeal, used only for seeding mock history).
+export function bacDealFromShoe(take) {
+  const p = [take(), take()];
+  const b = [take(), take()];
 
   const pt2 = bacTotal(p);
   const bt2 = bacTotal(b);
@@ -902,14 +903,14 @@ export function bacDeal() {
   // Player rule: draw on 0-5, stand on 6-7.
   let playerThird = null;
   if (pt2 <= 5) {
-    playerThird = card();
+    playerThird = take();
     p.push(playerThird);
   }
 
   // Banker rule.
   if (playerThird === null) {
     // Player stood -> banker draws on 0-5.
-    if (bt2 <= 5) b.push(card());
+    if (bt2 <= 5) b.push(take());
   } else {
     const t = bacCardValue(playerThird.r); // player's third-card value (0-9)
     let bankerDraws = false;
@@ -919,10 +920,74 @@ export function bacDeal() {
     else if (bt2 === 5) bankerDraws = t >= 4 && t <= 7;
     else if (bt2 === 6) bankerDraws = t === 6 || t === 7;
     // bt2 === 7 -> stand
-    if (bankerDraws) b.push(card());
+    if (bankerDraws) b.push(take());
   }
 
   return { p, b };
+}
+
+// Infinite-shoe deal (rank/suit uniform, repeats allowed). Used only to seed the
+// initial mock history; live draws come from createBacShoe().
+export function bacDeal() {
+  const card = () => ({ r: Math.floor(Math.random() * 13) + 1, s: Math.floor(Math.random() * 4) });
+  return bacDealFromShoe(card);
+}
+
+// ---- Live shoe model (依照实际现场流程) -------------------------------------
+// 一靴 = 8 副牌 (416 张)，逐张发出、不放回；发到接近底部的「切牌位」后本靴结束，
+// 触发洗牌。第 30 局之后关闭部分玩法（对子 / 庄幸运6 / 和）。
+export const BAC_DECKS = 8;
+export const BAC_CUT_MIN = 14;          // 切牌位距底部 14–20 张
+export const BAC_CUT_MAX = 20;
+export const BAC_SHUFFLE_SECONDS = 15;  // 洗牌封盘时长
+export const BAC_SIDE_BET_CUTOFF_ROUND = 30; // 此局之后关闭部分玩法
+
+// 第 30 局之后关闭的玩法：和、庄幸运6、以及全部对子。庄/闲/两面 始终开放。
+export const BAC_SIDE_BET_TYPES = [
+  'bac-tie', 'bac-lucky6',
+  'bac-banker-pair', 'bac-player-pair', 'bac-any-pair', 'bac-perfect-pair',
+];
+
+// True when the "side" plays should be closed for the round currently open for
+// betting (第 30 局之后).
+export const bacSideBetsClosed = (roundInShoe) => roundInShoe > BAC_SIDE_BET_CUTOFF_ROUND;
+
+// Creates a stateful 8-deck shoe. deal() returns the dealt hand, the 1-based
+// round number within the shoe, and whether the cut card was reached (shoe
+// finished → caller should shuffle and start a fresh shoe).
+export function createBacShoe() {
+  const s = { cards: [], idx: 0, cut: 0, hands: 0 };
+
+  const shuffle = () => {
+    const cards = [];
+    for (let d = 0; d < BAC_DECKS; d++)
+      for (let r = 1; r <= 13; r++)
+        for (let suit = 0; suit < 4; suit++)
+          cards.push({ r, s: suit });
+    // Fisher–Yates.
+    for (let i = cards.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmp = cards[i]; cards[i] = cards[j]; cards[j] = tmp;
+    }
+    s.cards = cards;
+    s.idx = 0;
+    s.cut = cards.length - (BAC_CUT_MIN + Math.floor(Math.random() * (BAC_CUT_MAX - BAC_CUT_MIN + 1)));
+    s.hands = 0;
+  };
+
+  const deal = () => {
+    const take = () => {
+      if (s.idx >= s.cards.length) shuffle(); // safety; cut card should prevent this
+      return s.cards[s.idx++];
+    };
+    const numbers = bacDealFromShoe(take);
+    s.hands += 1;
+    const shoeEnded = s.idx >= s.cut;
+    return { numbers, roundInShoe: s.hands, shoeEnded };
+  };
+
+  shuffle();
+  return { deal, shuffle };
 }
 
 // Game categories and list for the left side drawer

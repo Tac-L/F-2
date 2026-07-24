@@ -92,6 +92,7 @@ export default function PlayArea({
   onSetQuickBets,
   clearNonce,
   addToast,
+  bacSideBetsClosed = false,
 }) {
   // 六合彩 盘口 (A~D) scales every LHC odds. adj() rounds to 2 decimals.
   const pankouFactor = gameKind === 'lhc' ? lhcPankouFactor(pankou) : 1;
@@ -2426,17 +2427,20 @@ export default function PlayArea({
   // ============================================================
 
   // A single centered bet card (label on top, odds below), tinted by `color`.
-  const renderBacCard = (betObj, { label, color, className = '' }) => {
+  // `closed` marks a 玩法 that is sealed for this round (第 30 局之后 关闭的副注)
+  // while the main 庄/闲/两面 stay open.
+  const renderBacCard = (betObj, { label, color, className = '', closed = false }) => {
     const isSelected = isBetSelected(betObj.id);
     return (
       <button
         type="button"
-        className={`bet-button bac-card-btn ${className} ${isSelected ? 'selected' : ''}`}
+        className={`bet-button bac-card-btn ${className} ${isSelected ? 'selected' : ''} ${closed ? 'bac-closed' : ''}`}
         onClick={() => onToggleBet(betObj)}
-        disabled={isClosed}
+        disabled={isClosed || closed}
       >
         <span className="bac-card-label" style={{ color }}>{label}</span>
         <span className="bac-card-odds" style={{ color }}>{betObj.odds.toFixed(betObj.odds >= 10 ? 1 : 2)}</span>
+        {closed && <span className="bac-closed-tag">已封</span>}
         {renderCheckmark(isSelected)}
       </button>
     );
@@ -2447,46 +2451,63 @@ export default function PlayArea({
     betName, odds, displayTitle: betName, type,
   });
 
-  // 庄闲: 庄 (tall left) | 和 + 庄幸运6 (stacked middle) | 闲 (tall right).
-  const renderBacZhuangXian = () => (
-    <div className="play-area">
-      {renderPlayHelpBar()}
+  // Section header for the single-page 百家乐 layout. The first section (庄闲)
+  // carries the 玩法说明 link on the right.
+  const renderBacSectionHead = (title, withHelp = false) => (
+    <div className="bac-section-head">
+      <span className="bac-section-title">{title}</span>
+      {withHelp && (
+        <button type="button" className="play-help-btn bac-section-help" onClick={() => setHelpOpen(true)}>
+          玩法说明
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+        </button>
+      )}
+    </div>
+  );
+
+  // 百家乐 玩法较少：庄闲 / 对子 / 两面 全部在一个滚动页里分区展示，无左侧标签栏。
+  // 每个玩法组包在一个淺藍 panel 里（标题 + 注单），注单本身仍是白底。
+  const renderBacAll = () => (
+    <div className="play-area bac-all">
       {renderPlayHelpModal()}
-      <div className="bac-zx-board">
-        {renderBacCard(bacBet('bac-banker', '庄', 'bac-banker', BAC_ODDS.banker), { label: '庄', color: '#e3342f', className: 'bac-tall' })}
-        <div className="bac-zx-mid">
-          {renderBacCard(bacBet('bac-tie', '和', 'bac-tie', BAC_ODDS.tie), { label: '和', color: '#16a34a' })}
-          {renderBacCard(bacBet('bac-lucky6', '庄幸运6', 'bac-lucky6', BAC_ODDS.lucky6), { label: '庄幸运6', color: '#f59e0b' })}
+
+      {/* 庄闲: 庄 (tall left) | 和 + 庄幸运6 (stacked middle) | 闲 (tall right). */}
+      <div className="bac-panel">
+        {renderBacSectionHead('庄闲', true)}
+        <div className="bac-zx-board">
+          {renderBacCard(bacBet('bac-banker', '庄', 'bac-banker', BAC_ODDS.banker), { label: '庄', color: '#e3342f', className: 'bac-tall' })}
+          <div className="bac-zx-mid">
+            {renderBacCard(bacBet('bac-tie', '和', 'bac-tie', BAC_ODDS.tie), { label: '和', color: '#16a34a', closed: bacSideBetsClosed })}
+            {renderBacCard(bacBet('bac-lucky6', '庄幸运6', 'bac-lucky6', BAC_ODDS.lucky6), { label: '庄幸运6', color: '#f59e0b', closed: bacSideBetsClosed })}
+          </div>
+          {renderBacCard(bacBet('bac-player', '闲', 'bac-player', BAC_ODDS.player), { label: '闲', color: '#2563eb', className: 'bac-tall' })}
         </div>
-        {renderBacCard(bacBet('bac-player', '闲', 'bac-player', BAC_ODDS.player), { label: '闲', color: '#2563eb', className: 'bac-tall' })}
       </div>
-    </div>
-  );
 
-  // 对子: 2×2 grid.
-  const renderBacDuizi = () => (
-    <div className="play-area">
-      {renderPlayHelpBar()}
-      {renderPlayHelpModal()}
-      <div className="betting-grid">
-        {renderBacCard(bacBet('bac-banker-pair', '庄对', 'bac-banker-pair', BAC_ODDS.bankerPair), { label: '庄对', color: '#e3342f' })}
-        {renderBacCard(bacBet('bac-player-pair', '闲对', 'bac-player-pair', BAC_ODDS.playerPair), { label: '闲对', color: '#2563eb' })}
-        {renderBacCard(bacBet('bac-any-pair', '任意对子', 'bac-any-pair', BAC_ODDS.anyPair), { label: '任意对子', color: '#16a34a' })}
-        {renderBacCard(bacBet('bac-perfect-pair', '完美对子', 'bac-perfect-pair', BAC_ODDS.perfectPair), { label: '完美对子', color: '#db2777' })}
+      {/* 对子: 2×2 grid. */}
+      <div className="bac-panel">
+        {renderBacSectionHead('对子')}
+        <div className="betting-grid">
+          {renderBacCard(bacBet('bac-banker-pair', '庄对', 'bac-banker-pair', BAC_ODDS.bankerPair), { label: '庄对', color: '#e3342f', closed: bacSideBetsClosed })}
+          {renderBacCard(bacBet('bac-player-pair', '闲对', 'bac-player-pair', BAC_ODDS.playerPair), { label: '闲对', color: '#2563eb', closed: bacSideBetsClosed })}
+          {renderBacCard(bacBet('bac-any-pair', '任意对子', 'bac-any-pair', BAC_ODDS.anyPair), { label: '任意对子', color: '#16a34a', closed: bacSideBetsClosed })}
+          {renderBacCard(bacBet('bac-perfect-pair', '完美对子', 'bac-perfect-pair', BAC_ODDS.perfectPair), { label: '完美对子', color: '#db2777', closed: bacSideBetsClosed })}
+        </div>
       </div>
-    </div>
-  );
 
-  // 两面: 闲单/闲双 · 庄单/庄双 (2×2 grid).
-  const renderBacLiangMian = () => (
-    <div className="play-area">
-      {renderPlayHelpBar()}
-      {renderPlayHelpModal()}
-      <div className="betting-grid">
-        {renderBacCard(bacBet('bac-player-odd', '闲单', 'bac-player-odd', BAC_ODDS.twoSided), { label: '闲单', color: '#2563eb' })}
-        {renderBacCard(bacBet('bac-player-even', '闲双', 'bac-player-even', BAC_ODDS.twoSided), { label: '闲双', color: '#2563eb' })}
-        {renderBacCard(bacBet('bac-banker-odd', '庄单', 'bac-banker-odd', BAC_ODDS.twoSided), { label: '庄单', color: '#e3342f' })}
-        {renderBacCard(bacBet('bac-banker-even', '庄双', 'bac-banker-even', BAC_ODDS.twoSided), { label: '庄双', color: '#e3342f' })}
+      {/* 两面: 闲单/闲双 · 庄单/庄双 (2×2 grid). */}
+      <div className="bac-panel">
+        {renderBacSectionHead('两面')}
+        <div className="betting-grid">
+          {renderBacCard(bacBet('bac-player-odd', '闲单', 'bac-player-odd', BAC_ODDS.twoSided), { label: '闲单', color: '#2563eb' })}
+          {renderBacCard(bacBet('bac-player-even', '闲双', 'bac-player-even', BAC_ODDS.twoSided), { label: '闲双', color: '#2563eb' })}
+          {renderBacCard(bacBet('bac-banker-odd', '庄单', 'bac-banker-odd', BAC_ODDS.twoSided), { label: '庄单', color: '#e3342f' })}
+          {renderBacCard(bacBet('bac-banker-even', '庄双', 'bac-banker-even', BAC_ODDS.twoSided), { label: '庄双', color: '#e3342f' })}
+        </div>
       </div>
     </div>
   );
@@ -4029,16 +4050,8 @@ export default function PlayArea({
   }
 
   if (gameKind === 'bac') {
-    switch (activeTab) {
-      case 'zhuangxian':
-        return renderBacZhuangXian();
-      case 'duizi':
-        return renderBacDuizi();
-      case 'liangmian':
-        return renderBacLiangMian();
-      default:
-        return <div className="play-area">Tab Content Not Found</div>;
-    }
+    // 全部玩法（庄闲 / 对子 / 两面）单页展示。
+    return renderBacAll();
   }
 
   if (gameKind === 'fhc') {
