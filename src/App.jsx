@@ -2741,26 +2741,29 @@ export default function App() {
                 </>
               )}
             </div>
-            <button
-              type="button"
-              className={`icon-btn ${isVideoOpen ? 'active' : ''}`}
-              title="开奖动画 / 直播视频"
-              style={{ color: theme === 'midnight-purple' ? '#9B7BFF' : theme === 'midnight-blue' ? '#7199FE' : '#3b82f6', display: 'flex', alignItems: 'center', gap: '2px' }}
-              onClick={() => setIsVideoOpen(prev => !prev)}
-            >
-              <img src={`${import.meta.env.BASE_URL}${theme === 'midnight-blue' || theme === 'midnight-purple' ? 'youtube-db.png' : 'youtube.png'}`} width="20" height="20" alt="开奖动画" />
-              {/* Caret to indicate expandable player */}
-              <svg
-                width="12" height="12" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                style={{
-                  transition: 'transform 0.2s ease',
-                  transform: isVideoOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                }}
+            {/* 鱼虾蟹 / 百家乐 不提供开奖动画 */}
+            {gameKind !== 'fhc' && gameKind !== 'bac' && (
+              <button
+                type="button"
+                className={`icon-btn ${isVideoOpen ? 'active' : ''}`}
+                title="开奖动画 / 直播视频"
+                style={{ color: theme === 'midnight-purple' ? '#9B7BFF' : theme === 'midnight-blue' ? '#7199FE' : '#3b82f6', display: 'flex', alignItems: 'center', gap: '2px' }}
+                onClick={() => setIsVideoOpen(prev => !prev)}
               >
-                <polyline points="6 9 12 15 18 9"/>
-              </svg>
-            </button>
+                <img src={`${import.meta.env.BASE_URL}${theme === 'midnight-blue' || theme === 'midnight-purple' ? 'youtube-db.png' : 'youtube.png'}`} width="20" height="20" alt="开奖动画" />
+                {/* Caret to indicate expandable player */}
+                <svg
+                  width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                  style={{
+                    transition: 'transform 0.2s ease',
+                    transform: isVideoOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                  }}
+                >
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </button>
+            )}
           </div>
 
           {/* History Dropdown Menu */}
@@ -2794,7 +2797,7 @@ export default function App() {
             activeGameId={activeGameId}
           />
         ) : (
-          isVideoOpen && (
+          isVideoOpen && gameKind !== 'fhc' && gameKind !== 'bac' && (
             <div className={`video-player-container open ${gameKind === 'k3' ? 'k3' : gameKind === 'xy28' ? 'xy28' : gameKind === 'lhc' ? 'lhc' : gameKind === 'animal' ? 'animal' : gameKind === 'fhc' ? 'fhc' : gameKind === 'bac' ? 'bac' : ''}`}>
               {/* 动物运动会 embeds the full Cocos scene (which has its own header),
                   so skip the app's result top-bar for it. */}
