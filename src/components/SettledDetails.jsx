@@ -1,5 +1,6 @@
 import React from 'react';
 import { PK10_COLORS, DRAWER_CATEGORIES, animalBallSrc, fhcSymbolSrc, fhcSymbolNameOf, bacCardSrc, bacTotal } from '../constants/gameData';
+import Dice from './Dice';
 
 export default function SettledDetails({
   onBack,
@@ -393,7 +394,7 @@ export default function SettledDetails({
               </button>
             </div>
             <div className="result-modal-body">
-              <div className="result-modal-balls">
+              <div className={`result-modal-balls ${resultModalData.gameId && (resultModalData.gameId.startsWith('k3') || resultModalData.gameId.startsWith('fhc')) ? 'compact' : ''}`}>
                 {/* 百家乐: drawNumbers is { p:[cards], b:[cards] } — render 闲/庄 cards. */}
                 {resultModalData.gameId && resultModalData.gameId.startsWith('bac') && resultModalData.drawNumbers ? (
                   <div className="bac-result-row">
@@ -435,6 +436,10 @@ export default function SettledDetails({
                         alt={fhcSymbolNameOf(num)}
                       />
                     );
+                  }
+                  // 快三 shows the dice faces (K3-ball artwork).
+                  if (resultModalData.gameId && resultModalData.gameId.startsWith('k3')) {
+                    return <Dice key={idx} value={num} size={32} />;
                   }
                   const color = PK10_COLORS[num] || { bg: '#9ca3af', text: '#ffffff' };
                   return (

@@ -2643,8 +2643,9 @@ img.pk10-ball {
 
 .bet-detail-row .detail-label {
   color: #64748b;
-  width: 65px;
   flex-shrink: 0;
+  /* label 宽度自适应，标题与内容间距固定且左右两栏一致 */
+  margin-right: 4px;
 }
 
 .bet-detail-row .detail-value {
@@ -3998,6 +3999,15 @@ img.pk10-ball {
   gap: 4px;
   justify-content: space-between;
   align-items: center;
+}
+/* 快三 / 鱼虾蟹：图案数量少，靠左对齐并缩小，不要撑满分散。 */
+.result-modal-balls.compact {
+  justify-content: flex-start;
+  gap: 6px;
+}
+.result-modal-balls.compact .modal-animal-ball {
+  width: 32px;
+  height: 32px;
 }
 
 .modal-pk10-ball {
