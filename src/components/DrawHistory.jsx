@@ -2,6 +2,8 @@ import React from 'react';
 import {
   lhcColorOf, lhcZodiacOf, lhcIsDomestic, lhcBallSrc, LHC_WUXING,
   pk10BallSrc, animalBallSrc, DRAWER_CATEGORIES,
+  fhcSymbolSrc, fhcSymbolNameOf,
+  bacDeal, bacTotal, bacCardSrc,
 } from '../constants/gameData';
 
 // 五行 (element) of a number — find the element set it belongs to.
@@ -138,6 +140,41 @@ const buildAnimalHistory = () => {
   return list;
 };
 
+// ----- 鱼虾蟹 mock history (3 dice, each a symbol id 1-6) -----
+const randomFhcDraw = () => Array.from({ length: 3 }, () => Math.floor(Math.random() * 6) + 1);
+
+const buildFhcHistory = () => {
+  const seeds = [
+    [1, 3, 5],
+    [6, 2, 4],
+    [3, 3, 1],
+  ];
+  const list = [];
+  const startIssue = 3480;
+  for (let i = 0; i < 40; i++) {
+    list.push({
+      issue: String(startIssue - i),
+      date: pk10DateTime(i),
+      numbers: seeds[i] || randomFhcDraw(),
+    });
+  }
+  return list;
+};
+
+// ----- 百家乐 mock history ({ p: [cards], b: [cards] }) -----
+const buildBacHistory = () => {
+  const list = [];
+  const startIssue = 1480;
+  for (let i = 0; i < 40; i++) {
+    list.push({
+      issue: String(startIssue - i),
+      date: pk10DateTime(i),
+      numbers: bacDeal(),
+    });
+  }
+  return list;
+};
+
 export default function DrawHistory({ onBack, onOpenMenu }) {
   const [categoryId, setCategoryId] = React.useState('lhc');
   const [gameId, setGameId] = React.useState(DRAWER_CATEGORIES[0].games[0].id);
@@ -150,6 +187,8 @@ export default function DrawHistory({ onBack, onOpenMenu }) {
   const lhcHistory = React.useMemo(() => buildLhcHistory(), []);
   const pk10History = React.useMemo(() => buildPk10History(), []);
   const animalHistory = React.useMemo(() => buildAnimalHistory(), []);
+  const fhcHistory = React.useMemo(() => buildFhcHistory(), []);
+  const bacHistory = React.useMemo(() => buildBacHistory(), []);
 
   const category = DRAWER_CATEGORIES.find((c) => c.id === categoryId);
   const game = category.games.find((g) => g.id === gameId);
@@ -161,7 +200,11 @@ export default function DrawHistory({ onBack, onOpenMenu }) {
       ? pk10History
       : categoryId === 'animal'
         ? animalHistory
-        : [];
+        : categoryId === 'fhc'
+          ? fhcHistory
+          : categoryId === 'bac'
+            ? bacHistory
+            : [];
 
   const history = React.useMemo(() => {
     if (!issueQuery) return allHistory;
@@ -221,6 +264,42 @@ export default function DrawHistory({ onBack, onOpenMenu }) {
   // ===== 动物运动会: 其他 — 3 个龙虎 (冠vs第六, 亚vs第五, 季vs第四) =====
   const animalDragonTiger = (numbers) =>
     [0, 1, 2].map((i) => (numbers[i] > numbers[5 - i] ? '龙' : '虎'));
+
+  // ===== 鱼虾蟹: 号码 — 3 个图案（鱼/虾/蟹/葫芦/金钱/鸡） =====
+  const renderFhcSymbols = (numbers) => numbers.map((num, idx) => (
+    <img key={idx} className="history-fhc-symbol" src={fhcSymbolSrc(fhcSymbolNameOf(num))} alt={fhcSymbolNameOf(num)} />
+  ));
+
+  // ===== 百家乐: 闲X [牌] | [牌] 庄X（补牌横放于外侧，与投注页一致） =====
+  const renderBacResult = (numbers) => {
+    const pCards = (numbers && numbers.p) || [];
+    const bCards = (numbers && numbers.b) || [];
+    const pt = bacTotal(pCards);
+    const bt = bacTotal(bCards);
+    const upCard = (c, key) => <img key={key} className="bac-result-card" src={bacCardSrc(c)} alt="" />;
+    const drawnCard = (c, key) => (
+      <span key={key} className="bac-drawn"><img className="bac-result-card" src={bacCardSrc(c)} alt="" /></span>
+    );
+    const playerEls = [];
+    if (pCards[2]) playerEls.push(drawnCard(pCards[2], 'p2'));
+    pCards.slice(0, 2).forEach((c, i) => playerEls.push(upCard(c, `p${i}`)));
+    const bankerEls = [];
+    bCards.slice(0, 2).forEach((c, i) => bankerEls.push(upCard(c, `b${i}`)));
+    if (bCards[2]) bankerEls.push(drawnCard(bCards[2], 'b2'));
+    return (
+      <span className="bac-result-row">
+        <span className="bac-hand bac-hand-left">
+          <span className="bac-side-label player">闲{pt}</span>
+          {playerEls}
+        </span>
+        <span className="bac-result-sep" />
+        <span className="bac-hand bac-hand-right">
+          {bankerEls}
+          <span className="bac-side-label banker">庄{bt}</span>
+        </span>
+      </span>
+    );
+  };
 
   // ===== 六合彩: 彩球 — 6 正码 + 特码 =====
   const renderLhcBalls = (numbers) => {
@@ -414,6 +493,20 @@ export default function DrawHistory({ onBack, onOpenMenu }) {
                     {categoryId === 'animal'
                       ? renderAnimalBalls(item.numbers)
                       : renderPk10Balls(item.numbers)}
+                  </div>
+                )}
+
+                {/* ===== 鱼虾蟹：只显示历史号码（无 tab 切换） ===== */}
+                {categoryId === 'fhc' && (
+                  <div className="history-balls-row fhc">
+                    {renderFhcSymbols(item.numbers)}
+                  </div>
+                )}
+
+                {/* ===== 百家乐：只显示开奖结果（无 tab 切换） ===== */}
+                {categoryId === 'bac' && (
+                  <div className="history-balls-row bac">
+                    {renderBacResult(item.numbers)}
                   </div>
                 )}
 

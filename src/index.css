@@ -5346,6 +5346,14 @@ img.lhc-ball {
   align-items: center;
   gap: 6px;
 }
+/* 鱼虾蟹 开奖历史：3 个图案 */
+.history-balls-row.fhc { gap: 8px; }
+.history-fhc-symbol {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  display: block;
+}
 
 .history-stat-grid {
   display: grid;
