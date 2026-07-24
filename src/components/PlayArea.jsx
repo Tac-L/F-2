@@ -1210,11 +1210,11 @@ export default function PlayArea({
           {gameKind === 'fhc' && activeTab === 'single' && (
             <div className="play-help-body">
               <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
-                <strong>单殿：</strong>于 6 种图案（鱼、虾、蟹、葫芦、金钱、鸡）中选择 1 个或 1 个以上投注，所投图案出现在开奖的三颗骰子中即视为中奖，中奖赔率依图案出现次数累计。
+                <strong>单骰：</strong>于 6 种图案（鱼、虾、蟹、葫芦、金钱、鸡）中选择 1 个或 1 个以上投注，所投图案出现在开奖的三颗骰子中即视为中奖，中奖赔率依图案出现次数累计。
                 {'\n'}　图案出现一次，赔率 1.97；出现二次，赔率 2.94；出现三次，赔率 3.92。
                 {'\n\n'}举例：
-                {'\n'}投注单殿「鱼」100 元，开奖结果为「鱼·虾·蟹」，鱼出现一次，视为中奖，派彩 197 元。
-                {'\n'}投注单殿「鱼」100 元，开奖结果为「鱼·鱼·蟹」，鱼出现二次，视为中奖，派彩 294 元。
+                {'\n'}投注单骰「鱼」100 元，开奖结果为「鱼·虾·蟹」，鱼出现一次，视为中奖，派彩 197 元。
+                {'\n'}投注单骰「鱼」100 元，开奖结果为「鱼·鱼·蟹」，鱼出现二次，视为中奖，派彩 294 元。
               </div>
             </div>
           )}
@@ -2495,7 +2495,7 @@ export default function PlayArea({
   // ===================== 鱼虾蟹 (FHC) Tabs ====================
   // ============================================================
 
-  // Shared 6-symbol board for 单殿 / 全围 (2 per row via .betting-grid).
+  // Shared 6-symbol board for 单骰 / 全围 (2 per row via .betting-grid).
   const renderFhcBoard = ({ tabId, type, positionName, odds, oddsLabel }) => (
     <div className="play-area">
       {renderPlayHelpBar()}
@@ -2538,7 +2538,7 @@ export default function PlayArea({
     renderFhcBoard({
       tabId: 'single',
       type: 'fhc-single',
-      positionName: '单殿',
+      positionName: '单骰',
       odds: FHC_ODDS.single,
       oddsLabel: FHC_ODDS.single.toFixed(2),
     });

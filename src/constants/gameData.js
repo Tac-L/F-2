@@ -812,7 +812,7 @@ export const animalBallSrc = (n) =>
 
 // ======================= 鱼虾蟹 (FHC / Hoo Hey How) Game Configurations =======================
 // 鱼虾蟹 draws 3 dice; each die shows one of 6 图案 (symbols) instead of pips.
-// 单殿: bet a symbol — pays per number of dice showing it (1/2/3 次).
+// 单骰: bet a symbol — pays per number of dice showing it (1/2/3 次).
 // 全围: bet a symbol — wins only when all three dice show that symbol.
 
 // The 6 symbols (order matches the reference screenshots). `color` tints the odds text.
@@ -835,11 +835,11 @@ export const fhcSymbolNameOf = (id) => FHC_SYMBOL_NAME[id] || '';
 
 // Left sidebar tabs for 鱼虾蟹.
 export const FHC_SIDEBAR_TABS = [
-  { id: 'single', name: '单殿' },
+  { id: 'single', name: '单骰' },
   { id: 'all-around', name: '全围' },
 ];
 
-// Odds. 单殿 base 1.97 (每命中一次派彩累加, 出现 1/2/3 次 -> 1.97 / 2.94 / 3.92);
+// Odds. 单骰 base 1.97 (每命中一次派彩累加, 出现 1/2/3 次 -> 1.97 / 2.94 / 3.92);
 // 全围 180 (三颗骰子同一图案).
 export const FHC_ODDS = {
   single: 1.97,

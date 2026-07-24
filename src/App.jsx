@@ -941,7 +941,7 @@ export default function App() {
         let isWin = false;
         // 正肖 pays per matching 正码 — captured here, applied to winAmt below.
         let zhengxiaoHits = 0;
-        // 鱼虾蟹 单殿 pays per number of dice showing the symbol — captured here.
+        // 鱼虾蟹 单骰 pays per number of dice showing the symbol — captured here.
         let fhcSingleHits = 0;
         // 和局 (七色波 平手 / 合肖 49): the stake is refunded (push, net 0).
         let isPush = false;
@@ -1114,7 +1114,7 @@ export default function App() {
           const symId = parseInt(bet.positionId, 10);
           const count = drawNumbers.filter(d => d === symId).length;
           if (bet.type === 'fhc-single') {
-            // 单殿: wins if the symbol appears at least once; pays per appearance.
+            // 单骰: wins if the symbol appears at least once; pays per appearance.
             isWin = count >= 1;
             fhcSingleHits = count;
           } else if (bet.type === 'fhc-all-around') {
