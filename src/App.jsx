@@ -35,6 +35,7 @@ import LhcAnimation from './components/LhcAnimation';
 import AnimalAnimation from './components/AnimalAnimation';
 import FhcAnimation from './components/FhcAnimation';
 import BacAnimation from './components/BacAnimation';
+import BacRoadmap from './components/BacRoadmap';
 
 // ===== 嵌入参数 (供父项目通过 URL query 传入) =====
 // 用法示例: /?embed=1&skin=3
@@ -392,6 +393,7 @@ export default function App() {
     }
   });
   const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const [isRoadmapOpen, setIsRoadmapOpen] = useState(false); // 百家乐 路子图 展开
   // 六合彩 盘口 (A~D): scales all LHC odds. The play content is identical.
   const [lhcPankou, setLhcPankou] = useState('A');
   const [isPankouOpen, setIsPankouOpen] = useState(false);
@@ -2877,6 +2879,32 @@ export default function App() {
                 </>
               )}
             </div>
+            {/* 百家乐: 路子图 toggle (在倒计时右侧) */}
+            {gameKind === 'bac' && (
+              <button
+                type="button"
+                className={`icon-btn ${isRoadmapOpen ? 'active' : ''}`}
+                title="路子图"
+                style={{ color: theme === 'midnight-purple' ? '#9B7BFF' : theme === 'midnight-blue' ? '#7199FE' : '#3b82f6', display: 'flex', alignItems: 'center', gap: '2px' }}
+                onClick={() => setIsRoadmapOpen(prev => !prev)}
+              >
+                {/* 路子图 icon: 圆角路单 + 庄(红)/闲(蓝) 两颗珠子示意 */}
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="3" width="18" height="18" rx="4.5" stroke="currentColor" strokeWidth="1.7" />
+                  <line x1="12" y1="4" x2="12" y2="20" stroke="currentColor" strokeWidth="1.1" opacity="0.25" />
+                  <line x1="4" y1="12" x2="20" y2="12" stroke="currentColor" strokeWidth="1.1" opacity="0.25" />
+                  <circle cx="8" cy="8" r="2.3" fill="#e53935" />
+                  <circle cx="16" cy="8" r="2.3" fill="#2563eb" />
+                </svg>
+                <svg
+                  width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                  style={{ transition: 'transform 0.2s ease', transform: isRoadmapOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+            )}
             {/* 鱼虾蟹 / 百家乐 不提供开奖动画 */}
             {gameKind !== 'fhc' && gameKind !== 'bac' && (
               <button
@@ -2924,7 +2952,12 @@ export default function App() {
             </div>
           )}
         </div>
-        
+
+        {/* 百家乐 路子图 (往下推开) */}
+        {gameKind === 'bac' && isRoadmapOpen && (
+          <BacRoadmap history={activeGame.history} />
+        )}
+
         {/* Live Race Animation Player (PK10 only) */}
         {gameKind === 'pk10' ? (
           <RaceAnimation

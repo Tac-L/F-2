@@ -7222,3 +7222,185 @@ img.lhc-ball {
 .baca-outcome.player { color: #6ee7a8; }
 .baca-outcome.banker { color: #ff8f8f; }
 .baca-outcome.tie { color: #7fd0ff; }
+
+/* ======================= 百家乐 路子图 (roadmap) ======================= */
+.bac-roadmap {
+  padding: 8px 10px 10px;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  animation: bac-roadmap-in 0.2s ease;
+}
+@keyframes bac-roadmap-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.bac-roadmap-empty {
+  padding: 18px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 13px;
+}
+/* 真实赌场版式: 珠盘(左) | 大路(右上) + 下三路(右下并排) */
+.bac-board {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.bac-board-bead {
+  flex: 0 0 132px;
+  display: flex;
+  flex-direction: column;
+  border-right: 2px solid #d7dbe3;
+  overflow: hidden;
+}
+.bac-board-right {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.bac-board-big {
+  border-bottom: 2px solid #d7dbe3;
+  overflow: hidden;
+}
+.bac-board-derived {
+  display: flex;
+  align-items: stretch;
+}
+.bac-board-sub {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+}
+.bac-board-sub + .bac-board-sub { border-left: 2px solid #d7dbe3; }
+.bac-board-scroll { overflow-x: auto; overflow-y: hidden; }
+.bac-road-grid {
+  display: flex;
+  flex-direction: column;
+  width: max-content;
+}
+.bac-road-line { display: flex; }
+.bac-road-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border-right: 1px solid #eef0f3;
+  border-bottom: 1px solid #eef0f3;
+}
+.bac-road-grid.md .bac-road-cell { width: 19px; height: 19px; }
+.bac-road-grid.xs .bac-road-cell { width: 10px; height: 10px; }
+
+/* 珠盘路: 实心圆 + 庄/闲/和 字 */
+.bac-bead {
+  position: relative;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 9px; font-weight: 700; line-height: 1;
+}
+.bac-bead.banker { background: #e02020; }
+.bac-bead.player { background: #1e5fd6; }
+.bac-bead.tie    { background: #1f9d55; }
+.bac-pair-dot {
+  position: absolute; width: 5px; height: 5px; border-radius: 50%;
+  border: 1px solid #fff; box-sizing: border-box;
+}
+.bac-pair-dot.banker { top: -1px; left: -1px; background: #e02020; }
+.bac-pair-dot.player { bottom: -1px; right: -1px; background: #1e5fd6; }
+
+/* 大路: 空心圆 (和局 = 绿色斜线 + 数字) */
+.bac-big {
+  position: relative;
+  width: 15px; height: 15px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background: transparent;
+}
+.bac-big.banker { border-color: #e02020; }
+.bac-big.player { border-color: #1e5fd6; }
+.bac-tie-slash {
+  position: absolute; top: 50%; left: -3px; right: -3px; height: 2px;
+  background: #1f9d55; transform: rotate(-45deg); transform-origin: center;
+}
+.bac-tie-num {
+  position: absolute; right: -4px; bottom: -5px;
+  font-size: 8px; font-weight: 700; line-height: 1; color: #1f9d55;
+}
+
+/* 大眼路: 空心小圆 */
+.bac-eye {
+  width: 7px; height: 7px; border-radius: 50%;
+  border: 1.5px solid transparent; background: transparent; box-sizing: border-box;
+}
+.bac-eye.red  { border-color: #e02020; }
+.bac-eye.blue { border-color: #1e5fd6; }
+
+/* 小路: 实心小圆 */
+.bac-small { width: 7px; height: 7px; border-radius: 50%; }
+.bac-small.red  { background: #e02020; }
+.bac-small.blue { background: #1e5fd6; }
+
+/* 曱甴路: 斜杠 */
+.bac-cockroach { width: 9px; height: 2px; transform: rotate(-45deg); }
+.bac-cockroach.red  { background: #e02020; }
+.bac-cockroach.blue { background: #1e5fd6; }
+
+/* 庄问路 / 闲问路 (左下角预测) */
+.bac-ask-row {
+  display: flex;
+  gap: 6px;
+  padding: 6px 4px 2px;
+  margin-top: auto;
+}
+.bac-ask {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 5px 2px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid #d7dbe3;
+}
+.bac-ask-marks {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.bac-ask-label { font-size: 12px; font-weight: 700; line-height: 1; }
+.bac-ask.banker .bac-ask-label { color: #e02020; }
+.bac-ask.player .bac-ask-label { color: #1e5fd6; }
+/* 预测标记放大, 便于辨识 */
+.bac-ask-marks .bac-eye { width: 13px; height: 13px; border-width: 2px; }
+.bac-ask-marks .bac-small { width: 13px; height: 13px; }
+.bac-ask-marks .bac-cockroach { width: 15px; height: 2.5px; }
+/* 无预测 (数据不足) → 灰色 */
+.bac-eye.none { border-color: #c2c8d2; }
+.bac-small.none { background: #c2c8d2; }
+.bac-cockroach.none { background: #c2c8d2; }
+
+/* 深色主题 */
+[data-theme^="midnight-"] .bac-roadmap {
+  background: #1b2340;
+  border-bottom-color: #2c375c;
+}
+[data-theme^="midnight-"] .bac-ask {
+  background: transparent;
+  border-color: #3a4870;
+}
+[data-theme^="midnight-"] .bac-ask.banker .bac-ask-label { color: #ff8f8f; }
+[data-theme^="midnight-"] .bac-ask.player .bac-ask-label { color: #7fb0ff; }
+[data-theme^="midnight-"] .bac-board { border-color: #2c375c; }
+[data-theme^="midnight-"] .bac-board-bead { border-right-color: #3a4870; }
+[data-theme^="midnight-"] .bac-board-big { border-bottom-color: #3a4870; }
+[data-theme^="midnight-"] .bac-board-sub + .bac-board-sub { border-left-color: #3a4870; }
+[data-theme^="midnight-"] .bac-road-cell { border-right-color: #2c375c; border-bottom-color: #2c375c; }
+[data-theme^="midnight-"] .bac-roadmap-empty { color: #7c86a8; }
