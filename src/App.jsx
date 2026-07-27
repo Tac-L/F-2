@@ -1611,6 +1611,9 @@ export default function App() {
   // Reset active selections
   const handleReset = () => {
     clearSelections();
+    // 快捷金额回到第一个、倍数回到初始 (第一个)
+    setBetAmount(String(chipValues[0] ?? 10));
+    setBetMultiplier(multiplierValues[0] ?? 1);
   };
 
   // Refresh balance (mock)
