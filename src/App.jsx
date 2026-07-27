@@ -82,6 +82,12 @@ const ROOM_ID_MAP = {
   '1001010': 'animal_1m', // 一分动物运动会
   '1001020': 'animal_5m', // 五分动物运动会
   '1001030': 'animal_10m',// 十分动物运动会
+  '702010': 'fhc_1m',     // 一分鱼虾蟹
+  '702020': 'fhc_5m',     // 五分鱼虾蟹
+  '702030': 'fhc_10m',    // 十分鱼虾蟹
+  '901010': 'bac_a1',     // 百家乐A1
+  '901020': 'bac_a2',     // 百家乐A2
+  '901030': 'bac_a3',     // 百家乐A3
 };
 
 const getEmbedParams = () => {
@@ -439,7 +445,22 @@ export default function App() {
       currentIssue: 3401,
       history: generateFhcMockHistory(3401)
     },
-    bac_1m: {
+    fhc_5m: {
+      kind: 'fhc',
+      timeLeft: 248,
+      maxTime: 300,
+      currentIssue: 681,
+      history: generateFhcMockHistory(681)
+    },
+    fhc_10m: {
+      kind: 'fhc',
+      timeLeft: 548,
+      maxTime: 600,
+      currentIssue: 341,
+      history: generateFhcMockHistory(341)
+    },
+    // 三张独立百家乐桌 (A1/A2/A3)：局长相同，但各有独立的靴、期号与倒计时。
+    bac_a1: {
       kind: 'bac',
       timeLeft: 48,
       maxTime: 60,
@@ -448,6 +469,26 @@ export default function App() {
       roundInShoe: 1,     // 本靴当前开放投注的局数 (1-based)
       shuffling: false,   // 洗牌中 (封盘)
       shuffleLeft: 0      // 洗牌剩余秒数
+    },
+    bac_a2: {
+      kind: 'bac',
+      timeLeft: 33,
+      maxTime: 60,
+      currentIssue: 2087,
+      history: generateBacMockHistory(2087),
+      roundInShoe: 1,
+      shuffling: false,
+      shuffleLeft: 0
+    },
+    bac_a3: {
+      kind: 'bac',
+      timeLeft: 12,
+      maxTime: 60,
+      currentIssue: 956,
+      history: generateBacMockHistory(956),
+      roundInShoe: 1,
+      shuffling: false,
+      shuffleLeft: 0
     },
     ffc_1m: {
       kind: 'ffc',
@@ -583,7 +624,11 @@ export default function App() {
       case 'ap_lhc_5m': return '五分澳门六合彩';
       case 'ap_lhc_10m': return '十分澳门六合彩';
       case 'fhc_1m': return '一分鱼虾蟹';
-      case 'bac_1m': return '百家乐';
+      case 'fhc_5m': return '五分鱼虾蟹';
+      case 'fhc_10m': return '十分鱼虾蟹';
+      case 'bac_a1': return '百家乐A1';
+      case 'bac_a2': return '百家乐A2';
+      case 'bac_a3': return '百家乐A3';
       default: return '极速赛车';
     }
   };
@@ -793,10 +838,11 @@ export default function App() {
   // Ref for timer interval
   const timerRef = useRef(null);
 
-  // Live 8-deck baccarat shoe (lazily created once; the 416-card array is kept
-  // out of React state so it isn't rebuilt on every render).
+  // Live 8-deck baccarat shoes, one per 百家乐 table (bac_a1/a2/a3). Each shoe's
+  // 416-card array is kept out of React state so it isn't rebuilt on every render;
+  // shoes are created lazily per table id the first time that table deals.
   const bacShoeRef = useRef(null);
-  if (!bacShoeRef.current) bacShoeRef.current = createBacShoe();
+  if (!bacShoeRef.current) bacShoeRef.current = {};
 
   // Ref to keep placedBets fresh for the background timer
   const placedBetsRef = useRef(placedBets);
@@ -1419,15 +1465,16 @@ export default function App() {
             return;
           }
 
-          // Time's up → deal the current round's hand from the shoe.
-          const { numbers, shoeEnded } = bacShoeRef.current.deal();
+          // Time's up → deal the current round's hand from this table's own shoe.
+          if (!bacShoeRef.current[gameId]) bacShoeRef.current[gameId] = createBacShoe();
+          const { numbers, shoeEnded } = bacShoeRef.current[gameId].deal();
           const drawIssueStr = game.currentIssue.toString();
           const newDraw = { issue: drawIssueStr, numbers };
           const updatedHistory = [newDraw, ...game.history].slice(0, 30);
 
           if (shoeEnded) {
             // Cut card reached: prepare a new shoe and enter the 洗牌 window.
-            bacShoeRef.current.shuffle();
+            bacShoeRef.current[gameId].shuffle();
             nextState[gameId] = {
               ...game,
               currentIssue: game.currentIssue + 1,

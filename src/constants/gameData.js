@@ -1050,14 +1050,20 @@ export const DRAWER_CATEGORIES = [
     id: 'fhc',
     name: '鱼虾蟹',
     games: [
-      { id: 'fhc_1m', name: '一分鱼虾蟹', status: 'active', initialTime: 48, maxTime: 60 }
+      { id: 'fhc_1m', name: '一分鱼虾蟹', status: 'active', initialTime: 48, maxTime: 60 },
+      { id: 'fhc_5m', name: '五分鱼虾蟹', status: 'active', initialTime: 248, maxTime: 300 },
+      { id: 'fhc_10m', name: '十分鱼虾蟹', status: 'active', initialTime: 548, maxTime: 600 }
     ]
   },
   {
     id: 'bac',
     name: '百家乐',
     games: [
-      { id: 'bac_1m', name: '百家乐', status: 'active', initialTime: 48, maxTime: 60 }
+      // 三张独立的百家乐桌 (A1/A2/A3)。局长相同 (maxTime 60)，但各自独立发牌，
+      // 因此当前倒计时/开奖节奏并不同步。
+      { id: 'bac_a1', name: '百家乐A1', status: 'active', initialTime: 48, maxTime: 60 },
+      { id: 'bac_a2', name: '百家乐A2', status: 'active', initialTime: 33, maxTime: 60 },
+      { id: 'bac_a3', name: '百家乐A3', status: 'active', initialTime: 12, maxTime: 60 }
     ]
   }
 ];
