@@ -1211,11 +1211,8 @@ export default function PlayArea({
           {gameKind === 'fhc' && activeTab === 'single' && (
             <div className="play-help-body">
               <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
-                <strong>单骰：</strong>于 6 种图案（鱼、虾、蟹、葫芦、金钱、鸡）中选择 1 个或 1 个以上投注，所投图案出现在开奖的三颗骰子中即视为中奖，中奖赔率依图案出现次数累计。
-                {'\n'}　图案出现一次，赔率 1.97；出现二次，赔率 2.94；出现三次，赔率 3.92。
-                {'\n\n'}举例：
-                {'\n'}投注单骰「鱼」100 元，开奖结果为「鱼·虾·蟹」，鱼出现一次，视为中奖，派彩 197 元。
-                {'\n'}投注单骰「鱼」100 元，开奖结果为「鱼·鱼·蟹」，鱼出现二次，视为中奖，派彩 294 元。
+                玩家选择一种图案（鱼、虾、蟹、钱币、葫芦、鸡）进行投注，开奖后根据三颗骰子中该图案出现的次数（分别为1、2、3次）进行派彩。
+                {'\n\n'}例如，假设鱼的单骰赔率为2.1，投注鱼单骰100元，开奖结果鱼出现1次，派彩110元；开奖结果鱼出现2次，派彩220元；开奖结果鱼出现3次，派彩330元。
               </div>
             </div>
           )}
@@ -1223,9 +1220,7 @@ export default function PlayArea({
           {gameKind === 'fhc' && activeTab === 'all-around' && (
             <div className="play-help-body">
               <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
-                <strong>全围：</strong>于 6 种图案中选择 1 个或 1 个以上投注，若开奖的三颗骰子图案全部相同，且与所投图案一致，即视为中奖，其余情形视为不中奖，赔率 180.0。
-                {'\n\n'}举例：
-                {'\n'}投注全围「鱼」，开奖结果为「鱼·鱼·鱼」，视为中奖，其余结果视为不中奖。
+                玩家选择一种图案（鱼、虾、蟹、钱币、葫芦、鸡）进行投注，当三颗骰子开出相同图案时，即为全围中奖。
               </div>
             </div>
           )}
