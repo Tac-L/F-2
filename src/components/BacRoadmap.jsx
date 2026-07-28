@@ -122,6 +122,33 @@ function predictNext(results, outcome) {
   return { eye: pick(1), small: pick(2), cockroach: pick(3) };
 }
 
+// 问路(点击): 算出「若下一局开 outcome」这一颗在五块路(珠盘/大路/大眼/小路/曱甴)
+// 各自网格的具体行列位置，供在真实路子图上高亮闪烁。下三路无新增则该路返回 null。
+function predictNextCells(results, outcome) {
+  const before = buildBigCols(results);
+  const after = buildBigCols([...results, { outcome, bankerPair: false, playerPair: false }]);
+  const pick = (p) => {
+    const a = deriveMarks(after, p);
+    const b = deriveMarks(before, p);
+    if (a.length <= b.length) return null;
+    const layout = layoutColumns(marksToCols(a));
+    const last = layout.cells[layout.cells.length - 1];
+    if (!last) return null;
+    return { row: last.row, col: last.col, outcome: a[a.length - 1] };
+  };
+  // 珠盘路: 下一颗按时间顺序落在第 results.length 格。
+  const bead = {
+    row: results.length % ROWS,
+    col: Math.floor(results.length / ROWS),
+    outcome,
+  };
+  // 大路: 追加一颗后新增的最后一格(一定存在，因 banker/player 必新增一颗)。
+  const bigLayout = layoutColumns(after);
+  const bigLast = bigLayout.cells[bigLayout.cells.length - 1];
+  const big = bigLast ? { row: bigLast.row, col: bigLast.col, outcome: bigLast.outcome } : null;
+  return { bead, big, eye: pick(1), small: pick(2), cockroach: pick(3) };
+}
+
 // 网格化: cells[] → grid[row][col]
 function toGrid(cells, colsCount) {
   const g = Array.from({ length: ROWS }, () => Array(colsCount).fill(null));
@@ -131,10 +158,14 @@ function toGrid(cells, colsCount) {
   return g;
 }
 
-// 通用网格渲染
-function RoadGrid({ cells, cols, minCols, cellClass, render }) {
-  const colsCount = Math.max(cols, minCols);
+// 通用网格渲染。ghost = { row, col, outcome } 时，在该空格叠加一颗闪烁的「问路」预测标记。
+function RoadGrid({ cells, cols, minCols, cellClass, render, ghost }) {
+  let colsCount = Math.max(cols, minCols);
+  if (ghost) colsCount = Math.max(colsCount, ghost.col + 1);
   const grid = toGrid(cells, colsCount);
+  if (ghost && ghost.row < ROWS && ghost.col < colsCount && !grid[ghost.row][ghost.col]) {
+    grid[ghost.row][ghost.col] = { ...ghost, ghost: true };
+  }
   return (
     <div className={`bac-road-grid ${cellClass}`}>
       {grid.map((line, r) => (
@@ -156,10 +187,21 @@ function ScrollRight({ dep, children }) {
   React.useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return undefined;
+    // 超出右边界 → 贴到最右(显示最新)；未超出时 scrollWidth==clientWidth，
+    // scrollLeft 自然回到 0(靠左)。内容/容器尺寸变化都重新贴右。
     const toRight = () => { el.scrollLeft = el.scrollWidth; };
     toRight();
+    let ro;
+    if (typeof ResizeObserver !== 'undefined') {
+      ro = new ResizeObserver(toRight);
+      ro.observe(el);
+      if (el.firstElementChild) ro.observe(el.firstElementChild);
+    }
     window.addEventListener('resize', toRight);
-    return () => window.removeEventListener('resize', toRight);
+    return () => {
+      window.removeEventListener('resize', toRight);
+      if (ro) ro.disconnect();
+    };
   }, [dep]);
   return (
     <div className="bac-board-scroll" ref={ref}>
@@ -197,10 +239,11 @@ export default function BacRoadmap({ history }) {
   const cockroach = React.useMemo(() => layoutColumns(marksToCols(deriveMarks(bigCols, 3))), [bigCols]);
 
   // ---- cell renderers ----
+  const ghostCls = (cell) => (cell.ghost ? ' bac-ghost' : '');
   const beadDot = (cell) => {
     const label = cell.outcome === 'banker' ? '庄' : cell.outcome === 'player' ? '闲' : '和';
     return (
-      <span className={`bac-bead ${cell.outcome}`}>
+      <span className={`bac-bead ${cell.outcome}${ghostCls(cell)}`}>
         {label}
         {cell.bankerPair && <span className="bac-pair-dot banker" />}
         {cell.playerPair && <span className="bac-pair-dot player" />}
@@ -211,16 +254,16 @@ export default function BacRoadmap({ history }) {
   const bigDot = (cell) => {
     const ties = (cell.ties || 0) + (cell.leadingTies || 0);
     return (
-      <span className={`bac-big ${cell.outcome}`}>
+      <span className={`bac-big ${cell.outcome}${ghostCls(cell)}`}>
         {ties > 0 && <span className="bac-tie-slash" />}
         {ties > 0 && <span className="bac-tie-num">{ties}</span>}
       </span>
     );
   };
 
-  const eyeDot = (cell) => <span className={`bac-eye ${cell.outcome}`} />;
-  const smallDot = (cell) => <span className={`bac-small ${cell.outcome}`} />;
-  const cockroachDot = (cell) => <span className={`bac-cockroach ${cell.outcome}`} />;
+  const eyeDot = (cell) => <span className={`bac-eye ${cell.outcome}${ghostCls(cell)}`} />;
+  const smallDot = (cell) => <span className={`bac-small ${cell.outcome}${ghostCls(cell)}`} />;
+  const cockroachDot = (cell) => <span className={`bac-cockroach ${cell.outcome}${ghostCls(cell)}`} />;
 
   const empty = results.length === 0;
 
@@ -228,15 +271,27 @@ export default function BacRoadmap({ history }) {
   const askBanker = React.useMemo(() => predictNext(results, 'banker'), [results]);
   const askPlayer = React.useMemo(() => predictNext(results, 'player'), [results]);
 
-  const askPill = (label, cls, pred) => (
-    <div className={`bac-ask ${cls}`}>
+  // 点问路 → 在下三路真实网格上高亮预测标记，闪烁 3 秒后自动消失。
+  // 记录触发时的局数(forLen)，一旦有新局开出即视为过期，不再叠加旧预测。
+  const [ask, setAsk] = React.useState(null); // { forLen, eye, small, cockroach }
+  const askTimer = React.useRef(null);
+  const triggerAsk = React.useCallback((outcome) => {
+    if (askTimer.current) clearTimeout(askTimer.current);
+    setAsk({ forLen: results.length, ...predictNextCells(results, outcome) });
+    askTimer.current = setTimeout(() => setAsk(null), 3000);
+  }, [results]);
+  React.useEffect(() => () => { if (askTimer.current) clearTimeout(askTimer.current); }, []);
+  const askGhost = ask && ask.forLen === results.length ? ask : null;
+
+  const askPill = (label, cls, pred, outcome) => (
+    <button type="button" className={`bac-ask ${cls}`} onClick={() => triggerAsk(outcome)}>
       <div className="bac-ask-marks">
         <span className={`bac-eye ${pred.eye || 'none'}`} />
         <span className={`bac-small ${pred.small || 'none'}`} />
         <span className={`bac-cockroach ${pred.cockroach || 'none'}`} />
       </div>
       <span className="bac-ask-label">{label}</span>
-    </div>
+    </button>
   );
 
   return (
@@ -247,34 +302,34 @@ export default function BacRoadmap({ history }) {
         // 真实赌场版式: 珠盘路(左) + 大路(右上) + 下三路 大眼/小路/曱甴(右下并排)
         <div className="bac-board">
           <div className="bac-board-bead">
-            <ScrollRight dep={results.length}>
-              <RoadGrid cells={bead} cols={beadCols} minCols={8} cellClass="md" render={beadDot} />
+            <ScrollRight dep={`${results.length}-${askGhost ? 'a' : ''}`}>
+              <RoadGrid cells={bead} cols={beadCols} minCols={8} cellClass="md" render={beadDot} ghost={askGhost?.bead} />
             </ScrollRight>
             <div className="bac-ask-row">
-              {askPill('庄问路', 'banker', askBanker)}
-              {askPill('闲问路', 'player', askPlayer)}
+              {askPill('庄问路', 'banker', askBanker, 'banker')}
+              {askPill('闲问路', 'player', askPlayer, 'player')}
             </div>
           </div>
           <div className="bac-board-right">
             <div className="bac-board-big">
-              <ScrollRight dep={results.length}>
-                <RoadGrid cells={bigRoad.cells} cols={bigRoad.cols} minCols={12} cellClass="md" render={bigDot} />
+              <ScrollRight dep={`${results.length}-${askGhost ? 'a' : ''}`}>
+                <RoadGrid cells={bigRoad.cells} cols={bigRoad.cols} minCols={12} cellClass="md" render={bigDot} ghost={askGhost?.big} />
               </ScrollRight>
             </div>
             <div className="bac-board-derived">
               <div className="bac-board-sub">
-                <ScrollRight dep={results.length}>
-                  <RoadGrid cells={bigEye.cells} cols={bigEye.cols} minCols={10} cellClass="xs" render={eyeDot} />
+                <ScrollRight dep={`${results.length}-${askGhost ? 'a' : ''}`}>
+                  <RoadGrid cells={bigEye.cells} cols={bigEye.cols} minCols={10} cellClass="xs" render={eyeDot} ghost={askGhost?.eye} />
                 </ScrollRight>
               </div>
               <div className="bac-board-sub">
-                <ScrollRight dep={results.length}>
-                  <RoadGrid cells={smallRoad.cells} cols={smallRoad.cols} minCols={10} cellClass="xs" render={smallDot} />
+                <ScrollRight dep={`${results.length}-${askGhost ? 'a' : ''}`}>
+                  <RoadGrid cells={smallRoad.cells} cols={smallRoad.cols} minCols={10} cellClass="xs" render={smallDot} ghost={askGhost?.small} />
                 </ScrollRight>
               </div>
               <div className="bac-board-sub">
-                <ScrollRight dep={results.length}>
-                  <RoadGrid cells={cockroach.cells} cols={cockroach.cols} minCols={10} cellClass="xs" render={cockroachDot} />
+                <ScrollRight dep={`${results.length}-${askGhost ? 'a' : ''}`}>
+                  <RoadGrid cells={cockroach.cells} cols={cockroach.cols} minCols={10} cellClass="xs" render={cockroachDot} ghost={askGhost?.cockroach} />
                 </ScrollRight>
               </div>
             </div>

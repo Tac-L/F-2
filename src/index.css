@@ -7369,6 +7369,30 @@ img.lhc-ball {
   border-radius: 8px;
   background: transparent;
   border: 1px solid #d7dbe3;
+  cursor: pointer;
+  font: inherit;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s ease;
+}
+.bac-ask:active { background: rgba(0, 0, 0, 0.05); }
+
+/* 问路预测标记在真实路子图上闪烁 3 秒 */
+@keyframes bac-ghost-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.2; }
+}
+.bac-ghost {
+  animation: bac-ghost-blink 0.7s ease-in-out infinite;
+}
+.bac-eye.bac-ghost,
+.bac-bead.bac-ghost,
+.bac-big.bac-ghost {
+  box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.95);
+}
+.bac-small.bac-ghost,
+.bac-cockroach.bac-ghost {
+  outline: 1.5px solid rgba(255, 193, 7, 0.9);
+  outline-offset: 1px;
 }
 .bac-ask-marks {
   display: flex;
