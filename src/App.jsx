@@ -924,12 +924,21 @@ export default function App() {
     if (gamesState[game.id]) {
       setActiveGameId(game.id);
       clearSelections();
+      setSelectedShortcutPositions([]);
       setActiveTab(defaultTabFor(game.id));
       setIsHistoryDropdownOpen(false);
     } else {
       addToast(`您已成功切换到: ${game.name} (暂未开放投注，仅展示玩法)`, 'info');
     }
     setIsDrawerOpen(false);
+  };
+
+  // 切换左侧玩法 tab 时清除已选中的点位（含快捷投注位置），避免旧选注残留。
+  const handleSelectTab = (tabId) => {
+    if (tabId === activeTab) return;
+    clearSelections();
+    setSelectedShortcutPositions([]);
+    setActiveTab(tabId);
   };
 
   // Check if betting is closed. PK10 locks 15s before draw; FFC locks 10s
@@ -3052,7 +3061,7 @@ export default function App() {
                   key={tab.id}
                   type="button"
                   className={`sidebar-tab ${isActive ? 'active' : ''}`}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => handleSelectTab(tab.id)}
                 >
                   {tab.name}
                 </button>
