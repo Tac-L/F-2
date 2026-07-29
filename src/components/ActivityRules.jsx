@@ -11,10 +11,11 @@ const CN_NUM = ['', '一', '二', '三', '四', '五', '六', '七', '八', '九
 const classifyLine = (line) => {
   if (line === '名词定义：' || /^名词定义/.test(line)) return 'section';
   if (/^[一二三四五六七八九十]+、/.test(line)) return 'section';   // 一、二、…
-  if (/^[0-9０-９]{1,2}、/.test(line)) return 'section';            // 1、 ２、 16、
+  if (/^[0-9０-９]{1,2}、(?![0-9０-９])/.test(line)) return 'section'; // 1、 ２、 16、（「、」后为数字则视为号码区间，非标题）
   if (/^\d+\.\d+/.test(line)) return 'sub';                          // 2.1
   if (/^(举例\d*|例如|例)\s*[:：]\s*$/.test(line)) return 'eglabel';  // 举例：（内容在下一行）
   if (/^(举例\d*|例如|例)[：:]/.test(line)) return 'eg';              // 例：xxx（单行）
+  if (/^如(?!果)/.test(line)) return 'eg';                           // 如：… / 如中奖… / 如开奖…（举例，排除「如果」）
   if (/^注[：:]/.test(line)) return 'note';
   if (/^[-•]\s*/.test(line)) return 'bullet';
   return 'p';
@@ -28,7 +29,7 @@ const distInfo = (line) => {
   if (/^蓝[波单双大小合]/.test(line)) return { color: 'blue' };
   if (/^[0-9０-９]{1,2}[头尾][：:]/.test(line)) return {};
   if (/^[金木水火土][：:]/.test(line)) return {};
-  if (/^[鼠牛虎兔龙蛇马羊猴鸡狗猪][：:]/.test(line)) return {};
+  if (/^[鼠牛虎兔龙蛇马羊猴鸡狗猪豹][：:]/.test(line)) return {};
   if (/^(球色号码分布如下|20\d\d年五行如下|范围包含)/.test(line)) return {};
   return null;
 };

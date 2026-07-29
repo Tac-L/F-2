@@ -7573,7 +7573,7 @@ img.lhc-ball {
   margin: 8px 0;
 }
 .rules-olist > li::marker {
-  color: var(--primary-blue-hover);
+  color: #1f2937;
   font-weight: 700;
 }
 .rules-olitem {
@@ -7710,6 +7710,7 @@ img.lhc-ball {
 [data-theme^="midnight-"] .rules-table.odds td:last-child { color: #ff8f8f; }
 [data-theme^="midnight-"] .rules-olist > li,
 [data-theme^="midnight-"] .rules-olitem { color: #c3cce6; }
+[data-theme^="midnight-"] .rules-olist > li::marker { color: #e5e9f5; }
 [data-theme^="midnight-"] .rules-item-cont,
 [data-theme^="midnight-"] .rules-subbullet { color: #9aa6c8; }
 [data-theme^="midnight-"] .rules-c-red { color: #ff8f8f; }
