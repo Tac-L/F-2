@@ -935,17 +935,18 @@ export function bacDeal() {
 
 // ---- Live shoe model (依照实际现场流程) -------------------------------------
 // 一靴 = 8 副牌 (416 张)，逐张发出、不放回；发到接近底部的「切牌位」后本靴结束，
-// 触发洗牌。第 30 局之后关闭部分玩法（对子 / 庄幸运6 / 和）。
+// 触发洗牌。第 30 局之后关闭「本靴30局内下注」的玩法。
 export const BAC_DECKS = 8;
 export const BAC_CUT_MIN = 14;          // 切牌位距底部 14–20 张
 export const BAC_CUT_MAX = 20;
 export const BAC_SHUFFLE_SECONDS = 15;  // 洗牌封盘时长
 export const BAC_SIDE_BET_CUTOFF_ROUND = 30; // 此局之后关闭部分玩法
 
-// 第 30 局之后关闭的玩法：和、庄幸运6、以及全部对子。庄/闲/两面 始终开放。
+// 第 30 局之后关闭的玩法：仅「完美对子」（对齐参考平台，其「本靴30局内下注」限制
+// 在我们现有玩法中只覆盖完美对子；和 / 庄幸运6 / 庄对 / 闲对 / 任意对子 均无限制）。
+// 庄 / 闲 / 两面 始终开放。
 export const BAC_SIDE_BET_TYPES = [
-  'bac-tie', 'bac-lucky6',
-  'bac-banker-pair', 'bac-player-pair', 'bac-any-pair', 'bac-perfect-pair',
+  'bac-perfect-pair',
 ];
 
 // True when the "side" plays should be closed for the round currently open for

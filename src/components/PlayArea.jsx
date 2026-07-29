@@ -2476,8 +2476,8 @@ export default function PlayArea({
         <div className="bac-zx-board">
           {renderBacCard(bacBet('bac-banker', '庄', 'bac-banker', BAC_ODDS.banker), { label: '庄', color: '#e3342f', className: 'bac-tall' })}
           <div className="bac-zx-mid">
-            {renderBacCard(bacBet('bac-tie', '和', 'bac-tie', BAC_ODDS.tie), { label: '和', color: '#16a34a', closed: bacSideBetsClosed })}
-            {renderBacCard(bacBet('bac-lucky6', '庄幸运6', 'bac-lucky6', BAC_ODDS.lucky6), { label: '庄幸运6', color: '#f59e0b', closed: bacSideBetsClosed })}
+            {renderBacCard(bacBet('bac-tie', '和', 'bac-tie', BAC_ODDS.tie), { label: '和', color: '#16a34a' })}
+            {renderBacCard(bacBet('bac-lucky6', '庄幸运6', 'bac-lucky6', BAC_ODDS.lucky6), { label: '庄幸运6', color: '#f59e0b' })}
           </div>
           {renderBacCard(bacBet('bac-player', '闲', 'bac-player', BAC_ODDS.player), { label: '闲', color: '#2563eb', className: 'bac-tall' })}
         </div>
@@ -2487,9 +2487,9 @@ export default function PlayArea({
       <div className="bac-panel">
         {renderBacSectionHead('对子')}
         <div className="betting-grid">
-          {renderBacCard(bacBet('bac-banker-pair', '庄对', 'bac-banker-pair', BAC_ODDS.bankerPair), { label: '庄对', color: '#e3342f', closed: bacSideBetsClosed })}
-          {renderBacCard(bacBet('bac-player-pair', '闲对', 'bac-player-pair', BAC_ODDS.playerPair), { label: '闲对', color: '#2563eb', closed: bacSideBetsClosed })}
-          {renderBacCard(bacBet('bac-any-pair', '任意对子', 'bac-any-pair', BAC_ODDS.anyPair), { label: '任意对子', color: '#16a34a', closed: bacSideBetsClosed })}
+          {renderBacCard(bacBet('bac-banker-pair', '庄对', 'bac-banker-pair', BAC_ODDS.bankerPair), { label: '庄对', color: '#e3342f' })}
+          {renderBacCard(bacBet('bac-player-pair', '闲对', 'bac-player-pair', BAC_ODDS.playerPair), { label: '闲对', color: '#2563eb' })}
+          {renderBacCard(bacBet('bac-any-pair', '任意对子', 'bac-any-pair', BAC_ODDS.anyPair), { label: '任意对子', color: '#16a34a' })}
           {renderBacCard(bacBet('bac-perfect-pair', '完美对子', 'bac-perfect-pair', BAC_ODDS.perfectPair), { label: '完美对子', color: '#db2777', closed: bacSideBetsClosed })}
         </div>
       </div>
