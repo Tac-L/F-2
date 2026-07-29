@@ -8,6 +8,7 @@ export default function RightMenuDrawer({
   onSelectSettled,
   onSelectBetting,
   onSelectHistory,
+  onSelectRules,
   onSelectSettings,
   onSelectPlanCenter,
   showPlanCenter = false,
@@ -186,6 +187,8 @@ export default function RightMenuDrawer({
                       if (onSelectBetting) onSelectBetting();
                     } else if (item.id === '开奖历史') {
                       if (onSelectHistory) onSelectHistory();
+                    } else if (item.id === '活动规则') {
+                      if (onSelectRules) onSelectRules();
                     } else if (item.id === '设置') {
                       if (onSelectSettings) onSelectSettings();
                     }

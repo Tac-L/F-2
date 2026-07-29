@@ -24,6 +24,7 @@ import RightMenuDrawer from './components/RightMenuDrawer';
 import UnsettledDetails from './components/UnsettledDetails';
 import SettledDetails from './components/SettledDetails';
 import DrawHistory from './components/DrawHistory';
+import ActivityRules from './components/ActivityRules';
 import SettingsPage from './components/SettingsPage';
 import LoginPage from './components/LoginPage';
 import { getLang, setLang, startTraditional } from './i18n';
@@ -638,7 +639,7 @@ export default function App() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isRightDrawerOpen, setIsRightDrawerOpen] = useState(false);
   const [isHistoryDropdownOpen, setIsHistoryDropdownOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState('betting'); // 'betting', 'unsettled', 'settled', 'history', 'settings'
+  const [currentPage, setCurrentPage] = useState('betting'); // 'betting', 'unsettled', 'settled', 'history', 'rules', 'settings'
   // 跟单计划 (follow-plan) modal, opened from the 长龙 rail.
   const [isFollowPlanOpen, setIsFollowPlanOpen] = useState(false);
   // 从右侧菜单进入计划中心时预设选中第一个游戏（而非当前游戏）；从投注页
@@ -956,7 +957,7 @@ export default function App() {
   // 百家乐 洗牌期间全程封盘；其余游戏在封盘倒计时内封盘。
   const bacShuffling = gameKind === 'bac' && !!activeGame.shuffling;
   const isClosed = bacShuffling || timeLeft <= lockSeconds;
-  // 第 30 局之后关闭部分玩法（对子 / 庄幸运6 / 和），庄/闲/两面 仍开放。
+  // 第 30 局之后关闭「本靴30局内下注」的玩法（我们现有玩法中仅完美对子），其余始终开放。
   const bacSideClosed = gameKind === 'bac' && !bacShuffling && bacSideBetsClosed(activeGame.roundInShoe);
 
   const clearSelections = () => {
@@ -995,7 +996,7 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isClosed, selectedBets, isConfirmModalOpen]);
 
-  // 百家乐 第 30 局之后关闭 对子 / 庄幸运6 / 和：清掉已选的这些注。
+  // 百家乐 第 30 局之后关闭 完美对子：清掉已选的这些注。
   useEffect(() => {
     if (!bacSideClosed) return;
     setNonShortcutSelectedBets(prev => {
@@ -3326,8 +3327,9 @@ export default function App() {
         onSelectSettled={() => { setCurrentPage('settled'); setIsFollowPlanOpen(false); }}
         onSelectBetting={() => { setCurrentPage('betting'); setIsFollowPlanOpen(false); }}
         onSelectHistory={() => { setCurrentPage('history'); setIsFollowPlanOpen(false); }}
+        onSelectRules={() => { setCurrentPage('rules'); setIsFollowPlanOpen(false); }}
         onSelectSettings={() => { setCurrentPage('settings'); setIsFollowPlanOpen(false); }}
-        activeItem={isFollowPlanOpen ? '计划中心' : currentPage === 'betting' ? '投注' : currentPage === 'unsettled' ? '未结明细' : currentPage === 'settled' ? '今日已结' : currentPage === 'history' ? '开奖历史' : currentPage === 'settings' ? '设置' : ''}
+        activeItem={isFollowPlanOpen ? '计划中心' : currentPage === 'betting' ? '投注' : currentPage === 'unsettled' ? '未结明细' : currentPage === 'settled' ? '今日已结' : currentPage === 'history' ? '开奖历史' : currentPage === 'rules' ? '活动规则' : currentPage === 'settings' ? '设置' : ''}
         unsettledAmount={placedBets.reduce((acc, b) => acc + b.amount, 20)}
         elevated={isFollowPlanOpen}
       />
@@ -3356,6 +3358,14 @@ export default function App() {
       {/* Draw History Full Page Overlay */}
       {currentPage === 'history' && (
         <DrawHistory
+          onBack={() => setCurrentPage('betting')}
+          onOpenMenu={() => setIsRightDrawerOpen(true)}
+        />
+      )}
+
+      {/* Activity Rules Full Page Overlay */}
+      {currentPage === 'rules' && (
+        <ActivityRules
           onBack={() => setCurrentPage('betting')}
           onOpenMenu={() => setIsRightDrawerOpen(true)}
         />
