@@ -68,6 +68,8 @@ export default function GameDrawer({ isOpen, onClose, onSelectGame, gameTimers =
     ffc: '分分',
     k3: '快三',
     xy28: '28',
+    fhc: '鱼虾蟹',
+    bac: '百家乐',
   };
 
   // 「常用」用内联星形图标（没有对应 PNG），active 时蓝色，未选中时灰色。
@@ -77,24 +79,8 @@ export default function GameDrawer({ isOpen, onClose, onSelectGame, gameTimers =
     return `data:image/svg+xml,${encodeURIComponent(svg)}`;
   };
 
-  // 鱼虾蟹 无对应 PNG，用内联「骰子 + 鱼图案」图标，配色规则同 starIcon。
-  const fishIconSrc = (isActive) => {
-    const color = isActive ? '#547cfd' : '#94a3b8';
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="4.6" fill="none" stroke="${color}" stroke-width="1.8"/><path d="M6.6 12c1.7-2.5 4.4-2.5 6.1 0-1.7 2.5-4.4 2.5-6.1 0z" fill="${color}"/><path d="M12.7 12l2.9-1.8v3.6z" fill="${color}"/><circle cx="8.1" cy="11.3" r="0.8" fill="#fff"/></svg>`;
-    return `data:image/svg+xml,${encodeURIComponent(svg)}`;
-  };
-
-  // 百家乐 无对应 PNG，用内联「三张扑克牌展开」图标，配色规则同 starIcon。
-  const cardIconSrc = (isActive) => {
-    const color = isActive ? '#547cfd' : '#94a3b8';
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="#fff" stroke="${color}" stroke-width="1.5" stroke-linejoin="round"><rect x="3.5" y="8.5" width="7.5" height="11" rx="1.5" transform="rotate(-20 7.25 14)"/><rect x="13" y="8.5" width="7.5" height="11" rx="1.5" transform="rotate(20 16.75 14)"/><rect x="8.25" y="5.5" width="7.5" height="12" rx="1.5"/></g><path d="M12 9l1.5 1.7-1.5 1.7-1.5-1.7z" fill="${color}"/></svg>`;
-    return `data:image/svg+xml,${encodeURIComponent(svg)}`;
-  };
-
   const categoryIconSrc = (catId, isActive) => {
     if (catId === 'recent') return starIconSrc(isActive);
-    if (catId === 'fhc') return fishIconSrc(isActive);
-    if (catId === 'bac') return cardIconSrc(isActive);
     const base = CATEGORY_ICON_BASE[catId];
     if (!base) return null;
     return `${import.meta.env.BASE_URL}gametype/${encodeURIComponent(base)}-${isActive ? 2 : 1}.png`;
