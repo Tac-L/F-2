@@ -452,6 +452,12 @@
   border-bottom-color: var(--mn-border);
 }
 
+/* Midnight: 下拉选单当前项（原本浅蓝底）→ 深色高亮底 + 主色文字 */
+[data-theme^="midnight-"] .history-dropdown-item.active {
+  background: var(--mn-surface-hover);
+  color: var(--primary-blue);
+}
+
 /* Midnight-blue: settled/unsettled filter dropdown text → light */
 [data-theme^="midnight-"] .history-picker,
 [data-theme^="midnight-"] .history-picker-value {
@@ -7085,6 +7091,86 @@ img.lhc-ball {
   color: var(--mn-text);
 }
 
+/* 「创建计划」→ 深色卡面 + 主色描边（呼吸灯边框仍由 fpBorderPulse 驱动） */
+[data-theme^="midnight-"] .fp-create-btn {
+  background: var(--mn-surface);
+  color: var(--primary-blue);
+}
+[data-theme^="midnight-"] .fp-create-btn:active {
+  background: var(--mn-surface-hover);
+}
+
+/* 自订计划 config：选择游戏 / 计划位置 下拉。
+   .fp-cfg-picker .history-picker 的浅色底写在午夜通用规则之后且同权重，
+   这里用更高权重（多一层 data-theme）改回深色。 */
+[data-theme^="midnight-"] .fp-cfg-picker .history-picker {
+  background: var(--mn-surface-2);
+  border-color: var(--mn-border);
+  color: var(--mn-text);
+}
+
+/* 计划名称 placeholder（输入框本体已由 .fp-config-box 的午夜规则转深） */
+[data-theme^="midnight-"] .fp-custom-input::placeholder {
+  color: var(--mn-text-muted);
+}
+
+/* 计划号码：两面玩法的文字号码 + 右侧箭头 */
+[data-theme^="midnight-"] .fp-custom-num-side {
+  color: var(--mn-text);
+}
+[data-theme^="midnight-"] .fp-custom-num-caret {
+  color: var(--mn-text-muted);
+}
+
+/* stepper（追号数 / 起始倍数 / 间隔期数 / 倍数X） */
+[data-theme^="midnight-"] .fp-stepper {
+  background: var(--mn-surface-2);
+}
+[data-theme^="midnight-"] .fp-stepper-val {
+  color: var(--mn-text);
+}
+[data-theme^="midnight-"] .fp-stepper-unit {
+  color: var(--mn-text-muted);
+}
+
+/* 停止条件勾选框：原生控件在深色底上是白方块，交给浏览器绘制深色版 */
+[data-theme^="midnight-"] .fp-config-stop-row input[type="checkbox"],
+[data-theme^="midnight-"] .fp-config-check input[type="checkbox"] {
+  color-scheme: dark;
+  accent-color: var(--primary-blue);
+}
+
+/* 选择号码底部弹层 */
+[data-theme^="midnight-"] .fp-numsheet {
+  background: var(--mn-surface);
+  box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.5);
+}
+[data-theme^="midnight-"] .fp-numsheet-head {
+  border-bottom-color: var(--mn-border);
+}
+[data-theme^="midnight-"] .fp-numsheet-title,
+[data-theme^="midnight-"] .fp-numsheet-side {
+  color: var(--mn-text);
+}
+[data-theme^="midnight-"] .fp-numsheet-cancel {
+  color: var(--mn-text-muted);
+}
+[data-theme^="midnight-"] .fp-numsheet-item {
+  background: var(--mn-surface-2);
+  border-color: var(--mn-border);
+}
+[data-theme^="midnight-"] .fp-numsheet-item.on {
+  background: var(--mn-surface-hover);
+  border-color: var(--primary-blue);
+}
+[data-theme^="midnight-"] .fp-numsheet-radio {
+  border-color: var(--mn-text-muted);
+}
+[data-theme^="midnight-"] .fp-numsheet-radio.on {
+  border-color: var(--primary-blue);
+  background: radial-gradient(var(--primary-blue) 0 42%, var(--mn-surface-2) 46%);
+}
+
 /* ===================== 鱼虾蟹 (FHC) ===================== */
 /* Betting board: reuse .betting-grid (2 columns). Each cell shows the symbol tile
    on the left and the odds on the right, like the 动物/两面 cells. */
@@ -7536,22 +7622,34 @@ img.lhc-ball {
 .bac-cockroach.none { background: #c2c8d2; }
 
 /* 深色主题 */
+/* 玩法组 panel（庄闲 / 对子 / 两面）：淺藍底 → 比注单更深一层的表面，
+   注单本身沿用 .bet-button 的午夜底色，层次与浅色版一致。 */
+[data-theme^="midnight-"] .bac-panel {
+  background: var(--mn-surface-2);
+  border-color: var(--mn-border);
+}
+/* 顶部开奖条 / 结果弹窗的 闲 / 庄 标签：深蓝深红在深色底上偏暗，改用亮色变体 */
+[data-theme^="midnight-"] .bac-side-label.player { color: #7fb0ff; }
+[data-theme^="midnight-"] .bac-side-label.banker { color: #ff8f8f; }
+[data-theme^="midnight-"] .bac-result-sep { background: rgba(255, 255, 255, 0.28); }
+/* 路子图：原本写死的深蓝色系改用皮肤 token，午夜紫才不会露出蓝底；
+   格线用白色低透明度，两种皮肤通用。 */
 [data-theme^="midnight-"] .bac-roadmap {
-  background: #1b2340;
-  border-bottom-color: #2c375c;
+  background: var(--mn-surface);
+  border-bottom-color: var(--mn-border);
 }
 [data-theme^="midnight-"] .bac-ask {
   background: transparent;
-  border-color: #3a4870;
+  border-color: rgba(255, 255, 255, 0.22);
 }
 [data-theme^="midnight-"] .bac-ask.banker .bac-ask-label { color: #ff8f8f; }
 [data-theme^="midnight-"] .bac-ask.player .bac-ask-label { color: #7fb0ff; }
-[data-theme^="midnight-"] .bac-board { border-color: #2c375c; }
-[data-theme^="midnight-"] .bac-board-bead { border-right-color: #3a4870; }
-[data-theme^="midnight-"] .bac-board-big { border-bottom-color: #3a4870; }
-[data-theme^="midnight-"] .bac-board-sub + .bac-board-sub { border-left-color: #3a4870; }
-[data-theme^="midnight-"] .bac-road-cell { border-right-color: #2c375c; border-bottom-color: #2c375c; }
-[data-theme^="midnight-"] .bac-roadmap-empty { color: #7c86a8; }
+[data-theme^="midnight-"] .bac-board { border-color: var(--mn-border); }
+[data-theme^="midnight-"] .bac-board-bead { border-right-color: rgba(255, 255, 255, 0.22); }
+[data-theme^="midnight-"] .bac-board-big { border-bottom-color: rgba(255, 255, 255, 0.22); }
+[data-theme^="midnight-"] .bac-board-sub + .bac-board-sub { border-left-color: rgba(255, 255, 255, 0.22); }
+[data-theme^="midnight-"] .bac-road-cell { border-right-color: var(--mn-border); border-bottom-color: var(--mn-border); }
+[data-theme^="midnight-"] .bac-roadmap-empty { color: var(--mn-text-muted); }
 
 /* ===== 活动规则 (Activity Rules) page ===== */
 .rules-block {
@@ -7929,6 +8027,9 @@ img.lhc-ball {
   border-color: var(--mn-border);
 }
 [data-theme^="midnight-"] .rules-eg-total { color: #eef2ff; }
+/* 示例牌局的 庄家 / 闲家 标签：与其他百家乐深色文案统一用亮色变体 */
+[data-theme^="midnight-"] .rules-eg-side.banker { color: #ff8f8f; }
+[data-theme^="midnight-"] .rules-eg-side.player { color: #7fb0ff; }
 [data-theme^="midnight-"] .rules-eg-btn {
   background: transparent;
 }
