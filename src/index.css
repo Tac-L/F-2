@@ -308,6 +308,7 @@
 [data-theme^="midnight-"] .unsettled-detail-container,
 [data-theme^="midnight-"] .draw-row.clickable:hover,
 [data-theme^="midnight-"] .draw-row.clickable:active,
+[data-theme^="midnight-"] .report-card.clickable:active,
 [data-theme^="midnight-"] .settled-detail-container,
 [data-theme^="midnight-"] .play-help-tabs,
 [data-theme^="midnight-"] .history-dropdown-item:active,
@@ -5367,6 +5368,54 @@ img.lhc-ball {
 }
 .history-card-top.cols-2 { grid-template-columns: 1fr 1fr; }
 .history-card-top.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+/* ===== 报表查询：逐日汇总卡片 ===== */
+.report-card {
+  padding: 16px 14px;
+}
+.report-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px 12px;
+}
+.report-card-footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+}
+/* 整张卡片可点击。hover 同样只在支持悬停的设备上生效，
+   避免触屏点击后卡片底色残留；触屏的按下反馈交给 :active。 */
+.report-card.clickable {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+@media (hover: hover) {
+  .report-card.clickable:hover {
+    background-color: #f8fafc;
+  }
+  [data-theme^="midnight-"] .report-card.clickable:hover {
+    background-color: var(--mn-surface-2);
+    background: var(--mn-surface-2);
+  }
+}
+.report-card.clickable:active {
+  background-color: #f1f5f9;
+}
+
+/* 「查看详情」为视觉提示，点击由整张卡片处理 */
+.report-detail-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 1px solid var(--primary-blue);
+  border-radius: 6px;
+  color: var(--primary-blue);
+  font-size: 13px;
+  font-weight: 600;
+}
 
 .history-field {
   display: flex;

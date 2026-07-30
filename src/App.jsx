@@ -24,6 +24,7 @@ import RightMenuDrawer from './components/RightMenuDrawer';
 import UnsettledDetails from './components/UnsettledDetails';
 import SettledDetails from './components/SettledDetails';
 import DrawHistory from './components/DrawHistory';
+import ReportQuery from './components/ReportQuery';
 import ActivityRules from './components/ActivityRules';
 import SettingsPage from './components/SettingsPage';
 import LoginPage from './components/LoginPage';
@@ -639,7 +640,9 @@ export default function App() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isRightDrawerOpen, setIsRightDrawerOpen] = useState(false);
   const [isHistoryDropdownOpen, setIsHistoryDropdownOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState('betting'); // 'betting', 'unsettled', 'settled', 'history', 'rules', 'settings'
+  const [currentPage, setCurrentPage] = useState('betting'); // 'betting', 'unsettled', 'settled', 'history', 'report', 'rules', 'settings'
+  // 报表查询：点击某日卡片进入该游戏该日期的「今日已结」版面；null 时显示报表列表。
+  const [reportDetailCtx, setReportDetailCtx] = useState(null); // { gameId, gameName, date } | null
   // 跟单计划 (follow-plan) modal, opened from the 长龙 rail.
   const [isFollowPlanOpen, setIsFollowPlanOpen] = useState(false);
   // 从右侧菜单进入计划中心时预设选中第一个游戏（而非当前游戏）；从投注页
@@ -3332,9 +3335,10 @@ export default function App() {
         onSelectSettled={() => { setCurrentPage('settled'); setIsFollowPlanOpen(false); }}
         onSelectBetting={() => { setCurrentPage('betting'); setIsFollowPlanOpen(false); }}
         onSelectHistory={() => { setCurrentPage('history'); setIsFollowPlanOpen(false); }}
+        onSelectReport={() => { setReportDetailCtx(null); setCurrentPage('report'); setIsFollowPlanOpen(false); }}
         onSelectRules={() => { setCurrentPage('rules'); setIsFollowPlanOpen(false); }}
         onSelectSettings={() => { setCurrentPage('settings'); setIsFollowPlanOpen(false); }}
-        activeItem={isFollowPlanOpen ? '计划中心' : currentPage === 'betting' ? '投注' : currentPage === 'unsettled' ? '未结明细' : currentPage === 'settled' ? '今日已结' : currentPage === 'history' ? '开奖历史' : currentPage === 'rules' ? '活动规则' : currentPage === 'settings' ? '设置' : ''}
+        activeItem={isFollowPlanOpen ? '计划中心' : currentPage === 'betting' ? '投注' : currentPage === 'unsettled' ? '未结明细' : currentPage === 'settled' ? '今日已结' : currentPage === 'history' ? '开奖历史' : currentPage === 'report' ? '报表查询' : currentPage === 'rules' ? '活动规则' : currentPage === 'settings' ? '设置' : ''}
         unsettledAmount={placedBets.reduce((acc, b) => acc + b.amount, 20)}
         elevated={isFollowPlanOpen}
       />
@@ -3365,6 +3369,27 @@ export default function App() {
         <DrawHistory
           onBack={() => setCurrentPage('betting')}
           onOpenMenu={() => setIsRightDrawerOpen(true)}
+        />
+      )}
+
+      {/* Report Query Full Page Overlay */}
+      {currentPage === 'report' && !reportDetailCtx && (
+        <ReportQuery
+          onBack={() => setCurrentPage('betting')}
+          onOpenMenu={() => setIsRightDrawerOpen(true)}
+          onViewDetail={(ctx) => setReportDetailCtx(ctx)}
+        />
+      )}
+
+      {/* 报表查询 -> 点击某日卡片 -> 该游戏该日期的「今日已结」版面；返回回到报表查询 */}
+      {currentPage === 'report' && reportDetailCtx && (
+        <SettledDetails
+          onBack={() => setReportDetailCtx(null)}
+          onOpenMenu={() => setIsRightDrawerOpen(true)}
+          settledBets={settledBets}
+          addToast={addToast}
+          presetGameId={reportDetailCtx.gameId}
+          presetDate={reportDetailCtx.date}
         />
       )}
 

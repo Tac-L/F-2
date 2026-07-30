@@ -6,7 +6,10 @@ export default function SettledDetails({
   onBack,
   onOpenMenu,
   settledBets = [],
-  addToast
+  addToast,
+  // 从「报表查询」进入时预设的游戏 / 日期（点击某日卡片直接进入该日已结版面）。
+  presetGameId = null,
+  presetDate = null
 }) {
   const [resultModalData, setResultModalData] = React.useState(null);
 
@@ -14,8 +17,12 @@ export default function SettledDetails({
   // right picker = specific game within that category. Picking 全部游戏 disables
   // the right picker and shows every order.
   const CATEGORY_OPTIONS = [{ id: 'all', name: '全部游戏' }, ...DRAWER_CATEGORIES];
-  const [categoryId, setCategoryId] = React.useState('all');
-  const [gameId, setGameId] = React.useState(null);
+  // 预设游戏时，定位其所属分类并直接选中该游戏。
+  const presetCategoryId = presetGameId
+    ? (DRAWER_CATEGORIES.find((c) => c.games.some((g) => g.id === presetGameId))?.id || 'all')
+    : 'all';
+  const [categoryId, setCategoryId] = React.useState(presetCategoryId);
+  const [gameId, setGameId] = React.useState(presetGameId);
   const [openMenu, setOpenMenu] = React.useState(null); // 'category' | 'game' | null
 
   const selectedCategory = CATEGORY_OPTIONS.find((c) => c.id === categoryId);
@@ -158,14 +165,15 @@ export default function SettledDetails({
   const totalAmount = filteredBets.reduce((acc, bet) => acc + bet.amount, 0);
   const totalResult = filteredBets.reduce((acc, bet) => acc + bet.winLoss, 0);
 
-  // Dynamic report title date based on current local time
+  // 报表标题日期：从报表查询进入时用该卡片的日期，否则用当前本地日期。
   const reportDate = React.useMemo(() => {
+    if (presetDate) return presetDate;
     const now = new Date();
     const yyyy = now.getFullYear();
     const mm = String(now.getMonth() + 1).padStart(2, '0');
     const dd = String(now.getDate()).padStart(2, '0');
     return `${yyyy}-${mm}-${dd}`;
-  }, []);
+  }, [presetDate]);
 
   return (
     <div className="settled-detail-container">
