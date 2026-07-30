@@ -7657,6 +7657,11 @@ img.lhc-ball {
 .rules-table td.rules-td-left {
   text-align: left;
 }
+/* 第一栏（项目 / 玩法 / 点数）不换行，长文栏仍自动换行 */
+.rules-table th:first-child,
+.rules-table td:first-child {
+  white-space: nowrap;
+}
 .rules-table.odds td:last-child {
   font-weight: 700;
   color: #e3342f;
