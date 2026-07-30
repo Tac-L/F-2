@@ -2697,9 +2697,13 @@ img.pk10-ball {
   transition: all 0.15s;
 }
 
-.detail-value .copy-btn:hover {
-  background-color: #eff6ff;
-  color: var(--primary-blue-hover);
+/* 仅在真正支持悬停的设备上应用 hover：触屏上 :hover 会在点击后残留，
+   让复制按钮看起来一直停在「已按下」的状态。 */
+@media (hover: hover) {
+  .detail-value .copy-btn:hover {
+    background-color: #eff6ff;
+    color: var(--primary-blue-hover);
+  }
 }
 
 .detail-value .copy-btn:active {
@@ -3948,8 +3952,11 @@ img.pk10-ball {
   transition: background-color 0.15s ease;
 }
 
-.view-result-btn:hover {
-  background-color: #1d4ed8;
+/* 同上：触屏点击后 :hover 会残留，让按钮看起来一直是按下状态。 */
+@media (hover: hover) {
+  .view-result-btn:hover {
+    background-color: #1d4ed8;
+  }
 }
 
 .view-result-btn:active {
