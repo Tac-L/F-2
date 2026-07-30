@@ -295,18 +295,13 @@
 }
 
 /* Midnight-blue: secondary / hover / muted surfaces → deeper indigo */
-[data-theme^="midnight-"] .sidebar-tab:hover,
-[data-theme^="midnight-"] .shortcut-pos-tab:hover,
 [data-theme^="midnight-"] .accordion-content,
-[data-theme^="midnight-"] .edit-chip-btn:hover,
 [data-theme^="midnight-"] .btn-reset:active,
 [data-theme^="midnight-"] .modal-btn-cancel,
 [data-theme^="midnight-"] .confirm-bet-row,
 [data-theme^="midnight-"] .confirm-btn-cancel:active,
-[data-theme^="midnight-"] .drawer-sidebar-tab:hover,
 [data-theme^="midnight-"] .drawer-content,
 [data-theme^="midnight-"] .unsettled-detail-container,
-[data-theme^="midnight-"] .draw-row.clickable:hover,
 [data-theme^="midnight-"] .draw-row.clickable:active,
 [data-theme^="midnight-"] .report-card.clickable:active,
 [data-theme^="midnight-"] .settled-detail-container,
@@ -318,6 +313,19 @@
 [data-theme^="midnight-"] .login-captcha {
   background-color: var(--mn-surface-2);
   background: var(--mn-surface-2);
+}
+
+/* 上面那组里的 :hover 部分单独抽出并加上 hover 能力判断：触屏点击后 :hover 会
+   残留，若与 :active / 常态选择器混在同一条规则里就无法只gate悬停部分。 */
+@media (hover: hover) {
+  [data-theme^="midnight-"] .sidebar-tab:hover,
+  [data-theme^="midnight-"] .shortcut-pos-tab:hover,
+  [data-theme^="midnight-"] .edit-chip-btn:hover,
+  [data-theme^="midnight-"] .drawer-sidebar-tab:hover,
+  [data-theme^="midnight-"] .draw-row.clickable:hover {
+    background-color: var(--mn-surface-2);
+    background: var(--mn-surface-2);
+  }
 }
 
 /* Midnight-blue: drawer base surface → app base */
@@ -466,8 +474,10 @@
   background-color: #a11f18;
   box-shadow: 0 4px 12px rgba(161, 31, 24, 0.35);
 }
-[data-theme^="midnight-"] .settings-logout-btn:hover {
-  background-color: #8c1a14;
+@media (hover: hover) {
+  [data-theme^="midnight-"] .settings-logout-btn:hover {
+    background-color: #8c1a14;
+  }
 }
 
 /* Midnight: PK10 position tab (1~10) & bet cell selected state → dark orange tint */
@@ -653,8 +663,10 @@ body {
   transition: background-color 0.2s;
 }
 
-.icon-btn:hover {
-  background-color: rgba(3, 105, 161, 0.08);
+@media (hover: hover) {
+  .icon-btn:hover {
+    background-color: rgba(3, 105, 161, 0.08);
+  }
 }
 
 .icon-btn:active {
@@ -670,9 +682,11 @@ body {
   color: var(--header-text);
 }
 
-.app-header > button.icon-btn:hover,
-.app-header .header-right-group > button.icon-btn:hover {
-  background-color: transparent;
+@media (hover: hover) {
+  .app-header > button.icon-btn:hover,
+  .app-header .header-right-group > button.icon-btn:hover {
+    background-color: transparent;
+  }
 }
 
 /* Draw Information Banner */
@@ -900,8 +914,10 @@ img.pk10-ball {
   border-bottom: none;
 }
 
-.sidebar-tab:hover {
-  background-color: #f8fafc;
+@media (hover: hover) {
+  .sidebar-tab:hover {
+    background-color: #f8fafc;
+  }
 }
 
 /* 第 30 局之后「对子」整页关闭：置灰、禁点。 */
@@ -910,8 +926,10 @@ img.pk10-ball {
   cursor: not-allowed;
   color: var(--text-muted);
 }
-.sidebar-tab.disabled:hover {
-  background: none;
+@media (hover: hover) {
+  .sidebar-tab.disabled:hover {
+    background: none;
+  }
 }
 
 .sidebar-tab.active {
@@ -1101,9 +1119,11 @@ img.pk10-ball {
   text-align: center;
 }
 
-.shortcut-pos-tab:hover {
-  background-color: #f8fafc;
-  border-color: #cbd5e1;
+@media (hover: hover) {
+  .shortcut-pos-tab:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+  }
 }
 
 /* Don't leave a focus ring after tapping (deselecting must return to the plain
@@ -1393,8 +1413,10 @@ img.pk10-ball {
   color: var(--text-muted);
 }
 
-.edit-chip-btn:hover {
-  background-color: #f8fafc;
+@media (hover: hover) {
+  .edit-chip-btn:hover {
+    background-color: #f8fafc;
+  }
 }
 
 /* Action Inputs Row */
@@ -1908,9 +1930,11 @@ img.pk10-ball {
   transition: all 0.15s;
 }
 
-.confirm-bet-delete:hover {
-  color: var(--danger-red);
-  background-color: #fee2e2;
+@media (hover: hover) {
+  .confirm-bet-delete:hover {
+    color: var(--danger-red);
+    background-color: #fee2e2;
+  }
 }
 
 .confirm-modal-bulk {
@@ -1953,16 +1977,20 @@ img.pk10-ball {
   color: var(--primary-blue);
 }
 
-.bulk-mode-toggle:hover {
-  background-color: #f8fafc;
+@media (hover: hover) {
+  .bulk-mode-toggle:hover {
+    background-color: #f8fafc;
+  }
 }
 
 [data-theme^="midnight-"] .bulk-mode-toggle {
   border-color: var(--mn-border);
 }
 
-[data-theme^="midnight-"] .bulk-mode-toggle:hover {
-  background-color: var(--mn-surface-hover);
+@media (hover: hover) {
+  [data-theme^="midnight-"] .bulk-mode-toggle:hover {
+    background-color: var(--mn-surface-hover);
+  }
 }
 
 .bulk-label {
@@ -2127,8 +2155,10 @@ img.pk10-ball {
   gap: 6px;
 }
 
-.drawer-sidebar-tab:hover {
-  background-color: #f8fafc;
+@media (hover: hover) {
+  .drawer-sidebar-tab:hover {
+    background-color: #f8fafc;
+  }
 }
 
 .drawer-sidebar-tab.active {
@@ -2209,10 +2239,12 @@ img.pk10-ball {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.drawer-game-card:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
-  border-color: #cbd5e1;
+@media (hover: hover) {
+  .drawer-game-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+    border-color: #cbd5e1;
+  }
 }
 
 .drawer-game-card:active {
@@ -2403,8 +2435,10 @@ img.pk10-ball {
   text-align: left;
 }
 
-.right-drawer-menu-item:hover {
-  background-color: var(--rmenu-hover-bg);
+@media (hover: hover) {
+  .right-drawer-menu-item:hover {
+    background-color: var(--rmenu-hover-bg);
+  }
 }
 
 .right-drawer-menu-item.active {
@@ -2451,16 +2485,20 @@ img.pk10-ball {
   text-align: left;
 }
 
-.right-drawer-sound-btn:hover {
-  background-color: #fef2f2;
+@media (hover: hover) {
+  .right-drawer-sound-btn:hover {
+    background-color: #fef2f2;
+  }
 }
 
 /* 开启状态：绿色 */
 .right-drawer-sound-btn.on {
   color: #16a34a;
 }
-.right-drawer-sound-btn.on:hover {
-  background-color: #f0fdf4;
+@media (hover: hover) {
+  .right-drawer-sound-btn.on:hover {
+    background-color: #f0fdf4;
+  }
 }
 .right-drawer-sound-btn.on .icon {
   color: #16a34a;
@@ -3199,9 +3237,11 @@ img.pk10-ball {
   transition: all 0.15s;
 }
 
-.video-sound-btn:hover {
-  color: #e2e8f0;
-  background-color: rgba(255, 255, 255, 0.05);
+@media (hover: hover) {
+  .video-sound-btn:hover {
+    color: #e2e8f0;
+    background-color: rgba(255, 255, 255, 0.05);
+  }
 }
 
 .video-sound-btn:active {
@@ -3619,8 +3659,10 @@ img.pk10-ball {
   transition: background-color 0.2s;
 }
 
-.draw-row.clickable:hover {
-  background-color: #f8fafc;
+@media (hover: hover) {
+  .draw-row.clickable:hover {
+    background-color: #f8fafc;
+  }
 }
 
 .draw-row.clickable:active {
@@ -4018,8 +4060,10 @@ img.pk10-ball {
   transition: color 0.15s;
 }
 
-.result-modal-close:hover {
-  color: var(--modal-title-close-hover);
+@media (hover: hover) {
+  .result-modal-close:hover {
+    color: var(--modal-title-close-hover);
+  }
 }
 
 .result-modal-body {
@@ -5209,8 +5253,10 @@ img.lhc-ball {
   border: 1px solid var(--header-btn-border);
   color: var(--header-btn-text);
 }
-.pankou-picker:hover {
-  background-color: var(--header-btn-hover-bg);
+@media (hover: hover) {
+  .pankou-picker:hover {
+    background-color: var(--header-btn-hover-bg);
+  }
 }
 .pankou-picker .history-picker-caret {
   color: var(--header-btn-text);
@@ -6029,8 +6075,10 @@ img.lhc-ball {
   transition: background-color 0.15s, transform 0.1s;
 }
 
-.settings-logout-btn:hover {
-  background-color: #d12b22;
+@media (hover: hover) {
+  .settings-logout-btn:hover {
+    background-color: #d12b22;
+  }
 }
 
 .settings-logout-btn:active {
@@ -6249,8 +6297,10 @@ img.lhc-ball {
   transition: background-color 0.15s, transform 0.1s;
 }
 
-.login-submit:hover {
-  background-color: var(--primary-blue-hover);
+@media (hover: hover) {
+  .login-submit:hover {
+    background-color: var(--primary-blue-hover);
+  }
 }
 
 .login-submit:active {
@@ -6627,10 +6677,14 @@ img.lhc-ball {
   cursor: pointer;
   transition: all 0.15s;
 }
-.fp-btn:not(:disabled):hover { background: #eef2ff; }
+@media (hover: hover) {
+  .fp-btn:not(:disabled):hover { background: #eef2ff; }
+}
 .fp-btn-on { background: #4f7cff; color: #fff; }
 .fp-btn-cancel { color: #ef4444; border-color: #ef4444; }
-.fp-btn-cancel:hover { background: #fef2f2; }
+@media (hover: hover) {
+  .fp-btn-cancel:hover { background: #fef2f2; }
+}
 
 .fp-empty {
   text-align: center;
@@ -6975,16 +7029,20 @@ img.lhc-ball {
   border-color: var(--primary-blue);
   color: var(--primary-blue);
 }
-[data-theme^="midnight-"] .fp-btn:not(:disabled):hover {
-  background: var(--mn-surface-hover);
+@media (hover: hover) {
+  [data-theme^="midnight-"] .fp-btn:not(:disabled):hover {
+    background: var(--mn-surface-hover);
+  }
 }
 [data-theme^="midnight-"] .fp-btn-on {
   background: var(--primary-blue);
   color: #fff;
 }
 /* 停止跟投 / 取消 保持红色语义，仅让底色跟随深色 */
-[data-theme^="midnight-"] .fp-btn-cancel:hover {
-  background: rgba(239, 68, 68, 0.12);
+@media (hover: hover) {
+  [data-theme^="midnight-"] .fp-btn-cancel:hover {
+    background: rgba(239, 68, 68, 0.12);
+  }
 }
 /* Config 页输入框 / 分隔线 */
 [data-theme^="midnight-"] .fp-config-box,
