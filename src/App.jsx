@@ -1024,6 +1024,8 @@ export default function App() {
         let zhengxiaoHits = 0;
         // 鱼虾蟹 单骰 pays per number of dice showing the symbol — captured here.
         let fhcSingleHits = 0;
+        // 庄幸运6 分级赔率：两张牌 6 点胜 = 12，三张牌 6 点胜 = 20（现场规则）。
+        let lucky6Odds = 0;
         // 和局 (七色波 平手 / 合肖 49): the stake is refunded (push, net 0).
         let isPush = false;
 
@@ -1226,6 +1228,7 @@ export default function App() {
               break;
             case 'bac-lucky6':
               isWin = bankerWin && bt === 6;
+              if (isWin) lucky6Odds = bCards.length >= 3 ? BAC_ODDS.lucky6Three : BAC_ODDS.lucky6;
               break;
             case 'bac-banker-pair':
               isWin = isPair(bCards);
@@ -1377,7 +1380,9 @@ export default function App() {
               ? Math.round(bet.amount * (1 + (bet.odds - 1) * zhengxiaoHits))
               : bet.type === 'fhc-single'
                 ? Math.round(bet.amount * (1 + (bet.odds - 1) * fhcSingleHits))
-                : Math.round(bet.amount * bet.odds);
+                : bet.type === 'bac-lucky6'
+                  ? Math.round(bet.amount * lucky6Odds)
+                  : Math.round(bet.amount * bet.odds);
         if (isWin) {
           totalWinnings += winAmt;
           winningDetails.push(`${bet.displayTitle} (中 ${winAmt}元)`);

@@ -878,7 +878,8 @@ export const BAC_ODDS = {
   banker: 1.95,      // 庄 (5% 抽水, 和局退回)
   player: 2.0,       // 闲 (和局退回)
   tie: 9.0,          // 和
-  lucky6: 12.0,      // 庄幸运6 (庄以 6 点获胜)
+  lucky6: 12.0,      // 庄幸运6 — 庄以 6 点获胜（两张牌）
+  lucky6Three: 20.0, // 庄幸运6 — 庄以 6 点获胜（三张牌）
   bankerPair: 12.0,  // 庄对
   playerPair: 12.0,  // 闲对
   anyPair: 6.0,      // 任意对子

@@ -20,6 +20,7 @@ import {
   BAC_ODDS,
 } from '../constants/gameData';
 import Dice from './Dice';
+import BacRulesContent from './BacRulesContent';
 
 const LIANMA_SUB_TABS = [
   { id: 'si-quan-zhong', name: '四全中' },
@@ -223,7 +224,7 @@ export default function PlayArea({
 
     return (
       <div className="play-help-overlay" onClick={() => setHelpOpen(false)}>
-        <div className="play-help-modal" onClick={(e) => e.stopPropagation()}>
+        <div className={`play-help-modal ${gameKind === 'bac' ? 'bac' : ''}`} onClick={(e) => e.stopPropagation()}>
           <div className="play-help-header">
             <span className="play-help-title">玩法说明</span>
             <button type="button" className="play-help-close" onClick={() => setHelpOpen(false)}>&times;</button>
@@ -1178,32 +1179,10 @@ export default function PlayArea({
             </div>
           )}
 
-          {/* ===================== 百家乐 (BAC) ===================== */}
+          {/* ===================== 百家乐 (BAC) —— 复用「活动规则」内容 ===================== */}
           {gameKind === 'bac' && (
             <div className="play-help-body">
-              <div className="play-help-box" style={{ whiteSpace: 'normal', display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '13px' }}>
-                <div>
-                  <strong>游戏简介：</strong>
-                  {'\n'}百家乐分为【闲家】和【庄家】，玩家可以下注闲家或庄家，点数总和最接近 9 点者获胜。双方各收到至少两至三张牌，第三张为补牌。如果需要补牌，将按照以下补牌规则多发一张牌。任何一家拿到「例牌」（两张牌合计共为 8 或 9 点）时，牌局即结束，不再补牌。
-                </div>
-                <div>
-                  <strong>玩法规则和赔率：</strong>
-                  {'\n'}庄 1.95、闲 2.0、和 9.0、庄幸运6 12.0；庄对 12.0、闲对 12.0、任意对子 6.0、完美对子 26.0；两面（闲单/闲双/庄单/庄双）1.96。
-                </div>
-                <div>
-                  <strong>点数计算方法：</strong>
-                  {'\n'}10、J、Q 及 K 的扑克牌算作零点，其他按牌面点数计算。当所有牌的点数总和超过 9 点时，仅算总数中的个位。例，最小点数为：0 点（4+6=10）；最大点数为：9 点（4+5=9）取个位数。
-                </div>
-                <div>
-                  <strong>例牌：</strong>
-                  {'\n'}庄闲任何一方两牌合计为 8 或 9 点（称为例牌），双方都不需补牌，即定胜负（双方同持 8 点或 9 点为和局）。
-                </div>
-                <div>
-                  <strong>补牌规则：</strong>
-                  {'\n'}若闲家不需补牌（即闲家首两张牌合计为「6 至 9 点」），庄家以「闲家补牌规则」补牌，即庄家首两张牌合计「0 至 5」点要补一张牌，6 点以上不许补牌。
-                  {'\n'}若闲家补牌，庄家依其首两张点数与闲家补牌点数决定是否补牌。
-                </div>
-              </div>
+              <BacRulesContent />
             </div>
           )}
 
@@ -2424,7 +2403,7 @@ export default function PlayArea({
   // A single centered bet card (label on top, odds below), tinted by `color`.
   // `closed` marks a 玩法 that is sealed for this round (第 30 局之后 关闭的副注)
   // while the main 庄/闲/两面 stay open.
-  const renderBacCard = (betObj, { label, color, className = '', closed = false }) => {
+  const renderBacCard = (betObj, { label, color, className = '', closed = false, oddsText = null }) => {
     const isSelected = isBetSelected(betObj.id);
     return (
       <button
@@ -2434,7 +2413,7 @@ export default function PlayArea({
         disabled={isClosed || closed}
       >
         <span className="bac-card-label" style={{ color }}>{label}</span>
-        <span className="bac-card-odds" style={{ color }}>{betObj.odds.toFixed(betObj.odds >= 10 ? 1 : 2)}</span>
+        <span className="bac-card-odds" style={{ color }}>{oddsText || betObj.odds.toFixed(betObj.odds >= 10 ? 1 : 2)}</span>
         {closed && <span className="bac-closed-tag">已封</span>}
         {renderCheckmark(isSelected)}
       </button>
@@ -2477,7 +2456,7 @@ export default function PlayArea({
           {renderBacCard(bacBet('bac-banker', '庄', 'bac-banker', BAC_ODDS.banker), { label: '庄', color: '#e3342f', className: 'bac-tall' })}
           <div className="bac-zx-mid">
             {renderBacCard(bacBet('bac-tie', '和', 'bac-tie', BAC_ODDS.tie), { label: '和', color: '#16a34a' })}
-            {renderBacCard(bacBet('bac-lucky6', '庄幸运6', 'bac-lucky6', BAC_ODDS.lucky6), { label: '庄幸运6', color: '#f59e0b' })}
+            {renderBacCard(bacBet('bac-lucky6', '庄幸运6', 'bac-lucky6', BAC_ODDS.lucky6), { label: '庄幸运6', color: '#f59e0b', oddsText: '12 / 20' })}
           </div>
           {renderBacCard(bacBet('bac-player', '闲', 'bac-player', BAC_ODDS.player), { label: '闲', color: '#2563eb', className: 'bac-tall' })}
         </div>

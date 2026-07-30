@@ -1,10 +1,7 @@
 import React from 'react';
 import { DRAWER_CATEGORIES } from '../constants/gameData';
-import { IMPORTANT_STATEMENT, GAME_RULES, BAC_RULES } from '../constants/gameRules';
-
-// Arabic -> Chinese numerals so 百家乐 section headings match the other games
-// (一、二、… instead of a boxed number badge).
-const CN_NUM = ['', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+import { IMPORTANT_STATEMENT, GAME_RULES } from '../constants/gameRules';
+import BacRulesContent from './BacRulesContent';
 
 // Classify a raw rule line into a display kind so it can be styled consistently
 // across every game without hand-tagging hundreds of lines.
@@ -137,54 +134,6 @@ const renderLines = (lines, { numberItems = false } = {}) => {
     }
   });
 };
-
-// Render the structured 百家乐 block list (supports real tables).
-const renderBlocks = (blocks) => blocks.map((b, i) => {
-  switch (b.t) {
-    case 'section':
-      return <h3 key={i} className="rules-section">{CN_NUM[Number(b.n)] || b.n}、{b.title}</h3>;
-    case 'sub':
-      return <h4 key={i} className="rules-sub">{b.text}</h4>;
-    case 'p':
-      return <p key={i} className={`rules-p ${b.muted ? 'rules-muted' : ''}`}>{b.text}</p>;
-    case 'note':
-      return <p key={i} className="rules-note">{b.text}</p>;
-    case 'eg':
-      return <p key={i} className="rules-eg">{b.text}</p>;
-    case 'ul':
-      return (
-        <ul key={i} className="rules-ul">
-          {b.items.map((it, k) => (
-            typeof it === 'string'
-              ? <li key={k}>{it}</li>
-              : <li key={k}><span className={`rules-tag rules-tag-${it.labelClass}`}>{it.label}</span>：{it.text}</li>
-          ))}
-        </ul>
-      );
-    case 'table':
-      return (
-        <div key={i} className="rules-table-wrap">
-          {b.caption && <div className="rules-table-caption">{b.caption}</div>}
-          <table className={`rules-table ${b.odds ? 'odds' : ''}`}>
-            <thead>
-              <tr>{b.head.map((h, k) => <th key={k}>{h}</th>)}</tr>
-            </thead>
-            <tbody>
-              {b.rows.map((row, r) => (
-                <tr key={r}>
-                  {row.map((cell, c) => (
-                    <td key={c} className={(b.leftCols || []).includes(c) ? 'rules-td-left' : ''}>{cell}</td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      );
-    default:
-      return null;
-  }
-});
 
 export default function ActivityRules({ onBack, onOpenMenu }) {
   const [categoryId, setCategoryId] = React.useState(DRAWER_CATEGORIES[0].id);
@@ -333,7 +282,7 @@ export default function ActivityRules({ onBack, onOpenMenu }) {
         {/* Game-specific rules content */}
         <div className="rules-block rules-content">
           {isBac
-            ? renderBlocks(BAC_RULES)
+            ? <BacRulesContent />
             : lines.length === 0
               ? (
                 <div className="settled-empty-state">

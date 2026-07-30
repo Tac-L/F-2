@@ -5098,6 +5098,16 @@ img.lhc-ball {
   overflow: hidden;
   box-shadow: 0 12px 32px rgba(15, 23, 42, 0.25);
 }
+/* 百家乐「玩法说明」复用活动规则内容（含表格），给更宽/更高的空间 */
+.play-help-modal.bac {
+  max-width: 380px;
+  height: 88vh;
+  max-height: 88vh;
+}
+.play-help-modal.bac .play-help-body {
+  display: block; /* 覆盖 flex column，避免表格 wrap 被压缩塌陷 */
+  padding: 12px 12px 16px;
+}
 .play-help-header {
   display: flex;
   align-items: center;
@@ -7665,6 +7675,148 @@ img.lhc-ball {
 .rules-table.odds td:last-child {
   font-weight: 700;
   color: #e3342f;
+}
+/* 输赢条件单元格内：文字 + 右侧「例」按钮 */
+.rules-cell-eg {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.rules-cell-eg-text {
+  flex: 1;
+  min-width: 0;
+}
+.rules-eg-btn {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  padding: 2px 10px;
+  border: 1px solid var(--primary-blue);
+  border-radius: 12px;
+  background: rgba(var(--primary-blue-rgb), 0.08);
+  color: var(--primary-blue);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.rules-eg-btn:active {
+  background: rgba(var(--primary-blue-rgb), 0.18);
+}
+
+/* 「例」示例牌型弹窗 */
+.rules-eg-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: rgba(15, 23, 42, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.rules-eg-modal {
+  width: 100%;
+  max-width: 360px;
+  max-height: 82vh;
+  background: #ffffff;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.28);
+}
+.rules-eg-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 16px;
+  background: var(--panel-title-bg);
+  border-bottom: 1px solid var(--panel-title-border);
+}
+.rules-eg-modal-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--panel-title-text);
+}
+.rules-eg-modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--panel-title-btn);
+  cursor: pointer;
+  padding: 0 4px;
+}
+.rules-eg-modal-body {
+  padding: 14px 16px 18px;
+  overflow-y: auto;
+}
+.rules-eg-desc {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #475569;
+  margin: 0 0 12px;
+}
+.rules-eg-hand {
+  background: #f8fafc;
+  border: 1px solid #eef2f7;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+.rules-eg-hand:last-child {
+  margin-bottom: 0;
+}
+.rules-eg-hand-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary-blue-hover);
+  margin-bottom: 10px;
+}
+.rules-eg-hand-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.rules-eg-hand-row + .rules-eg-hand-row {
+  margin-top: 10px;
+}
+.rules-eg-side {
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 700;
+}
+.rules-eg-side.banker { color: #e3342f; }
+.rules-eg-side.player { color: #2563eb; }
+.rules-eg-cards {
+  flex: 1;
+  display: flex;
+  gap: 4px;
+}
+.rules-eg-card {
+  width: 38px;
+  height: auto;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.18);
+}
+.rules-eg-total {
+  flex: 0 0 auto;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+[data-theme^="midnight-"] .rules-eg-modal {
+  background-color: var(--mn-surface);
+}
+[data-theme^="midnight-"] .rules-eg-desc { color: #c3cce6; }
+[data-theme^="midnight-"] .rules-eg-hand {
+  background: var(--mn-surface-2);
+  border-color: var(--mn-border);
+}
+[data-theme^="midnight-"] .rules-eg-total { color: #eef2ff; }
+[data-theme^="midnight-"] .rules-eg-btn {
+  background: transparent;
 }
 
 /* Back-to-top floating button */
