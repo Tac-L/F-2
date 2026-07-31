@@ -1158,21 +1158,26 @@ export default function App() {
             const category = classifyFfcTriple(drawNumbers[0], drawNumbers[1], drawNumbers[2]);
             isWin = category === bet.betName;
           } else if (bet.type === 'xy28-tail-number') {
-            isWin = (sum % 10) === parseInt(bet.betName);
+            // 尾球只开放 1-8，尾数为 0 或 9 时一律不中奖。
+            const tail = sum % 10;
+            isWin = tail !== 0 && tail !== 9 && tail === parseInt(bet.betName);
           } else if (bet.type === 'xy28-tail-twosided') {
             const tail = sum % 10;
-            const tailBig = tail >= 5;
-            const tailOdd = tail % 2 !== 0;
-            switch (bet.betName) {
-              case '大': isWin = tailBig; break;
-              case '小': isWin = !tailBig; break;
-              case '单': isWin = tailOdd; break;
-              case '双': isWin = !tailOdd; break;
-              case '大单': isWin = tailBig && tailOdd; break;
-              case '小单': isWin = !tailBig && tailOdd; break;
-              case '大双': isWin = tailBig && !tailOdd; break;
-              case '小双': isWin = !tailBig && !tailOdd; break;
-              default: break;
+            // 尾数 0 / 9 视为不中奖，两面同样不派彩。
+            if (tail !== 0 && tail !== 9) {
+              const tailBig = tail >= 5;
+              const tailOdd = tail % 2 !== 0;
+              switch (bet.betName) {
+                case '大': isWin = tailBig; break;
+                case '小': isWin = !tailBig; break;
+                case '单': isWin = tailOdd; break;
+                case '双': isWin = !tailOdd; break;
+                case '大单': isWin = tailBig && tailOdd; break;
+                case '小单': isWin = !tailBig && tailOdd; break;
+                case '大双': isWin = tailBig && !tailOdd; break;
+                case '小双': isWin = !tailBig && !tailOdd; break;
+                default: break;
+              }
             }
           }
         } else if (bet.type && bet.type.startsWith('animal-')) {

@@ -2706,7 +2706,8 @@ export default function PlayArea({
     );
   };
 
-  // --------- XY28: 尾球 (last digit of 总和: 数字 0-9 + 两面) ----------
+  // --------- XY28: 尾球 (last digit of 总和: 数字 1-8 + 两面) ----------
+  // 尾数 0 / 9 一律视为不中奖，因此这两个号码不开放投注。
   const renderXy28TailBall = () => {
     return (
       <div className="play-area">
@@ -2714,7 +2715,7 @@ export default function PlayArea({
         {renderPlayHelpModal()}
         {renderXy28Section('xy28-tail-num', '数字', (
           <div className="betting-grid">
-            {Array.from({ length: 10 }, (_, i) => i).map((num) => {
+            {Array.from({ length: 8 }, (_, i) => i + 1).map((num) => {
               const betId = `xy28-tail-number-${num}`;
               const isSelected = isBetSelected(betId);
               const betObj = {
