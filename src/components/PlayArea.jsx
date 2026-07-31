@@ -1190,7 +1190,7 @@ export default function PlayArea({
           {gameKind === 'fhc' && activeTab === 'single' && (
             <div className="play-help-body">
               <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
-                玩家选择一种图案（鱼、虾、蟹、钱币、葫芦、鸡）进行投注，开奖后根据三颗骰子中该图案出现的次数（分别为1、2、3次）进行派彩。
+                玩家选择一种图案（鱼、虾、葫芦、钱币、蟹、鸡）进行投注，开奖后根据三颗骰子中该图案出现的次数（分别为1、2、3次）进行派彩。
                 {'\n\n'}例如，假设鱼的单骰赔率为2.1，投注鱼单骰100元，开奖结果鱼出现1次，派彩110元；开奖结果鱼出现2次，派彩220元；开奖结果鱼出现3次，派彩330元。
               </div>
             </div>
@@ -1199,7 +1199,7 @@ export default function PlayArea({
           {gameKind === 'fhc' && activeTab === 'all-around' && (
             <div className="play-help-body">
               <div className="play-help-box" style={{ whiteSpace: 'normal' }}>
-                玩家选择一种图案（鱼、虾、蟹、钱币、葫芦、鸡）进行投注，当三颗骰子开出相同图案时，即为全围中奖。
+                玩家选择一种图案（鱼、虾、葫芦、钱币、蟹、鸡）进行投注，当三颗骰子开出相同图案时，即为全围中奖。
               </div>
             </div>
           )}

@@ -313,8 +313,8 @@ export const XY28_ODDS = {
   zhong: 1.78,       // 中: 总和 10-17
   daBian: 4.54,      // 大边: 总和 18-27
   xiaoBian: 4.54,    // 小边: 总和 0-9
-  // 尾球 (based on the last digit of 总和)
-  tailNumber: 10,    // 尾数 0-9
+  // 尾球 (based on the last digit of 总和; 尾数 0 / 9 一律不中奖，故不开放投注)
+  tailNumber: 10,    // 尾数 1-8
   tailTwoSided: 2.5, // 尾 大 / 小 / 单 / 双
   tailCombo: 5,      // 尾 大单 / 小单 / 大双 / 小双
   // 龙虎豹 (总和 mod 3)
@@ -815,14 +815,16 @@ export const animalBallSrc = (n) =>
 // 单骰: bet a symbol — pays per number of dice showing it (1/2/3 次).
 // 全围: bet a symbol — wins only when all three dice show that symbol.
 
-// The 6 symbols (order matches the reference screenshots). `color` tints the odds text.
+// The 6 symbols, ordered by 点数 (id = 点数, 一点~六点). The betting board renders
+// them 2 per row, so this order lays out as 1 2 / 3 4 / 5 6.
+// `color` tints the odds text (红: 鱼/鸡, 绿: 虾/蟹, 蓝: 葫芦/金钱).
 export const FHC_SYMBOLS = [
-  { id: 1, name: '鱼', color: '#e3342f' },   // 红
-  { id: 2, name: '虾', color: '#16a34a' },   // 绿
-  { id: 3, name: '蟹', color: '#16a34a' },   // 绿
-  { id: 4, name: '葫芦', color: '#2563eb' }, // 蓝
-  { id: 5, name: '金钱', color: '#2563eb' }, // 蓝
-  { id: 6, name: '鸡', color: '#e3342f' },   // 红
+  { id: 1, name: '鱼', color: '#e3342f' },   // 一点 红
+  { id: 2, name: '虾', color: '#16a34a' },   // 二点 绿
+  { id: 3, name: '葫芦', color: '#2563eb' }, // 三点 蓝
+  { id: 4, name: '金钱', color: '#2563eb' }, // 四点 蓝
+  { id: 5, name: '蟹', color: '#16a34a' },   // 五点 绿
+  { id: 6, name: '鸡', color: '#e3342f' },   // 六点 红
 ];
 
 // Symbol artwork lives in /public/鱼虾蟹/<name>.svg (each a 24×24 rounded tile).
