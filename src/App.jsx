@@ -65,6 +65,10 @@ const SKIN_CODE_MAP = {
 };
 const VALID_THEMES = ['light-blue', 'deep-blue', 'midnight-blue', 'midnight-purple'];
 
+// 百家乐倒计时右侧的「路子图」入口开关。暂时隐藏 (2026-08-17 之后由业主确认是否
+// 开放)，路子图本体与相关样式都保留原样，改回 true 即可恢复入口。
+const SHOW_BAC_ROADMAP_ENTRY = false;
+
 // roomid -> 内部游戏 id。父项目可用 /?roomid=1062010 直接打开对应游戏投注页。
 const ROOM_ID_MAP = {
   '1062010': 'pk10_1m',   // 一分极速赛车
@@ -2905,8 +2909,8 @@ export default function App() {
                 </>
               )}
             </div>
-            {/* 百家乐: 路子图 toggle (在倒计时右侧) */}
-            {gameKind === 'bac' && (
+            {/* 百家乐: 路子图 toggle (在倒计时右侧) — 由 SHOW_BAC_ROADMAP_ENTRY 控制显隐 */}
+            {gameKind === 'bac' && SHOW_BAC_ROADMAP_ENTRY && (
               <button
                 type="button"
                 className={`icon-btn ${isRoadmapOpen ? 'active' : ''}`}
