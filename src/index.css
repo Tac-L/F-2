@@ -1062,28 +1062,34 @@ img.pk10-ball {
   font-size: 13px;
 }
 
-/* Selection checkmark badge on top right */
+/* Selection checkmark badge — 橘色圆形徽章，骑在按钮右上角上（略微溢出按钮范围）。
+   容器的 12px padding 大于 6px 溢出量，所以不会被 .play-area 的滚动裁切。 */
 .selected-checkmark {
   position: absolute;
-  top: 0;
-  right: 0;
-  width: 0;
-  height: 0;
-  border-top: 14px solid var(--orange-selected);
-  border-left: 14px solid transparent;
-  border-top-right-radius: 6px;
+  top: -6px;
+  right: -6px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: var(--orange-selected);
+  z-index: 2;
 }
 
 .selected-checkmark::after {
   content: '';
   position: absolute;
-  top: -13px;
-  right: 1px;
-  width: 3px;
-  height: 6px;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 7px;
   border: solid white;
   border-width: 0 1.5px 1.5px 0;
-  transform: rotate(45deg);
+  /* translate(-50%,-50%) 让「元素」的几何中心对准圆心，但勾只是 L 形的右、下两条
+     边：旋转 45° 后白色笔画的包围盒中心比元素中心低 1.41px（最高点是斜接内角而
+     非右上角）。多减这 1.4px，落在圆心的才是勾本身。
+     注意 * { box-sizing: border-box } 不作用于伪元素，这里 4×7 是 content box，
+     算上两条 1.5px 边框，实际 border box 是 5.5×8.5 —— 偏移量是按后者算的。 */
+  transform: translate(-50%, calc(-50% - 1.4px)) rotate(45deg);
 }
 
 .bet-button.selected {
@@ -1149,8 +1155,18 @@ img.pk10-ball {
   font-weight: bold;
 }
 
+/* 快捷点位是圆角更小的小方块，徽章往内收一点，免得贴到网格边缘被裁掉。 */
 .shortcut-pos-tab .selected-checkmark {
-  border-top-right-radius: 5px;
+  top: -5px;
+  right: -5px;
+  width: 14px;
+  height: 14px;
+}
+
+.shortcut-pos-tab .selected-checkmark::after {
+  width: 3.5px;
+  height: 6px;
+  transform: translate(-50%, calc(-50% - 1.2px)) rotate(45deg);
 }
 
 /* Standard Betting Grid */
