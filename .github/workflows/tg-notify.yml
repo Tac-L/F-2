@@ -1,0 +1,82 @@
+name: Telegram Push Notify
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    # 刪除分支／標籤的 push 事件不需要通知
+    if: github.event_name == 'workflow_dispatch' || github.event.deleted == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        with:
+          script: |
+            const token = process.env.TG_BOT_TOKEN;
+            const chatId = process.env.TG_CHAT_ID;
+            if (!token || !chatId) {
+              core.setFailed('缺少 TELEGRAM_BOT_TOKEN 或 TELEGRAM_CHAT_ID secret');
+              return;
+            }
+
+            // Telegram parse_mode=HTML 需要跳脫，否則 commit 訊息裡的 <div> & "引號" 會讓訊息送不出去
+            const esc = (s) => String(s ?? '')
+              .replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;');
+            const subject = (msg) => String(msg ?? '').split('\n')[0].trim();
+
+            const p = context.payload;
+            const repo = `${context.repo.owner}/${context.repo.repo}`;
+            const ref = String(context.ref || '').replace(/^refs\/(heads|tags)\//, '');
+            const pusher = p.pusher?.name || p.sender?.login || '未知';
+            const repoUrl = p.repository?.html_url || `https://github.com/${repo}`;
+
+            let commits = p.commits || [];
+            if (commits.length === 0) {
+              // 手動觸發，或 push 事件沒帶 commits 時，改抓 HEAD commit
+              const { data } = await github.rest.repos.getCommit({
+                ...context.repo,
+                ref: context.sha,
+              });
+              commits = [{ message: data.commit.message, url: data.html_url }];
+            }
+
+            const lines = [];
+            lines.push(`<b>${esc('<檔案更新通知>')}</b>`);
+            lines.push(`儲存庫：<a href="${esc(repoUrl)}">${esc(repo)}</a>（${esc(ref)}）`);
+            lines.push(`更新者：${esc(pusher)}`);
+
+            if (commits.length === 1) {
+              lines.push(`提交訊息：${esc(subject(commits[0].message))}`);
+              lines.push(`<a href="${esc(commits[0].url)}">點此查看 Commit 變更</a>`);
+            } else {
+              lines.push(`提交訊息：（本次共 ${commits.length} 個 commit）`);
+              for (const c of commits) {
+                lines.push(`• ${esc(subject(c.message))}`);
+              }
+              const compare = p.compare || commits[commits.length - 1].url;
+              lines.push(`<a href="${esc(compare)}">點此查看 Commit 變更</a>`);
+            }
+
+            const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                chat_id: chatId,
+                text: lines.join('\n'),
+                parse_mode: 'HTML',
+                disable_web_page_preview: true,
+              }),
+            });
+
+            if (!res.ok) {
+              core.setFailed(`Telegram API 回應 ${res.status}：${await res.text()}`);
+            }
